@@ -1,120 +1,72 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import AppDialogs from './components/organisms/AppDialogs.jsx'
+import Toast from './components/molecules/Toast.jsx'
+import DashboardLayout from './templates/DashboardLayout.jsx'
+import DashboardPage from './pages/DashboardPage.jsx'
+import EmployeesPage from './pages/EmployeesPage.jsx'
+import RolesPage from './pages/RolesPage.jsx'
+import SignedOutPage from './pages/SignedOutPage.jsx'
+import useDashboard from './hooks/useDashboard.js'
+import { currentUser, navigation } from './data/dashboard.js'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const dashboard = useDashboard()
+
+  if (!dashboard.signedIn) {
+    return <SignedOutPage onOpenDashboard={dashboard.openDashboard} />
+  }
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+      <DashboardLayout
+        page={dashboard.page}
+        user={currentUser}
+        navigation={navigation}
+        search={dashboard.search}
+        onSearchChange={dashboard.updateSearch}
+        onSearchSubmit={dashboard.submitSearch}
+        onNavigate={dashboard.navigate}
+        onLogout={dashboard.requestLogout}
+      >
+        {dashboard.page === 'Dashboard' && <DashboardPage
+          user={currentUser}
+          employees={dashboard.employees}
+          activities={dashboard.activities}
+          statistics={dashboard.statistics}
+          onSelectStatistic={dashboard.selectStatistic}
+          onAddEmployee={dashboard.openAddEmployee}
+          onViewEmployee={dashboard.viewEmployee}
+          onViewEmployees={() => dashboard.navigate('Medewerkers')}
+          onViewActivities={dashboard.viewActivities}
+        />}
+        {dashboard.page === 'Medewerkers' && <EmployeesPage
+          total={dashboard.employees.length}
+          employees={dashboard.filteredEmployees}
+          roles={dashboard.roles}
+          search={dashboard.search}
+          roleFilter={dashboard.roleFilter}
+          statusFilter={dashboard.statusFilter}
+          onRoleFilterChange={dashboard.setRoleFilter}
+          onStatusFilterChange={dashboard.setStatusFilter}
+          onAddEmployee={dashboard.openAddEmployee}
+          onViewEmployee={dashboard.viewEmployee}
+        />}
+        {dashboard.page === 'Rollen' && <RolesPage
+          roles={dashboard.roles}
+          employees={dashboard.employees}
+          onViewRole={dashboard.viewRole}
+        />}
+      </DashboardLayout>
+      <Toast message={dashboard.notice} onDismiss={dashboard.dismissNotice} />
+      <AppDialogs
+        modal={dashboard.modal}
+        roles={dashboard.roles}
+        activities={dashboard.activities}
+        formError={dashboard.formError}
+        onClose={dashboard.closeModal}
+        onAddEmployee={dashboard.addEmployee}
+        onViewRole={dashboard.viewRole}
+        onConfirmLogout={dashboard.confirmLogout}
+      />
     </>
   )
 }
