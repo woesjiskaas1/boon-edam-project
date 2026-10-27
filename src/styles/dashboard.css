@@ -1,11 +1,8 @@
 .app-shell { min-height: 100svh; }
 .sidebar { width: 248px; position: fixed; inset: 0 auto 0 0; z-index: 30; background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 31px 10px 22px; }
 .brand-button { display: flex; border: 0; background: transparent; padding: 0; margin: 0 20px 47px; text-align: left; }
-.brand { display: inline-flex; align-items: center; gap: 13px; font-size: 25px; font-weight: 750; white-space: nowrap; letter-spacing: -.85px; }
-.brand-mark { width: 46px; height: 46px; flex: 0 0 46px; position: relative; isolation: isolate; }
-.brand-mark::before, .brand-mark::after { content: ''; position: absolute; width: 31px; height: 32px; border: 6px solid var(--green); }
-.brand-mark::before { top: 0; left: 0; z-index: 2; }
-.brand-mark::after { bottom: 0; right: 0; border-color: var(--yellow); z-index: 1; }
+.brand { display: inline-flex; align-items: center; width: 190px; max-width: 100%; }
+.brand-logo { display: block; width: 100%; height: auto; }
 .navigation { display: grid; gap: 8px; }
 .nav-item { position: relative; display: flex; align-items: center; gap: 21px; padding: 17px 23px; width: 100%; border: 0; background: transparent; border-radius: 6px; text-align: left; font-size: 15px; color: #505968; min-height: 54px; }
 .nav-item:hover { background: #f6f9f4; color: var(--green-dark); }
@@ -138,7 +135,7 @@
 .toast { display: flex; align-items: center; gap: 12px; padding: 13px 15px; border: 1px solid #c8debf; border-radius: 10px; background: #f3faee; box-shadow: 0 8px 30px #12200b12; color: #35652c; font-size: 13px; line-height: 1.7; }
 .toast > svg, .toast > .icon-button { flex-shrink: 0; }
 .signed-out { min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; background: #fff; }
-.signed-out > .brand { margin-bottom: 50px; }
+.signed-out > .brand { width: 260px; margin-bottom: 50px; }
 .signed-out-icon { width: 76px; height: 76px; border-radius: 50%; background: var(--green-pale); color: #4b9039; display: grid; place-items: center; margin-bottom: 24px; }
 .signed-out h1 { font-size: 30px; letter-spacing: -.9px; margin-bottom: 12px; }
 .signed-out p { color: var(--text-muted); font-size: 14px; line-height: 1.7; margin-bottom: 24px; }
@@ -155,10 +152,7 @@
 @media (max-width: 1390px) {
   .sidebar { width: 220px; }
   .workspace { margin-left: 220px; }
-  .brand { font-size: 23px; gap: 10px; }
   .brand-button { margin-left: 14px; margin-right: 8px; }
-  .brand-mark { width: 41px; height: 41px; flex-basis: 41px; }
-  .brand-mark::before, .brand-mark::after { width: 29px; height: 29px; border-width: 5px; }
   .main-content { padding-inline: 25px; }
   .stat-card { padding: 20px 16px; gap: 13px; }
   .stat-icon { width: 49px; height: 49px; }
@@ -205,9 +199,6 @@
 @media (max-width: 960px) {
   .sidebar { width: 200px; padding-top: 28px; }
   .workspace { margin-left: 200px; }
-  .brand { font-size: 21px; gap: 9px; }
-  .brand-mark { width: 36px; height: 36px; flex-basis: 36px; }
-  .brand-mark::before, .brand-mark::after { width: 25px; height: 25px; }
   .nav-item { gap: 16px; padding-inline: 17px; font-size: 14px; }
   .sidebar-footnote { padding-inline: 17px; font-size: 9px; }
   .main-content { padding: 29px 22px 0; }
@@ -229,9 +220,6 @@
   .navigation-open .sidebar-backdrop { display: block; position: fixed; inset: 0; z-index: 25; background: #16211650; border: 0; }
   .mobile-sidebar-close { display: inline-flex; position: absolute; right: 12px; top: 80px; }
   .brand-button { margin-bottom: 55px; margin-left: 19px; }
-  .brand { font-size: 25px; gap: 12px; }
-  .brand-mark { width: 43px; height: 43px; flex-basis: 43px; }
-  .brand-mark::before, .brand-mark::after { width: 31px; height: 31px; border-width: 6px; }
   .nav-item { padding-inline: 24px; min-height: 57px; }
   .workspace { margin-left: 0; }
   .topbar { height: 74px; padding-inline: 20px; gap: 16px; }

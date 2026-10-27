@@ -9,6 +9,7 @@ een zijmenu, gebruikersnaam, organisatiecijfers, recente medewerkers en activite
 Op kleine schermen is de navigatie beschikbaar via de menuknop.
 
 De pagina's Dashboard, Medewerkers en Rollen werken met fictieve voorbeeldgegevens.
+De voorbeeldpersonen zijn John Doe en Jane Doe; John Doe is het ingelogde voorbeeldaccount.
 Je kunt medewerkers zoeken, op rol en status filteren, gegevens bekijken en via het
 formulier een medewerker toevoegen. Aantallen en recente activiteit worden direct
 bijgewerkt. Gegevens staan alleen in het geheugen en worden bij herladen teruggezet.
