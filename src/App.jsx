@@ -1,74 +1,116 @@
-import AppDialogs from './components/organisms/AppDialogs.jsx'
-import Toast from './components/molecules/Toast.jsx'
-import DashboardLayout from './templates/DashboardLayout.jsx'
-import DashboardPage from './pages/DashboardPage.jsx'
-import EmployeesPage from './pages/EmployeesPage.jsx'
-import RolesPage from './pages/RolesPage.jsx'
-import SignedOutPage from './pages/SignedOutPage.jsx'
-import useDashboard from './hooks/useDashboard.js'
-import { currentUser, navigation } from './data/dashboard.js'
+import { useState } from "react";
+import TopNavbar from "./components/organisms/TopNavbar";
+import Sidebar from "./components/organisms/Sidebar";
+
+import Dashboard from "./pages/Dashboard";
+import Employees from "./pages/Employees";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+
+import AddEmployee from "./pages/AddEmployee";
+
+import initialEmployees from "./data/employees";
+import roles from "./data/roles";
+
+import "./styles/layout.css";
 
 function App() {
-  const dashboard = useDashboard()
+  const [activePage, setActivePage] = useState("dashboard");
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [employees, setEmployees] = useState(initialEmployees);
 
-  if (!dashboard.signedIn) {
-    return <SignedOutPage onOpenDashboard={dashboard.openDashboard} />
+
+  const renderPage = () => {
+    switch (activePage) {
+      case "dashboard":
+        return <Dashboard />;
+      case "profile":
+        return <Profile />;
+      case "settings":
+        return <Settings />;
+      default:
+        return <Dashboard />;
+
+      case "employees":
+        return (
+          <Employees
+            employees={employees}
+            onAddEmployee={() => setActivePage("add-employee")}
+          />
+        );
+      case "add-employee":
+        return (
+          <AddEmployee
+            onSave={handleAddEmployee}
+            onCancel={() => setActivePage("employees")}
+          />
+        );
+    }
+  };
+
+  // Maakt van de formuliergegevens een nieuwe medewerker
+  // en zet die achteraan in de lijst.
+  const handleAddEmployee = (formData) => {
+    const selectedRole = roles.find((role) => role.id === formData.roleId);
+    const nextNumber = employees.length + 1;
+
+    const newEmployee = {
+      id: `EMP${String(nextNumber).padStart(3, "0")}`,
+      name: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      birthDate: formData.birthDate,
+      country: formData.country,
+      email: formData.email.trim(),
+      role: selectedRole.name,
+      skills: formData.skillIds,
+    };
+
+    setEmployees((current) => [...current, newEmployee]);
+    setActivePage("employees");
+  };
+
+  if (isLoggedOut) {
+    return (
+      <main className="logged-out-screen">
+        <h1>Je bent uitgelogd</h1>
+        <p>Dit is een demonstratie van de uitlogfunctie.</p>
+        <button
+          type="button"
+          onClick={() => setIsLoggedOut(false)}
+        >
+          Terug naar het portaal
+        </button>
+      </main>
+    );
   }
 
   return (
-    <>
-      <DashboardLayout
-        page={dashboard.page}
-        user={currentUser}
-        navigation={navigation}
-        search={dashboard.search}
-        onSearchChange={dashboard.updateSearch}
-        onSearchSubmit={dashboard.submitSearch}
-        onNavigate={dashboard.navigate}
-        onLogout={dashboard.requestLogout}
-      >
-        {dashboard.page === 'Dashboard' && <DashboardPage
-          user={currentUser}
-          employees={dashboard.employees}
-          activities={dashboard.activities}
-          statistics={dashboard.statistics}
-          onSelectStatistic={dashboard.selectStatistic}
-          onAddEmployee={dashboard.openAddEmployee}
-          onViewEmployee={dashboard.viewEmployee}
-          onViewEmployees={() => dashboard.navigate('Medewerkers')}
-          onViewActivities={dashboard.viewActivities}
-        />}
-        {dashboard.page === 'Medewerkers' && <EmployeesPage
-          total={dashboard.employees.length}
-          employees={dashboard.filteredEmployees}
-          roles={dashboard.roles}
-          search={dashboard.search}
-          roleFilter={dashboard.roleFilter}
-          statusFilter={dashboard.statusFilter}
-          onRoleFilterChange={dashboard.setRoleFilter}
-          onStatusFilterChange={dashboard.setStatusFilter}
-          onAddEmployee={dashboard.openAddEmployee}
-          onViewEmployee={dashboard.viewEmployee}
-        />}
-        {dashboard.page === 'Rollen' && <RolesPage
-          roles={dashboard.roles}
-          employees={dashboard.employees}
-          onViewRole={dashboard.viewRole}
-        />}
-      </DashboardLayout>
-      <Toast message={dashboard.notice} onDismiss={dashboard.dismissNotice} />
-      <AppDialogs
-        modal={dashboard.modal}
-        roles={dashboard.roles}
-        activities={dashboard.activities}
-        formError={dashboard.formError}
-        onClose={dashboard.closeModal}
-        onAddEmployee={dashboard.addEmployee}
-        onViewRole={dashboard.viewRole}
-        onConfirmLogout={dashboard.confirmLogout}
+    <div className="app-layout">
+      <TopNavbar
+        onNavigate={setActivePage}
+        onLogout={() => setIsLoggedOut(true)}
       />
-    </>
-  )
+
+      <div className="app-body">
+        <Sidebar
+          activePage={
+            activePage === "add-employee" ? "employees" : activePage
+          }
+          onNavigate={setActivePage}
+          isCollapsed={isSidebarCollapsed}
+          onToggle={() =>
+            setIsSidebarCollapsed((collapsed) => !collapsed)
+          }
+        />
+
+        <main className="main-content">
+          {renderPage()}
+        </main>
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;

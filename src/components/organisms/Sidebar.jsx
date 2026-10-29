@@ -1,20 +1,42 @@
-import Brand from '../atoms/Brand.jsx'
-import Button from '../atoms/Button.jsx'
-import Icon from '../atoms/Icon.jsx'
-import NavItem from '../molecules/NavItem.jsx'
+const navigationItems = [
+  { id: "dashboard", label: "Dashboard", icon: "⌂" },
+  { id: "employees", label: "Medewerkers", icon: "♙" },
+  { id: "settings", label: "Instellingen", icon: "⚙" },
+];
 
-export default function Sidebar({ sidebarRef, page, navigation, onNavigate, onClose, onLogout }) {
+function Sidebar({ activePage, onNavigate, isCollapsed, onToggle }) {
   return (
-    <aside ref={sidebarRef} className="sidebar" id="main-navigation" aria-label="Hoofdnavigatie">
-      <Button variant="plain" className="brand-button" onClick={() => onNavigate('Dashboard')} aria-label="Boon Edam dashboard"><Brand /></Button>
-      <Button variant="icon" className="mobile-sidebar-close" onClick={onClose} aria-label="Navigatie sluiten"><Icon name="close" /></Button>
-      <nav className="navigation">
-        {navigation.map((item) => <NavItem key={item.name} icon={item.icon} active={page === item.name} onClick={() => onNavigate(item.name)}>{item.name}</NavItem>)}
+    <aside className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
+      <button
+        type="button"
+        className="sidebar-toggle"
+        onClick={onToggle}
+        aria-label={isCollapsed ? "Menu uitklappen" : "Menu inklappen"}
+      >
+        {isCollapsed ? "☰" : "←"}
+      </button>
+
+      <nav aria-label="Hoofdnavigatie">
+        {navigationItems.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            className={`sidebar-link ${
+              activePage === item.id ? "active" : ""
+            }`}
+            onClick={() => onNavigate(item.id)}
+            title={isCollapsed ? item.label : undefined}
+          >
+            <span className="sidebar-icon" aria-hidden="true">
+              {item.icon}
+            </span>
+
+            {!isCollapsed && <span>{item.label}</span>}
+          </button>
+        ))}
       </nav>
-      <div className="sidebar-bottom">
-        <NavItem icon="logout" className="logout-button" onClick={onLogout}>Uitloggen</NavItem>
-        <span className="sidebar-footnote">Boon Edam · Beheeromgeving</span>
-      </div>
     </aside>
-  )
+  );
 }
+
+export default Sidebar;
