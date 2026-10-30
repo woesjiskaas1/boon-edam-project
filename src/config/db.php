@@ -26,6 +26,10 @@ class db {
       $this->dbpass,
       $options
     );
+    $hasEmployeeTable = (int) $dbConn->query(
+      "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'employee'"
+    )->fetchColumn() > 0;
+
     $schema = file_get_contents(__DIR__ . '/database.sql');
     if ($schema === false) {
       throw new RuntimeException('Could not read database.sql');
@@ -55,6 +59,10 @@ class db {
     }
 
     foreach ($seedStatements as $statement) {
+      if ($hasEmployeeTable) {
+        break;
+      }
+
       $dbConn->exec($statement);
     }
 

@@ -73,10 +73,179 @@ $app->get('/employees', function (Request $request, Response $response) {
 //ENDPOINT ONE EMPLOYEE ALL INFO
 // ---------------------------------------------------------------------
 $app->get('/employees/{id:\d+}', function (Request $request, Response $response,$args = []) {
-    $id = $args['id']; 
+    $query = (new db())->connect()->prepare('SELECT * FROM employee WHERE employee_id = ?');
+    $query->execute([$args['id']]);
+    $names = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    $json = json_encode($names);
+    if ($json === false) {
+        throw new RuntimeException(json_last_error_msg());
+    }
+
+    $response->getBody()->write($json);
+    return $response;
+});
+// ---------------------------------------------------------------------
+
+//ENDPOINT ALL CERTIFICATE INFO
+// ---------------------------------------------------------------------
+$app->get('/certificates', function (Request $request, Response $response) {
     $names = (new db())->connect()
-        ->query("SELECT * FROM employee WHERE employee_id = $id")
+        ->query('SELECT * FROM certificate_type')
         ->fetchAll(PDO::FETCH_ASSOC);
+
+    $json = json_encode($names);
+    if ($json === false) {
+        throw new RuntimeException(json_last_error_msg());
+    }
+
+    $response->getBody()->write($json);
+    return $response;
+});
+// ---------------------------------------------------------------------
+
+//ENDPOINT CERTIFICATE INFO
+// ---------------------------------------------------------------------
+$app->get('/certificates/{name}', function (Request $request, Response $response, $args) {
+    $query = (new db())->connect()->prepare('SELECT * FROM certificate_type WHERE name = ?');
+    $query->execute([$args['name']]);
+    $names = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    $json = json_encode($names);
+    if ($json === false) {
+        throw new RuntimeException(json_last_error_msg());
+    }
+
+    $response->getBody()->write($json);
+    return $response;
+});
+// ---------------------------------------------------------------------
+
+//ENDPOINT ALL EMPLOYEE CERTIFICATE INFO
+// ---------------------------------------------------------------------
+$app->get('/employee_certificates', function (Request $request, Response $response) {
+    $names = (new db())->connect()
+        ->query('SELECT * FROM employee_certificate')
+        ->fetchAll(PDO::FETCH_ASSOC);
+
+    $json = json_encode($names);
+    if ($json === false) {
+        throw new RuntimeException(json_last_error_msg());
+    }
+
+    $response->getBody()->write($json);
+    return $response;
+});
+// ---------------------------------------------------------------------
+
+//ENDPOINT SPECIFIC EMPLOYEE CERTIFICATE INFO
+// ---------------------------------------------------------------------
+$app->get('/employee_certificates/{id:\d+}', function (Request $request, Response $response,$args = []) {
+    $query = (new db())->connect()->prepare('SELECT * FROM employee_certificate WHERE employee_id = ?');
+    $query->execute([$args['id']]);
+    $names = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    $json = json_encode($names);
+    if ($json === false) {
+        throw new RuntimeException(json_last_error_msg());
+    }
+
+    $response->getBody()->write($json);
+    return $response;
+});
+// ---------------------------------------------------------------------
+
+//ENDPOINT ALL EMPLOYEE TRAINING INFO
+// ---------------------------------------------------------------------
+$app->get('/employee_training', function (Request $request, Response $response) {
+    $names = (new db())->connect()
+        ->query('SELECT * FROM training')
+        ->fetchAll(PDO::FETCH_ASSOC);
+
+    $json = json_encode($names);
+    if ($json === false) {
+        throw new RuntimeException(json_last_error_msg());
+    }
+
+    $response->getBody()->write($json);
+    return $response;
+});
+// ---------------------------------------------------------------------
+
+//ENDPOINT SPECIFIC EMPLOYEE TRAINING INFO
+// ---------------------------------------------------------------------
+$app->get('/employee_training/{id:\d+}', function (Request $request, Response $response,$args = []) {
+    $query = (new db())->connect()->prepare('SELECT * FROM training WHERE employee_id = ?');
+    $query->execute([$args['id']]);
+    $names = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    $json = json_encode($names);
+    if ($json === false) {
+        throw new RuntimeException(json_last_error_msg());
+    }
+
+    $response->getBody()->write($json);
+    return $response;
+});
+// ---------------------------------------------------------------------
+
+//ENDPOINT ALL EMPLOYEE SKILL INFO
+// ---------------------------------------------------------------------
+$app->get('/employee_skills', function (Request $request, Response $response) {
+    $names = (new db())->connect()
+        ->query('SELECT * FROM employee_skill')
+        ->fetchAll(PDO::FETCH_ASSOC);
+
+    $json = json_encode($names);
+    if ($json === false) {
+        throw new RuntimeException(json_last_error_msg());
+    }
+
+    $response->getBody()->write($json);
+    return $response;
+});
+// ---------------------------------------------------------------------
+
+//ENDPOINT SPECIFIC EMPLOYEE SKILL INFO
+// ---------------------------------------------------------------------
+$app->get('/employee_skills/{id:\d+}', function (Request $request, Response $response,$args = []) {
+    $query = (new db())->connect()->prepare('SELECT * FROM employee_skill WHERE employee_id = ?');
+    $query->execute([$args['id']]);
+    $names = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    $json = json_encode($names);
+    if ($json === false) {
+        throw new RuntimeException(json_last_error_msg());
+    }
+
+    $response->getBody()->write($json);
+    return $response;
+});
+// ---------------------------------------------------------------------
+
+//ENDPOINT ALL EMPLOYEE FILE INFO
+// ---------------------------------------------------------------------
+$app->get('/employee_files', function (Request $request, Response $response) {
+    $names = (new db())->connect()
+        ->query('SELECT * FROM `file`')
+        ->fetchAll(PDO::FETCH_ASSOC);
+
+    $json = json_encode($names);
+    if ($json === false) {
+        throw new RuntimeException(json_last_error_msg());
+    }
+
+    $response->getBody()->write($json);
+    return $response;
+});
+// ---------------------------------------------------------------------
+
+//ENDPOINT SPECIFIC EMPLOYEE FILE INFO
+// ---------------------------------------------------------------------
+$app->get('/employee_files/{id:\d+}', function (Request $request, Response $response,$args = []) {
+    $query = (new db())->connect()->prepare('SELECT * FROM `file` WHERE employee_id = ?');
+    $query->execute([$args['id']]);
+    $names = $query->fetchAll(PDO::FETCH_ASSOC);
 
     $json = json_encode($names);
     if ($json === false) {
