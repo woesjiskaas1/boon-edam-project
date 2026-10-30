@@ -4,15 +4,21 @@ import Sidebar from "./components/organisms/Sidebar";
 
 import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
+import EmployeeFunctions from "./pages/EmployeeFunctions";
+
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+
 
 import AddEmployee from "./pages/AddEmployee";
 
 import initialEmployees from "./data/employees";
-import roles from "./data/roles";
+import employeeRoles from "./data/employeeRoles";
+
+
 
 import "./styles/layout.css";
+
 
 function App() {
   const [activePage, setActivePage] = useState("dashboard");
@@ -27,11 +33,10 @@ function App() {
         return <Dashboard />;
       case "profile":
         return <Profile />;
+      case "employee-functions":
+        return <EmployeeFunctions />;
       case "settings":
         return <Settings />;
-      default:
-        return <Dashboard />;
-
       case "employees":
         return (
           <Employees
@@ -46,13 +51,17 @@ function App() {
             onCancel={() => setActivePage("employees")}
           />
         );
+      default:
+        return <Dashboard />;
     }
+
+
   };
 
   // Maakt van de formuliergegevens een nieuwe medewerker
   // en zet die achteraan in de lijst.
   const handleAddEmployee = (formData) => {
-    const selectedRole = roles.find((role) => role.id === formData.roleId);
+    const selectedRole = employeeRoles.find((role) => role.id === formData.roleId);
     const nextNumber = employees.length + 1;
 
     const newEmployee = {

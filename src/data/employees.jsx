@@ -35,6 +35,12 @@ const employees = [
     role: "Sales Manager",
     country: "Nederland",
   },
+    {
+    id: "EMP007",
+    name: "Leo Visscher",
+    role: "CEO",
+    country: "Nederland",
+  },
 ];
 
 export default employees;

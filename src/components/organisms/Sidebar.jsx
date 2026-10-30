@@ -1,7 +1,9 @@
 const navigationItems = [
   { id: "dashboard", label: "Dashboard", icon: "⌂" },
   { id: "employees", label: "Medewerkers", icon: "♙" },
-  { id: "settings", label: "Instellingen", icon: "⚙" },
+  { id: "employee-functions", label: "Functies", icon: "" },
+  { id: "skills", label: "Skills", icon: "" },
+    { id: "settings", label: "Instellingen", icon: "⚙" },
 ];
 
 function Sidebar({ activePage, onNavigate, isCollapsed, onToggle }) {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import roles from "../data/roles";
+import employeeRoles from "../data/employeeRoles";
 import skills from "../data/skills";
 import "../styles/add-employee.css";
 
@@ -41,7 +41,7 @@ function AddEmployee({ onSave, onCancel }) {
   // Bij het kiezen van een rol vullen we meteen de standaard skills in.
   const handleRoleChange = (event) => {
     const roleId = event.target.value;
-    const selectedRole = roles.find((role) => role.id === roleId);
+    const selectedRole = employeeRoles.find((role) => role.id === roleId);
 
     setFormData((current) => ({
       ...current,
@@ -172,7 +172,7 @@ function AddEmployee({ onSave, onCancel }) {
             Rol
             <select name="roleId" value={formData.roleId} onChange={handleRoleChange}>
               <option value="">Kies een rol</option>
-              {roles.map((role) => (
+              {employeeRoles.map((role) => (
                 <option key={role.id} value={role.id}>{role.name}</option>
               ))}
             </select>

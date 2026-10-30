@@ -1,7 +1,6 @@
-// Alle functies (rollen) binnen Boon Edam.
-// Elke rol heeft "defaultSkills": de skills die een medewerker
-// met deze rol standaard krijgt. HR kan ze daarna per persoon aanpassen.
-const roles = [
+// All employee functions within Boon Edam.
+// Each function has default skills that can be adjusted per employee.
+const employeeRoles = [
   { id: "hr-manager", name: "HR Manager", defaultSkills: ["communicatie", "personeelsbeleid"] },
   { id: "software-developer", name: "Software Developer", defaultSkills: ["javascript", "react"] },
   { id: "project-manager", name: "Project Manager", defaultSkills: ["planning", "communicatie"] },
@@ -10,4 +9,4 @@ const roles = [
   { id: "sales-manager", name: "Sales Manager", defaultSkills: ["klantcontact", "onderhandelen"] },
 ];
 
-export default roles;
+export default employeeRoles;
