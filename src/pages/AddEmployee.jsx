@@ -1,16 +1,8 @@
 import { useState } from "react";
+import CountrySelect from "../components/molecules/CountrySelect";
 import employeeRoles from "../data/employeeRoles";
 import skills from "../data/skills";
 import "../styles/add-employee.css";
-
-const countries = [
-  "Nederland",
-  "België",
-  "Duitsland",
-  "Frankrijk",
-  "Verenigd Koninkrijk",
-  "Verenigde Staten",
-];
 
 // Zo ziet het formulier eruit als je de pagina opent: alles leeg.
 const emptyForm = {
@@ -18,7 +10,9 @@ const emptyForm = {
   lastName: "",
   birthDate: "",
   country: "",
+  address: "",
   email: "",
+  phone: "",
   roleId: "",
   skillIds: [],
 };
@@ -91,8 +85,16 @@ function AddEmployee({ onSave, onCancel }) {
       newErrors.country = "Kies een land.";
     }
 
+    if (formData.address.trim() === "") {
+      newErrors.address = "Vul een adres in.";
+    }
+
     if (!emailPattern.test(formData.email)) {
       newErrors.email = "Vul een geldig e-mailadres in.";
+    }
+
+    if (formData.phone.trim() === "") {
+      newErrors.phone = "Vul een telefoonnummer in.";
     }
 
     if (formData.roleId === "") {
@@ -145,18 +147,26 @@ function AddEmployee({ onSave, onCancel }) {
             {errors.birthDate && <span className="form-error">{errors.birthDate}</span>}
           </label>
 
-          <label className="form-field">
-            Land
-            <select name="country" value={formData.country} onChange={handleChange}>
-              <option value="">Kies een land</option>
-              {countries.map((country) => (
-                <option key={country} value={country}>{country}</option>
-              ))}
-            </select>
-            {errors.country && <span className="form-error">{errors.country}</span>}
-          </label>
+          <CountrySelect
+            value={formData.country}
+            onChange={(country) => setFormData((current) => ({ ...current, country }))}
+            error={errors.country}
+          />
 
           <label className="form-field form-field-wide">
+            Adres
+            <input
+              type="text"
+              name="address"
+              autoComplete="street-address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="Straatnaam 12"
+            />
+            {errors.address && <span className="form-error">{errors.address}</span>}
+          </label>
+
+          <label className="form-field">
             E-mailadres
             <input
               type="email"
@@ -166,6 +176,19 @@ function AddEmployee({ onSave, onCancel }) {
               placeholder="naam@boonedam.com"
             />
             {errors.email && <span className="form-error">{errors.email}</span>}
+          </label>
+
+          <label className="form-field">
+            Telefoonnummer
+            <input
+              type="tel"
+              name="phone"
+              autoComplete="tel"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="+31 6 12345678"
+            />
+            {errors.phone && <span className="form-error">{errors.phone}</span>}
           </label>
 
           <label className="form-field form-field-wide">

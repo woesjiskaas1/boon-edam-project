@@ -71,7 +71,9 @@ function App() {
       lastName: formData.lastName.trim(),
       birthDate: formData.birthDate,
       country: formData.country,
+      address: formData.address.trim(),
       email: formData.email.trim(),
+      phone: formData.phone.trim(),
       role: selectedRole.name,
       skills: formData.skillIds,
     };
