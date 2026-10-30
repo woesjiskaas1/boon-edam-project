@@ -1,8 +1,8 @@
 import { useState } from "react";
-import employees from "../data/employees";
+import CountryLabel from "../components/molecules/CountryLabel";
 const ITEMS_PER_PAGE = 50;
 
-function Employees({ employees, onAddEmployee }) {
+function Employees({ employees, onAddEmployee, onSelectEmployee }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.max(
@@ -29,7 +29,7 @@ function Employees({ employees, onAddEmployee }) {
       <div className="employees-header">
         <div>
           <h1>Medewerkers</h1>
-          <p>Overzicht van alle medewerkers.</p>
+          <p>Klik op een naam om de gegevens van een medewerker te bekijken.</p>
         </div>
 
         <div className="employees-header-actions">
@@ -61,20 +61,29 @@ function Employees({ employees, onAddEmployee }) {
           <tbody>
             {visibleEmployees.map((employee) => (
               <tr key={employee.id}>
-                <td>{employee.name}</td>
+                <td>
+                  <button
+                    type="button"
+                    className="employee-name-button"
+                    onClick={() => onSelectEmployee(employee.id)}
+                    aria-label={`Bekijk medewerker ${employee.name}`}
+                  >
+                    {employee.name}
+                  </button>
+                </td>
                 <td>{employee.id}</td>
                 <td>
                   <span className="employee-role">
                     {employee.role}
                   </span>
                 </td>
-                <td>{employee.country}</td>
+                <td><CountryLabel country={employee.country} /></td>
               </tr>
             ))}
 
             {visibleEmployees.length === 0 && (
               <tr>
-                <td colSpan="3">
+                <td colSpan="4">
                   Er zijn nog geen medewerkers beschikbaar.
                 </td>
               </tr>

@@ -5,6 +5,7 @@ import Sidebar from "./components/organisms/Sidebar";
 
 import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
+import Employee from "./pages/Employee";
 import EmployeeFunctions from "./pages/EmployeeFunctions";
 
 import Profile from "./pages/Profile";
@@ -152,6 +153,7 @@ function App() {
                 <Employees
                   employees={employees}
                   onAddEmployee={() => navigate("/medewerkers/toevoegen")}
+                  onSelectEmployee={(employeeId) => navigate(`/medewerkers/${employeeId}`)}
                 />
               }
             />
@@ -161,6 +163,15 @@ function App() {
                 <AddEmployee
                   onSave={handleAddEmployee}
                   onCancel={() => navigate("/medewerkers")}
+                />
+              }
+            />
+            <Route
+              path="/medewerkers/:employeeId"
+              element={
+                <Employee
+                  employees={employees}
+                  onBack={() => navigate("/medewerkers")}
                 />
               }
             />

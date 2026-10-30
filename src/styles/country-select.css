@@ -46,15 +46,6 @@
   color: #718079;
 }
 
-.country-select-flag {
-  flex-shrink: 0;
-  width: 27px;
-  height: 18px;
-  overflow: hidden;
-  border-radius: 3px;
-  box-shadow: 0 0 0 1px rgb(38 51 47 / 12%);
-}
-
 .country-select-chevron,
 .country-select-check {
   flex-shrink: 0;
