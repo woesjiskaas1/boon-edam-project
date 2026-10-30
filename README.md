@@ -4,4 +4,4 @@ php -S localhost:3333 index.php     <- in de terminal rennen IN DE PUBLIC FOLDER
 php -S localhost:3333 index.php
 ```
 
-PHP 8.5 or newer is required. XAMPP can provide the MySQL server.
+PHP 8.5 of nieuwer is nodig. XAMPP can provide the MySQL server.
