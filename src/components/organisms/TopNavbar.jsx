@@ -1,8 +1,17 @@
 import { useState } from "react";
 import logo from "../../assets/boon-edam-logo.png";
 
-function TopNavbar({ onNavigate, onLogout }) {
+
+
+function TopNavbar({ currentUser, onNavigate, onLogout }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Eerste letter van elk woord in de naam: "Jane Doe" wordt "JD".
+  const initials = currentUser.name
+    .split(" ")
+    .map((word) => word.charAt(0))
+    .join("")
+    .toUpperCase();
 
   const handleNavigate = (page) => {
     onNavigate(page);
@@ -27,8 +36,8 @@ function TopNavbar({ onNavigate, onLogout }) {
           aria-label="Open profielmenu"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          <span className="profile-avatar">G</span>
-          <span className="profile-label">Gebruiker</span>
+          <span className="profile-avatar">{initials}</span>
+          <span className="profile-label">{currentUser.name}</span>
           <span aria-hidden="true">{isMenuOpen ? "▲" : "▼"}</span>
         </button>
 

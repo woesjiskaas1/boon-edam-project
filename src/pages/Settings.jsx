@@ -1,6 +1,5 @@
 import { useState } from "react";
 import accessRoles, { permissions } from "../data/accessRoles";
-import portalUsers, { currentUserId } from "../data/portalUsers";
 import "../styles/settings.css";
 
 // De tabbladen van het menu bovenaan de pagina.
@@ -54,10 +53,10 @@ const getChangeBlockReason = (currentUser, targetUser) => {
   return null;
 };
 
-function Settings() {
-  const [activeTab, setActiveTab] = useState("general");
-  const currentUser = portalUsers.find((user) => user.id === currentUserId);
+function Settings({ currentUser, portalUsers }) {
+    const [activeTab, setActiveTab] = useState("general");
 
+    
   return (
     <section className="page">
       <div className="page-header">

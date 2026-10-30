@@ -1,0 +1,85 @@
+/* De hele pagina: kaart in het midden van het scherm */
+.auth-page {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 24px 16px;
+  background: #f5f7f6;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #e0e6e3;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 6%);
+}
+
+.auth-logo {
+  display: block;
+  width: 160px;
+  height: auto;
+  margin: 0 auto 24px;
+}
+
+.auth-card h1 {
+  margin: 0 0 6px;
+  color: #123c32;
+  font-size: 24px;
+  text-align: center;
+}
+
+.auth-intro {
+  margin: 0 0 24px;
+  color: #718079;
+  font-size: 14px;
+  text-align: center;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Algemene foutmelding bij het inloggen */
+.auth-error {
+  margin: 0;
+  padding: 10px 12px;
+  color: #b42318;
+  background: #fef3f2;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.auth-switch {
+  margin: 20px 0 0;
+  color: #52645b;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Een knop die eruitziet als een link */
+.link-button {
+  padding: 0;
+  color: #123c32;
+  background: none;
+  border: 0;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.auth-demo {
+  margin: 16px 0 0;
+  color: #a0aaa5;
+  font-size: 12px;
+  text-align: center;
+}

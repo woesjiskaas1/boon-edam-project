@@ -7,13 +7,17 @@ import Employees from "./pages/Employees";
 import EmployeeFunctions from "./pages/EmployeeFunctions";
 
 import Profile from "./pages/Profile";
-import Settings from "./pages/Settings";
+import Settings from "./pages/Settings"
 
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 import AddEmployee from "./pages/AddEmployee";
 
 import initialEmployees from "./data/employees";
 import employeeRoles from "./data/employeeRoles";
+
+import initialPortalUsers, { invitations as initialInvitations } from "./data/portalUsers";
 
 
 
@@ -22,8 +26,10 @@ import "./styles/layout.css";
 
 function App() {
   const [activePage, setActivePage] = useState("dashboard");
-  const [isLoggedOut, setIsLoggedOut] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authPage, setAuthPage] = useState("login");
+  const [portalUsers, setPortalUsers] = useState(initialPortalUsers);
+  const [invitations, setInvitations] = useState(initialInvitations);  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [employees, setEmployees] = useState(initialEmployees);
 
 
@@ -36,7 +42,7 @@ function App() {
       case "employee-functions":
         return <EmployeeFunctions />;
       case "settings":
-        return <Settings />;
+        return <Settings currentUser={currentUser} portalUsers={portalUsers} />;
       case "employees":
         return (
           <Employees
@@ -80,26 +86,70 @@ function App() {
     setActivePage("employees");
   };
 
-  if (isLoggedOut) {
+  // Inloggen: de gebruiker wordt de ingelogde gebruiker.
+  const handleLogin = (user) => {
+    setCurrentUser(user);
+    setActivePage("dashboard");
+  };
+
+  // Registreren: maak een account met de rol uit de uitnodiging.
+  const handleRegister = (formData) => {
+    const email = formData.email.trim().toLowerCase();
+    const invitation = invitations.find(
+      (item) => item.email.toLowerCase() === email
+    );
+    const highestId = Math.max(...portalUsers.map((user) => user.id));
+
+    const newUser = {
+      id: highestId + 1,
+      name: formData.name.trim(),
+      email: email,
+      password: formData.password,
+      accessRoleId: invitation.accessRoleId,
+    };
+
+    setPortalUsers((current) => [...current, newUser]);
+    setInvitations((current) =>
+      current.filter((item) => item.email.toLowerCase() !== email)
+    );
+    handleLogin(newUser);
+  };
+
+  // Uitloggen: niemand is meer ingelogd, terug naar het inlogscherm.
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setAuthPage("login");
+  };
+
+  // Niet ingelogd? Dan alleen het inlog- of registratiescherm.
+  if (!currentUser) {
+    if (authPage === "register") {
+      return (
+        <Register
+          portalUsers={portalUsers}
+          invitations={invitations}
+          onRegister={handleRegister}
+          onShowLogin={() => setAuthPage("login")}
+        />
+      );
+    }
+
     return (
-      <main className="logged-out-screen">
-        <h1>Je bent uitgelogd</h1>
-        <p>Dit is een demonstratie van de uitlogfunctie.</p>
-        <button
-          type="button"
-          onClick={() => setIsLoggedOut(false)}
-        >
-          Terug naar het portaal
-        </button>
-      </main>
+      <Login
+        portalUsers={portalUsers}
+        onLogin={handleLogin}
+        onShowRegister={() => setAuthPage("register")}
+      />
     );
   }
+
 
   return (
     <div className="app-layout">
       <TopNavbar
+        currentUser={currentUser}
         onNavigate={setActivePage}
-        onLogout={() => setIsLoggedOut(true)}
+        onLogout={handleLogout}
       />
 
       <div className="app-body">
