@@ -1,28 +1,7 @@
-# boon-edam-project
-
-React + Vite (JavaScript).
-
-De interface volgt Atomic Design: kleine bouwstenen onderaan, pagina's bovenaan. Een onderdeel importeert alleen uit dezelfde laag of een lagere laag.
-
-```text
-src/
-├── components/
-│   ├── atoms/          kleine, losse bouwstenen
-│   ├── molecules/      combinatie van atoms met één taak
-│   └── organisms/      groter interface-onderdeel
-├── templates/          gedeelde pagina-indeling
-├── pages/              concrete schermen
-├── hooks/              gedeelde logica
-├── data/               voorbeeldgegevens
-├── styles/
-│   ├── global.css      basisstijl voor de hele app
-│   └── dashboard.css   stijl van het dashboard
-├── assets/
-├── App.jsx
-└── main.jsx
-```
+php -S localhost:3333 index.php     <- in de terminal rennen IN DE PUBLIC FOLDER, ga daar dus heen met cd argumenten bijvoorbeeld
 
 ```bash
-npm install
-npm run dev
+php -S localhost:3333 index.php
 ```
+
+PHP 8.5 or newer is required. XAMPP can provide the MySQL server.
