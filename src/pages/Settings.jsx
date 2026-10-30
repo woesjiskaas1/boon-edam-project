@@ -1,12 +1,6 @@
-import { useState } from "react";
 import accessRoles, { permissions } from "../data/accessRoles";
 import "../styles/settings.css";
 
-// De tabbladen van het menu bovenaan de pagina.
-const tabs = [
-  { id: "general", label: "Algemeen" },
-  { id: "access", label: "Toegang" },
-];
 
 // Zoekt een toegangsrol op aan de hand van het id.
 const getRole = (roleId) =>
@@ -54,7 +48,6 @@ const getChangeBlockReason = (currentUser, targetUser) => {
 };
 
 function Settings({ currentUser, portalUsers }) {
-    const [activeTab, setActiveTab] = useState("general");
 
     
   return (
@@ -68,31 +61,6 @@ function Settings({ currentUser, portalUsers }) {
           </p>
         </div>
       </div>
-
-      <div className="settings-tabs" role="tablist">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            role="tab"
-            aria-selected={activeTab === tab.id}
-            className={`settings-tab ${activeTab === tab.id ? "active" : ""}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {activeTab === "general" && (
-        <div className="content-card">
-          <h2>Algemene instellingen</h2>
-          <p>Hier komen straks de algemene instellingen.</p>
-        </div>
-      )}
-
-      {activeTab === "access" && (
-        <>
           <div className="content-card settings-section">
             <div className="settings-section-header">
               <div>
@@ -183,8 +151,6 @@ function Settings({ currentUser, portalUsers }) {
               ))}
             </div>
           </div>
-        </>
-      )}
     </section>
   );
 }

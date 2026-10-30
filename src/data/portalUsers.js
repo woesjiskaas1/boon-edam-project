@@ -6,7 +6,7 @@ const portalUsers = [
   { id: 1, name: "John Doe", email: "john.doe@boonedam.com", password: "Welkom123", accessRoleId: "owner" },
   { id: 2, name: "Jane Doe", email: "jane.doe@boonedam.com", password: "Welkom123", accessRoleId: "admin" },
   { id: 3, name: "Jan de Vries", email: "jan.devries@boonedam.com", password: "Welkom123", accessRoleId: "editor" },
-  { id: 4, name: "Leo Visscher", email: "leovisscher07@gmail.com", password: "1234", accessRoleId: "viewer" },
+  { id: 4, name: "Leo Visscher", email: "leovisscher07@gmail.com", password: "1234", accessRoleId: "admin" },
 ];
 
 // Mensen die zijn uitgenodigd, maar nog geen account hebben.
