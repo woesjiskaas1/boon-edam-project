@@ -1,23 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
-import flags from "../../assets/flags.svg?no-inline";
+import CountryLabel from "./CountryLabel";
+import countries from "../../data/countries";
 import "../../styles/country-select.css";
-
-const countries = [
-  { code: "nl", name: "Nederland" },
-  { code: "be", name: "België" },
-  { code: "de", name: "Duitsland" },
-  { code: "fr", name: "Frankrijk" },
-  { code: "gb", name: "Verenigd Koninkrijk" },
-  { code: "us", name: "Verenigde Staten" },
-];
-
-function CountryFlag({ code }) {
-  return (
-    <svg className="country-select-flag" viewBox="0 0 30 20" aria-hidden="true">
-      <use href={`${flags}#${code}`} />
-    </svg>
-  );
-}
 
 function CountrySelect({ value, onChange, error }) {
   const id = useId();
@@ -130,8 +114,7 @@ function CountrySelect({ value, onChange, error }) {
           onBlur={() => setIsOpen(false)}
         >
           <span id={`${id}-value`} className={`country-select-value${selectedCountry ? "" : " is-placeholder"}`}>
-            {selectedCountry && <CountryFlag code={selectedCountry.code} />}
-            {selectedCountry?.name ?? "Kies een land"}
+            {selectedCountry ? <CountryLabel country={selectedCountry.name} /> : "Kies een land"}
           </span>
           <svg className="country-select-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="m5 7.5 5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -152,8 +135,7 @@ function CountrySelect({ value, onChange, error }) {
                 onMouseEnter={() => setActiveIndex(index)}
                 onClick={() => selectCountry(index)}
               >
-                <CountryFlag code={country.code} />
-                <span>{country.name}</span>
+                <CountryLabel country={country.name} />
                 {country.name === value && (
                   <svg className="country-select-check" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                     <path d="m4 10 4 4 8-8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />

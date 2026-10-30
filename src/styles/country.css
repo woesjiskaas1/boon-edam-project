@@ -1,0 +1,21 @@
+.country-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.country-label-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.country-flag {
+  flex-shrink: 0;
+  width: 27px;
+  height: 18px;
+  overflow: hidden;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgb(38 51 47 / 12%);
+}
