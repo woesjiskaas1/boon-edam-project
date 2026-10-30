@@ -45,14 +45,14 @@ function TopNavbar({ currentUser, onNavigate, onLogout }) {
           <div className="profile-dropdown">
             <button
               type="button"
-              onClick={() => handleNavigate("profile")}
+              onClick={() => handleNavigate("/profiel")}
             >
               Mijn profiel
             </button>
 
             <button
               type="button"
-              onClick={() => handleNavigate("settings")}
+              onClick={() => handleNavigate("/instellingen")}
             >
               Instellingen
             </button>

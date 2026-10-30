@@ -1,12 +1,15 @@
+import { NavLink } from "react-router";
+
+// Elk menu-item hoort bij een URL ("path").
 const navigationItems = [
-  { id: "dashboard", label: "Dashboard", icon: "⌂" },
-  { id: "employees", label: "Medewerkers", icon: "♙" },
-  { id: "employee-functions", label: "Functies", icon: "" },
-  { id: "skills", label: "Skills", icon: "" },
-    { id: "settings", label: "Instellingen", icon: "⚙" },
+  { path: "/", label: "Dashboard", icon: "⌂" },
+  { path: "/medewerkers", label: "Medewerkers", icon: "♙" },
+  { path: "/functies", label: "Functies", icon: "" },
+  { path: "/skills", label: "Skills", icon: "" },
+  { path: "/instellingen", label: "Instellingen", icon: "⚙" },
 ];
 
-function Sidebar({ activePage, onNavigate, isCollapsed, onToggle }) {
+function Sidebar({ isCollapsed, onToggle }) {
   return (
     <aside className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
       <button
@@ -20,13 +23,13 @@ function Sidebar({ activePage, onNavigate, isCollapsed, onToggle }) {
 
       <nav aria-label="Hoofdnavigatie">
         {navigationItems.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            className={`sidebar-link ${
-              activePage === item.id ? "active" : ""
-            }`}
-            onClick={() => onNavigate(item.id)}
+          <NavLink
+            key={item.path}
+            to={item.path}
+            end={item.path === "/"}
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
             title={isCollapsed ? item.label : undefined}
           >
             <span className="sidebar-icon" aria-hidden="true">
@@ -34,7 +37,7 @@ function Sidebar({ activePage, onNavigate, isCollapsed, onToggle }) {
             </span>
 
             {!isCollapsed && <span>{item.label}</span>}
-          </button>
+          </NavLink>
         ))}
       </nav>
     </aside>
