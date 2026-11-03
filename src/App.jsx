@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router";
 import TopNavbar from "./components/organisms/TopNavbar";
 import Sidebar from "./components/organisms/Sidebar";
@@ -17,7 +17,7 @@ import Register from "./pages/Register";
 
 import AddEmployee from "./pages/AddEmployee";
 
-import initialEmployees from "./data/employees";
+import { getEmployees } from "./services/employeeService";
 import employeeRoles from "./data/employeeRoles";
 
 import initialPortalUsers, { invitations as initialInvitations } from "./data/portalUsers";
@@ -32,11 +32,17 @@ function App() {
   const [portalUsers, setPortalUsers] = useState(initialPortalUsers);
   const [invitations, setInvitations] = useState(initialInvitations);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [employees, setEmployees] = useState(initialEmployees);
-
+  const [employees, setEmployees] = useState([]);
+  const [employeesError, setEmployeesError] = useState("");
   // Met navigate ga je in de code naar een andere URL.
   const navigate = useNavigate();
 
+  // Haalt de medewerkers één keer op uit de database, als de app start.
+  useEffect(() => {
+    getEmployees()
+      .then((loadedEmployees) => setEmployees(loadedEmployees))
+      .catch((error) => setEmployeesError(error.message));
+  }, []);
 
   // Maakt van de formuliergegevens een nieuwe medewerker
   // en zet die achteraan in de lijst.
@@ -145,6 +151,11 @@ function App() {
         />
 
         <main className="main-content">
+          {employeesError && (
+            <p className="auth-error" role="alert">
+              {employeesError} Draait de backend?
+            </p>
+          )}
           <Routes>
             <Route
               path="/"
