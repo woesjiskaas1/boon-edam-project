@@ -1,47 +1,16 @@
-import { NavLink } from "react-router";
+import Button from "../atoms/Button";
+import NavItem from "../molecules/NavItem";
+import navigationItems from "../../data/navigationItems";
 
-// Elk menu-item hoort bij een URL ("path").
-const navigationItems = [
-  { path: "/", label: "Dashboard", icon: "⌂" },
-  { path: "/medewerkers", label: "Medewerkers", icon: "♙" },
-  { path: "/functies", label: "Functies", icon: "" },
-  { path: "/skills", label: "Skills", icon: "" },
-  { path: "/instellingen", label: "Instellingen", icon: "⚙" },
-];
-
-function Sidebar({ isCollapsed, onToggle }) {
+export default function Sidebar({ isCollapsed, onToggle }) {
   return (
     <aside className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
-      <button
-        type="button"
-        className="sidebar-toggle"
-        onClick={onToggle}
-        aria-label={isCollapsed ? "Menu uitklappen" : "Menu inklappen"}
-      >
+      <Button className="sidebar-toggle" onClick={onToggle} aria-label={isCollapsed ? "Menu uitklappen" : "Menu inklappen"} aria-expanded={!isCollapsed}>
         {isCollapsed ? "☰" : "←"}
-      </button>
-
+      </Button>
       <nav aria-label="Hoofdnavigatie">
-        {navigationItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.path === "/"}
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? "active" : ""}`
-            }
-            title={isCollapsed ? item.label : undefined}
-          >
-            <span className="sidebar-icon" aria-hidden="true">
-              {item.icon}
-            </span>
-
-            {!isCollapsed && <span>{item.label}</span>}
-          </NavLink>
-        ))}
+        {navigationItems.map((item) => <NavItem key={item.path} item={item} isCollapsed={isCollapsed} />)}
       </nav>
     </aside>
   );
 }
-
-export default Sidebar;
