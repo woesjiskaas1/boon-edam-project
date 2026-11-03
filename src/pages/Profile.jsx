@@ -1,4 +1,3 @@
-import Avatar from "../components/atoms/Avatar";
 
 import "../styles/profile.css";
 
@@ -25,7 +24,10 @@ export default function Profile() {
       </header>
 
       <section className="profile-summary">
-        <Avatar name={`${profile.firstName} ${profile.lastName}`} firstAndLast />
+        <div className="profile-avatar" aria-hidden="true">
+          {profile.firstName.charAt(0)}
+          {profile.lastName.charAt(0)}
+        </div>
 
         <div className="profile-summary-info">
           <h2>

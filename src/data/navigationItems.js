@@ -1,9 +1,19 @@
 const navigationItems = [
-  { path: "/", label: "Dashboard", icon: "⌂" },
-  { path: "/medewerkers", label: "Medewerkers", icon: "♙" },
-  { path: "/functies", label: "Functies", icon: "" },
-  { path: "/skills", label: "Skills", icon: "" },
-  { path: "/instellingen", label: "Instellingen", icon: "⚙" },
+  {
+    id: "employees",
+    label: "Medewerkers",
+    icon: "users",
+  },
+  {
+    id: "settings",
+    label: "Instellingen",
+    icon: "settings",
+  },
+  {
+    id: "reports",
+    label: "Rapportages",
+    icon: "bar-chart",
+  }
 ];
 
 export default navigationItems;

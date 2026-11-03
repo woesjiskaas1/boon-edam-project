@@ -1,4 +1,4 @@
-function Skills() {
+function Dashboard() {
   return (
     <section>
       <h1>Skills aanmaak pagina</h1>
@@ -7,4 +7,4 @@ function Skills() {
   );
 }
 
-export default Skills;
+export default Dashboard;

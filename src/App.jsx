@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router";
-import PortalLayout from "./templates/PortalLayout";
+import TopNavbar from "./components/organisms/TopNavbar";
+import Sidebar from "./components/organisms/Sidebar";
 
 import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
@@ -21,14 +22,21 @@ import employeeRoles from "./data/employeeRoles";
 
 import initialPortalUsers, { invitations as initialInvitations } from "./data/portalUsers";
 
+
+
+import "./styles/layout.css";
+
+
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [portalUsers, setPortalUsers] = useState(initialPortalUsers);
   const [invitations, setInvitations] = useState(initialInvitations);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [employees, setEmployees] = useState(initialEmployees);
 
   // Met navigate ga je in de code naar een andere URL.
   const navigate = useNavigate();
+
 
   // Maakt van de formuliergegevens een nieuwe medewerker
   // en zet die achteraan in de lijst.
@@ -121,51 +129,71 @@ function App() {
   }
 
   return (
-    <PortalLayout currentUser={currentUser} onNavigate={navigate} onLogout={handleLogout}>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route
-          path="/medewerkers"
-          element={
-            <Employees
-              employees={employees}
-              onAddEmployee={() => navigate("/medewerkers/toevoegen")}
-              onSelectEmployee={(employeeId) => navigate(`/medewerkers/${employeeId}`)}
-            />
-          }
-        />
-        <Route
-          path="/medewerkers/toevoegen"
-          element={
-            <AddEmployee
-              onSave={handleAddEmployee}
-              onCancel={() => navigate("/medewerkers")}
-            />
-          }
-        />
-        <Route
-          path="/medewerkers/:employeeId"
-          element={
-            <Employee
-              employees={employees}
-              onBack={() => navigate("/medewerkers")}
-            />
-          }
-        />
-        <Route path="/functies" element={<EmployeeFunctions />} />
-        <Route path="/skills" element={<Skills />} />
-        <Route
-          path="/instellingen"
-          element={
-            <Settings currentUser={currentUser} portalUsers={portalUsers} />
-          }
-        />
-        <Route path="/profiel" element={<Profile />} />
+    <div className="app-layout">
+      <TopNavbar
+        currentUser={currentUser}
+        onNavigate={navigate}
+        onLogout={handleLogout}
+      />
 
-        {/* Al ingelogd of onbekende URL: naar het dashboard */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </PortalLayout>
+      <div className="app-body">
+        <Sidebar
+          isCollapsed={isSidebarCollapsed}
+          onToggle={() =>
+            setIsSidebarCollapsed((collapsed) => !collapsed)
+          }
+        />
+
+        <main className="main-content">
+          <Routes>
+            <Route
+              path="/"
+              element={<Dashboard currentUser={currentUser} employees={employees} />}
+            />
+            <Route
+              path="/medewerkers"
+              element={
+                <Employees
+                  employees={employees}
+                  onAddEmployee={() => navigate("/medewerkers/toevoegen")}
+                  onSelectEmployee={(employeeId) => navigate(`/medewerkers/${employeeId}`)}
+                />
+              }
+            />
+            <Route
+              path="/medewerkers/toevoegen"
+              element={
+                <AddEmployee
+                  onSave={handleAddEmployee}
+                  onCancel={() => navigate("/medewerkers")}
+                />
+              }
+            />
+            <Route
+              path="/medewerkers/:employeeId"
+              element={
+                <Employee
+                  employees={employees}
+                  onBack={() => navigate("/medewerkers")}
+                />
+              }
+            />
+            <Route path="/functies" element={<EmployeeFunctions />} />
+            <Route path="/skills" element={<Skills />} />
+            <Route
+              path="/instellingen"
+              element={
+                <Settings currentUser={currentUser} portalUsers={portalUsers} />
+              }
+            />
+            <Route path="/profiel" element={<Profile />} />
+
+            {/* Al ingelogd of onbekende URL: naar het dashboard */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
+      </div>
+    </div>
   );
 }
 

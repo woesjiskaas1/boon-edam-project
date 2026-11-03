@@ -1,7 +1,5 @@
 import { useState } from "react";
-import Button from "../components/atoms/Button";
-import Pagination from "../components/molecules/Pagination";
-import EmployeesTable from "../components/organisms/EmployeesTable";
+import CountryLabel from "../components/molecules/CountryLabel";
 const ITEMS_PER_PAGE = 50;
 
 function Employees({ employees, onAddEmployee, onSelectEmployee }) {
@@ -39,22 +37,96 @@ function Employees({ employees, onAddEmployee, onSelectEmployee }) {
             {employees.length} medewerkers
           </span>
 
-          <Button
+          <button
             type="button"
-            variant="primary"
+            className="primary-button"
             onClick={onAddEmployee}
           >
             + Medewerker toevoegen
-          </Button>
+          </button>
         </div>
       </div>
 
-      <EmployeesTable employees={visibleEmployees} onSelectEmployee={onSelectEmployee} />
-      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage}>
-        {employees.length === 0
-          ? "Geen medewerkers"
-          : `Medewerkers ${firstEmployee}–${lastEmployee} van ${employees.length}`}
-      </Pagination>
+      <div className="employees-table-container">
+        <table className="employees-table">
+          <thead>
+            <tr>
+              <th>Naam</th>
+              <th>Medewerkers ID</th>
+              <th>Rol</th>
+              <th>Land</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {visibleEmployees.map((employee) => (
+              <tr key={employee.id}>
+                <td>
+                  <button
+                    type="button"
+                    className="employee-name-button"
+                    onClick={() => onSelectEmployee(employee.id)}
+                    aria-label={`Bekijk medewerker ${employee.name}`}
+                  >
+                    {employee.name}
+                  </button>
+                </td>
+                <td>{employee.id}</td>
+                <td>
+                  <span className="employee-role">
+                    {employee.role}
+                  </span>
+                </td>
+                <td><CountryLabel country={employee.country} /></td>
+              </tr>
+            ))}
+
+            {visibleEmployees.length === 0 && (
+              <tr>
+                <td colSpan="4">
+                  Er zijn nog geen medewerkers beschikbaar.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="pagination">
+        <p className="pagination-info">
+          {employees.length === 0
+            ? "Geen medewerkers"
+            : `Medewerkers ${firstEmployee}–${lastEmployee} van ${employees.length}`}
+        </p>
+
+        <div className="pagination-controls">
+          <button
+            type="button"
+            className="pagination-button"
+            disabled={currentPage === 1}
+            onClick={() =>
+              setCurrentPage((page) => page - 1)
+            }
+          >
+            Vorige
+          </button>
+
+          <span className="pagination-current">
+            Pagina {currentPage} van {totalPages}
+          </span>
+
+          <button
+            type="button"
+            className="pagination-button"
+            disabled={currentPage === totalPages}
+            onClick={() =>
+              setCurrentPage((page) => page + 1)
+            }
+          >
+            Volgende
+          </button>
+        </div>
+      </div>
     </section>
   );
 }
