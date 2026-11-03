@@ -2,7 +2,9 @@ import { useState } from "react";
 import CountryLabel from "../components/molecules/CountryLabel";
 const ITEMS_PER_PAGE = 50;
 
-function Employees({ employees, onAddEmployee, onSelectEmployee }) {
+
+
+function Employees({ employees, onAddEmployee, onImportEmployees, onSelectEmployee }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.max(
@@ -36,7 +38,13 @@ function Employees({ employees, onAddEmployee, onSelectEmployee }) {
           <span className="employee-count">
             {employees.length} medewerkers
           </span>
-
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={onImportEmployees}
+          >
+            Importeren
+          </button>
           <button
             type="button"
             className="primary-button"

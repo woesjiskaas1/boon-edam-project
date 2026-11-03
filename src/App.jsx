@@ -12,6 +12,8 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Skills from "./pages/Skills";
 
+import ImportEmployees from "./pages/ImportEmployees";
+
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -156,6 +158,7 @@ function App() {
                 <Employees
                   employees={employees}
                   onAddEmployee={() => navigate("/medewerkers/toevoegen")}
+                  onImportEmployees={() => navigate("/medewerkers/importeren")}
                   onSelectEmployee={(employeeId) => navigate(`/medewerkers/${employeeId}`)}
                 />
               }
@@ -167,6 +170,12 @@ function App() {
                   onSave={handleAddEmployee}
                   onCancel={() => navigate("/medewerkers")}
                 />
+              }
+            />
+            <Route
+              path="/medewerkers/importeren"
+              element={
+                <ImportEmployees onCancel={() => navigate("/medewerkers")} />
               }
             />
             <Route
