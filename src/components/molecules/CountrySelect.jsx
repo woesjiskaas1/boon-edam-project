@@ -1,6 +1,9 @@
 import { useEffect, useId, useRef, useState } from "react";
 import CountryLabel from "./CountryLabel";
+import Button from "../atoms/Button";
+import Input from "../atoms/Input";
 import countries from "../../data/countries";
+import "../../styles/forms.css";
 import "../../styles/country-select.css";
 
 function CountrySelect({ value, onChange, error }) {
@@ -95,7 +98,7 @@ function CountrySelect({ value, onChange, error }) {
     <div className="form-field">
       <label id={`${id}-label`} htmlFor={`${id}-trigger`}>Land</label>
       <div className="country-select" ref={containerRef}>
-        <button
+        <Button
           ref={triggerRef}
           id={`${id}-trigger`}
           type="button"
@@ -119,7 +122,7 @@ function CountrySelect({ value, onChange, error }) {
           <svg className="country-select-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="m5 7.5 5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-        </button>
+        </Button>
 
         {isOpen && (
           <ul id={`${id}-listbox`} className="country-select-options" role="listbox" aria-labelledby={`${id}-label`}>
@@ -145,7 +148,7 @@ function CountrySelect({ value, onChange, error }) {
             ))}
           </ul>
         )}
-        <input type="hidden" name="country" value={value} />
+        <Input type="hidden" name="country" value={value} />
       </div>
       {error && <span id={`${id}-error`} className="form-error">{error}</span>}
     </div>
