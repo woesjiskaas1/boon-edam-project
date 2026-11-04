@@ -47,7 +47,7 @@ function App() {
   // Maakt van de formuliergegevens een nieuwe medewerker
   // en zet die achteraan in de lijst.
   const handleAddEmployee = (formData) => {
-    const selectedRole = employeeRoles.find((role) => role.id === formData.roleId);
+    const selectedRoles = employeeRoles.filter((role) => formData.roleIds.includes(role.id));
     const nextNumber = employees.length + 1;
 
     const newEmployee = {
@@ -60,7 +60,8 @@ function App() {
       address: formData.address.trim(),
       email: formData.email.trim(),
       phone: formData.phone.trim(),
-      role: selectedRole.name,
+      roleIds: formData.roleIds,
+      role: selectedRoles.map((role) => role.name).join(", "),
       skills: formData.skillIds,
     };
 

@@ -13,7 +13,7 @@ const emptyForm = {
   address: "",
   email: "",
   phone: "",
-  roleId: "",
+  roleIds: [],
   skillIds: [],
 };
 
@@ -32,16 +32,21 @@ function AddEmployee({ onSave, onCancel }) {
     }));
   };
 
-  // Bij het kiezen van een rol vullen we meteen de standaard skills in.
-  const handleRoleChange = (event) => {
-    const roleId = event.target.value;
-    const selectedRole = employeeRoles.find((role) => role.id === roleId);
+  // Bij het kiezen van rollen vullen we de gecombineerde standaardskills in.
+  const handleRoleToggle = (roleId) => {
+    setFormData((current) => {
+      const roleIds = current.roleIds.includes(roleId)
+        ? current.roleIds.filter((id) => id !== roleId)
+        : [...current.roleIds, roleId];
+      const selectedRoles = employeeRoles.filter((role) => roleIds.includes(role.id));
+      const skillIds = [...new Set(selectedRoles.flatMap((role) => role.defaultSkills))];
 
-    setFormData((current) => ({
-      ...current,
-      roleId: roleId,
-      skillIds: selectedRole ? [...selectedRole.defaultSkills] : [],
-    }));
+      return {
+        ...current,
+        roleIds,
+        skillIds,
+      };
+    });
   };
 
   // Vinkje aan = skill erbij, vinkje uit = skill eraf.
@@ -97,8 +102,8 @@ function AddEmployee({ onSave, onCancel }) {
       newErrors.phone = "Vul een telefoonnummer in.";
     }
 
-    if (formData.roleId === "") {
-      newErrors.roleId = "Kies een rol.";
+    if (formData.roleIds.length === 0) {
+      newErrors.roleIds = "Kies minimaal één rol.";
     }
 
     return newErrors;
@@ -191,17 +196,25 @@ function AddEmployee({ onSave, onCancel }) {
             {errors.phone && <span className="form-error">{errors.phone}</span>}
           </label>
 
-          <label className="form-field form-field-wide">
-            Rol
-            <select name="roleId" value={formData.roleId} onChange={handleRoleChange}>
-              <option value="">Kies een rol</option>
-              {employeeRoles.map((role) => (
-                <option key={role.id} value={role.id}>{role.name}</option>
-              ))}
-            </select>
-            {errors.roleId && <span className="form-error">{errors.roleId}</span>}
-          </label>
         </div>
+
+        <fieldset className="roles-fieldset">
+          <legend>Rollen</legend>
+          <p className="roles-hint">Je kunt meerdere rollen aanvinken.</p>
+          <div className="roles-list">
+            {employeeRoles.map((role) => (
+              <label key={role.id} className="role-option">
+                <input
+                  type="checkbox"
+                  checked={formData.roleIds.includes(role.id)}
+                  onChange={() => handleRoleToggle(role.id)}
+                />
+                {role.name}
+              </label>
+            ))}
+          </div>
+          {errors.roleIds && <span className="form-error">{errors.roleIds}</span>}
+        </fieldset>
 
         <fieldset className="skills-fieldset">
           <legend>Skills</legend>
