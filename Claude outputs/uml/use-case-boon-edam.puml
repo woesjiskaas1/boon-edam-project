@@ -1,0 +1,107 @@
+@startuml use-case
+' Use-case-diagram van het Boon Edam HR-portaal
+' Elke systeemrol erft alles wat de rol eronder mag (generalisatie):
+' Eigenaar > Beheerder > Bewerker > Lezer
+
+!theme plain
+skinparam dpi 200
+skinparam shadowing false
+skinparam defaultFontName "Helvetica"
+skinparam defaultFontSize 12
+skinparam ArrowColor #555555
+skinparam ActorBorderColor #3A4A5C
+skinparam UsecaseBorderColor #3A4A5C
+skinparam UsecaseBackgroundColor #E8EEF5
+skinparam RectangleBorderColor #9AA8B8
+skinparam PackageBorderColor #C3CDD8
+skinparam PackageFontStyle bold
+left to right direction
+
+title Use-case-diagram – Boon Edam HR-portaal
+
+actor "Uitgenodigde\ngebruiker" as Invitee
+actor "Lezer" as Viewer
+actor "Bewerker" as Editor
+actor "Beheerder" as Admin
+actor "Eigenaar" as Owner
+
+' Generalisatie: een hogere systeemrol kan alles van de lagere
+Editor -up-|> Viewer
+Admin -up-|> Editor
+Owner -up-|> Admin
+
+rectangle "Boon Edam HR-portaal" {
+
+  package "Account" {
+    usecase "Registreren\nmet uitnodiging" as UC_Register
+    usecase "Uitnodiging\ncontroleren" as UC_CheckInvite
+    usecase "Inloggen" as UC_Login
+    usecase "Uitloggen" as UC_Logout
+    usecase "Eigen profiel\nbekijken" as UC_Profile
+  }
+
+  package "Bekijken" {
+    usecase "Dashboard\nbekijken" as UC_Dashboard
+    usecase "Medewerkers\nbekijken" as UC_ViewEmployees
+    usecase "Medewerker-\ndetails bekijken" as UC_EmployeeDetail
+    usecase "Rollen en skills\nbekijken" as UC_ViewRoles
+  }
+
+  package "Medewerkers beheren" {
+    usecase "Medewerker\ntoevoegen" as UC_AddEmployee
+    usecase "Medewerker\nbewerken" as UC_EditEmployee
+    usecase "Medewerkers\nimporteren\n(CSV / Excel)" as UC_Import
+    usecase "Rol aan medewerker\nkoppelen" as UC_AssignRole
+    usecase "Standaard skills\nkopiëren" as UC_CopySkills
+    usecase "Skills van medewerker\naanpassen" as UC_EditSkills
+    usecase "Rollen en skills\nbeheren" as UC_ManageRoles
+  }
+
+  package "Toegang beheren" {
+    usecase "Gebruiker\nuitnodigen" as UC_Invite
+    usecase "Uitnodiging\nintrekken" as UC_Revoke
+    usecase "Systeemrol\nwijzigen" as UC_ChangeRole
+    usecase "Gebruiker\n(de)activeren" as UC_Deactivate
+    usecase "Gebruiker\nverwijderen" as UC_Delete
+  }
+}
+
+' --- Uitgenodigde gebruiker ---
+Invitee --> UC_Register
+UC_Register ..> UC_CheckInvite : <<include>>
+
+' --- Lezer (recht: view) ---
+Viewer --> UC_Login
+Viewer --> UC_Logout
+Viewer --> UC_Profile
+Viewer --> UC_Dashboard
+Viewer --> UC_ViewEmployees
+Viewer --> UC_EmployeeDetail
+Viewer --> UC_ViewRoles
+
+' --- Bewerker (recht: edit) ---
+Editor --> UC_AddEmployee
+Editor --> UC_EditEmployee
+Editor --> UC_Import
+Editor --> UC_AssignRole
+Editor --> UC_EditSkills
+Editor --> UC_ManageRoles
+UC_AssignRole ..> UC_CopySkills : <<include>>
+
+' --- Beheerder (recht: settings) ---
+Admin --> UC_Invite
+Admin --> UC_Revoke
+Admin --> UC_ChangeRole
+Admin --> UC_Deactivate
+Admin --> UC_Delete
+
+note bottom of Owner
+  Erft alles van Beheerder.
+  Alleen de Eigenaar kan
+  Beheerders wijzigen.
+end note
+
+note "Regel voor Toegang beheren:\nalleen bij gebruikers met een\nlagere systeemrol, en nooit bij\njezelf." as N_Rule
+N_Rule .. UC_ChangeRole
+
+@enduml
