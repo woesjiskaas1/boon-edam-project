@@ -9,12 +9,10 @@ import "../../styles/add-employee.css";
 // Zo ziet het formulier eruit als je de pagina opent: alles leeg.
 const emptyForm = {
   firstName: "",
+  middleName: "",
   lastName: "",
-  birthDate: "",
   country: "",
-  address: "",
   email: "",
-  phone: "",
   roleId: "",
   skillIds: [],
 };
@@ -77,26 +75,12 @@ function EmployeeForm({ employeeRoles, skills, onSave, onCancel }) {
       newErrors.lastName = "Vul een achternaam in.";
     }
 
-    if (formData.birthDate === "") {
-      newErrors.birthDate = "Kies een geboortedatum.";
-    } else if (new Date(formData.birthDate) > new Date()) {
-      newErrors.birthDate = "Een geboortedatum kan niet in de toekomst liggen.";
-    }
-
     if (formData.country === "") {
       newErrors.country = "Kies een land.";
     }
 
-    if (formData.address.trim() === "") {
-      newErrors.address = "Vul een adres in.";
-    }
-
     if (!emailPattern.test(formData.email)) {
       newErrors.email = "Vul een geldig e-mailadres in.";
-    }
-
-    if (formData.phone.trim() === "") {
-      newErrors.phone = "Vul een telefoonnummer in.";
     }
 
     if (formData.roleId === "") {
@@ -131,34 +115,23 @@ function EmployeeForm({ employeeRoles, skills, onSave, onCancel }) {
           error={errors.firstName}
         />
         <FormField
+          label="Tussenvoegsel"
+          name="middleName"
+          value={formData.middleName}
+          onChange={handleChange}
+          error={errors.middleName}
+        />
+        <FormField
           label="Achternaam"
           name="lastName"
           value={formData.lastName}
           onChange={handleChange}
           error={errors.lastName}
         />
-        <FormField
-          label="Geboortedatum"
-          type="date"
-          name="birthDate"
-          value={formData.birthDate}
-          onChange={handleChange}
-          error={errors.birthDate}
-        />
         <CountrySelect
           value={formData.country}
           onChange={(country) => setFormData((current) => ({ ...current, country }))}
           error={errors.country}
-        />
-        <FormField
-          label="Adres"
-          className="form-field-wide"
-          name="address"
-          autoComplete="street-address"
-          value={formData.address}
-          onChange={handleChange}
-          placeholder="Straatnaam 12"
-          error={errors.address}
         />
         <FormField
           label="E-mailadres"
@@ -168,16 +141,6 @@ function EmployeeForm({ employeeRoles, skills, onSave, onCancel }) {
           onChange={handleChange}
           placeholder="naam@boonedam.com"
           error={errors.email}
-        />
-        <FormField
-          label="Telefoonnummer"
-          type="tel"
-          name="phone"
-          autoComplete="tel"
-          value={formData.phone}
-          onChange={handleChange}
-          placeholder="+31 6 12345678"
-          error={errors.phone}
         />
         <FormField label="Rol" control={Select} className="form-field-wide" name="roleId" value={formData.roleId} onChange={handleRoleChange} error={errors.roleId}>
           <option value="">Kies een rol</option>

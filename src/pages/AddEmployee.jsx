@@ -1,25 +1,30 @@
 import { useState } from "react";
 import CountrySelect from "../components/molecules/CountrySelect";
-import employeeRoles from "../data/employeeRoles";
-import skills from "../data/skills";
+import TagPicker from "../components/molecules/TagPicker";
+
+import locations from "../data/locations";
 import "../styles/add-employee.css";
+import "../styles/tag-picker.css";
 
 // Zo ziet het formulier eruit als je de pagina opent: alles leeg.
 const emptyForm = {
   firstName: "",
+  middleName: "",
   lastName: "",
-  birthDate: "",
-  country: "",
-  address: "",
   email: "",
-  phone: "",
+  country: "",
+  location: "",
   roleIds: [],
   skillIds: [],
 };
 
-function AddEmployee({ onSave, onCancel }) {
+function AddEmployee({ employeeRoles, skills, onSave, onCancel }) {
   const [formData, setFormData] = useState(emptyForm);
   const [errors, setErrors] = useState({});
+  // Bezig met opslaan? Dan zetten we de knop uit.
+  const [isSaving, setIsSaving] = useState(false);
+  // Foutmelding van de backend, bijv. als de server niet draait.
+  const [saveError, setSaveError] = useState("");
 
   // Eén functie voor alle gewone invoervelden.
   // "name" van het veld bepaalt welke waarde in formData verandert.
@@ -31,6 +36,12 @@ function AddEmployee({ onSave, onCancel }) {
       [name]: value,
     }));
   };
+
+  const countryLocations = locations.filter(
+    (location) => location.country === formData.country
+  );
+  const previewRoles = employeeRoles.filter((role) => formData.roleIds.includes(role.id));
+  const previewSkills = skills.filter((skill) => formData.skillIds.includes(skill.id));
 
   // Bij het kiezen van rollen vullen we de gecombineerde standaardskills in.
   const handleRoleToggle = (roleId) => {
@@ -80,26 +91,12 @@ function AddEmployee({ onSave, onCancel }) {
       newErrors.lastName = "Vul een achternaam in.";
     }
 
-    if (formData.birthDate === "") {
-      newErrors.birthDate = "Kies een geboortedatum.";
-    } else if (new Date(formData.birthDate) > new Date()) {
-      newErrors.birthDate = "Een geboortedatum kan niet in de toekomst liggen.";
-    }
-
     if (formData.country === "") {
       newErrors.country = "Kies een land.";
     }
 
-    if (formData.address.trim() === "") {
-      newErrors.address = "Vul een adres in.";
-    }
-
     if (!emailPattern.test(formData.email)) {
       newErrors.email = "Vul een geldig e-mailadres in.";
-    }
-
-    if (formData.phone.trim() === "") {
-      newErrors.phone = "Vul een telefoonnummer in.";
     }
 
     if (formData.roleIds.length === 0) {
@@ -109,7 +106,8 @@ function AddEmployee({ onSave, onCancel }) {
     return newErrors;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
+    
     event.preventDefault();
 
     const newErrors = validate();
@@ -120,7 +118,17 @@ function AddEmployee({ onSave, onCancel }) {
       return;
     }
 
-    onSave(formData);
+    setIsSaving(true);
+    setSaveError("");
+
+    try {
+      await onSave(formData);
+    } catch (error) {
+      setSaveError(error.message);
+    } finally {
+      setIsSaving(false);
+    }
+
   };
 
   return (
@@ -133,11 +141,17 @@ function AddEmployee({ onSave, onCancel }) {
       </div>
 
       <form className="add-employee-form" onSubmit={handleSubmit} noValidate>
-        <div className="form-grid">
+        <h2 className="form-section-title">Persoonsgegevens</h2>
+        <div className="form-grid form-grid-names">
           <label className="form-field">
             Voornaam
             <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} />
             {errors.firstName && <span className="form-error">{errors.firstName}</span>}
+          </label>
+
+          <label className="form-field">
+            Tussenvoegsel
+            <input type="text" name="middleName" value={formData.middleName} onChange={handleChange} />
           </label>
 
           <label className="form-field">
@@ -146,32 +160,7 @@ function AddEmployee({ onSave, onCancel }) {
             {errors.lastName && <span className="form-error">{errors.lastName}</span>}
           </label>
 
-          <label className="form-field">
-            Geboortedatum
-            <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} />
-            {errors.birthDate && <span className="form-error">{errors.birthDate}</span>}
-          </label>
-
-          <CountrySelect
-            value={formData.country}
-            onChange={(country) => setFormData((current) => ({ ...current, country }))}
-            error={errors.country}
-          />
-
           <label className="form-field form-field-wide">
-            Adres
-            <input
-              type="text"
-              name="address"
-              autoComplete="street-address"
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="Straatnaam 12"
-            />
-            {errors.address && <span className="form-error">{errors.address}</span>}
-          </label>
-
-          <label className="form-field">
             E-mailadres
             <input
               type="email"
@@ -182,69 +171,75 @@ function AddEmployee({ onSave, onCancel }) {
             />
             {errors.email && <span className="form-error">{errors.email}</span>}
           </label>
-
-          <label className="form-field">
-            Telefoonnummer
-            <input
-              type="tel"
-              name="phone"
-              autoComplete="tel"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="+31 6 12345678"
-            />
-            {errors.phone && <span className="form-error">{errors.phone}</span>}
-          </label>
-
         </div>
 
-        <fieldset className="roles-fieldset">
-          <legend>Rollen</legend>
-          <p className="roles-hint">Je kunt meerdere rollen aanvinken.</p>
-          <div className="roles-list">
-            {employeeRoles.map((role) => (
-              <label key={role.id} className="role-option">
-                <input
-                  type="checkbox"
-                  checked={formData.roleIds.includes(role.id)}
-                  onChange={() => handleRoleToggle(role.id)}
-                />
-                {role.name}
-              </label>
-            ))}
-          </div>
-          {errors.roleIds && <span className="form-error">{errors.roleIds}</span>}
-        </fieldset>
+        <h2 className="form-section-title">Werkplek</h2>
+        <div className="form-grid">
+          <CountrySelect
+            value={formData.country}
+            onChange={(country) =>
+              setFormData((current) => ({ ...current, country, location: "" }))
+            }
+            error={errors.country}
+          />
 
-        <fieldset className="skills-fieldset">
-          <legend>Skills</legend>
-          <p className="skills-hint">
-            Bij het kiezen van een rol worden de standaard skills al
-            aangevinkt. Je kunt ze hier aanpassen.
+          <label className="form-field">
+            Vestiging
+            <select
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              disabled={formData.country === ""}
+            >
+              <option value="">
+                {formData.country === "" ? "Kies eerst een land" : "Kies een vestiging"}
+              </option>
+              {countryLocations.map((location) => (
+                <option key={location.id} value={location.id}>{location.name}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <h2 className="form-section-title">Rollen en skills</h2>
+        <div className="form-stack">
+          <TagPicker
+            label="Rollen"
+            hint="Een medewerker kan meerdere rollen hebben."
+            placeholder="Zoek een rol..."
+            selectedItems={previewRoles}
+            options={employeeRoles}
+            onSelect={handleRoleToggle}
+            onRemove={handleRoleToggle}
+            error={errors.roleIds}
+          />
+
+          <TagPicker
+            label="Skills"
+            hint="De standaard skills van de rollen komen er vanzelf bij. Je kunt ze aanpassen."
+            placeholder="Zoek een skill..."
+            selectedItems={previewSkills}
+            options={skills}
+            onSelect={handleSkillToggle}
+            onRemove={handleSkillToggle}
+          />
+        </div>
+
+        {saveError && (
+          <p className="form-error form-save-error" role="alert">
+            {saveError}
           </p>
-
-          <div className="skills-list">
-            {skills.map((skill) => (
-              <label key={skill.id} className="skill-option">
-                <input
-                  type="checkbox"
-                  checked={formData.skillIds.includes(skill.id)}
-                  onChange={() => handleSkillToggle(skill.id)}
-                />
-                {skill.name}
-              </label>
-            ))}
-          </div>
-        </fieldset>
+        )}
 
         <div className="form-actions">
           <button type="button" className="secondary-button" onClick={onCancel}>
             Annuleren
           </button>
-          <button type="submit" className="primary-button">
-            Medewerker opslaan
+          <button type="submit" className="primary-button" disabled={isSaving}>
+            {isSaving ? "Bezig met opslaan..." : "Medewerker opslaan"}
           </button>
         </div>
+
       </form>
     </section>
   );

@@ -17,8 +17,12 @@ import Register from "./pages/Register";
 
 import AddEmployee from "./pages/AddEmployee";
 
-import { getEmployees } from "./services/employeeService";
-import employeeRoles from "./data/employeeRoles";
+import {
+  getEmployees,
+  getJobRoles,
+  getSkills,
+  createEmployee,
+} from "./services/employeeService";
 
 import initialPortalUsers, { invitations as initialInvitations } from "./data/portalUsers";
 
@@ -34,6 +38,8 @@ function App() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [employeesError, setEmployeesError] = useState("");
+    const [jobRoles, setJobRoles] = useState([]);
+  const [skills, setSkills] = useState([]);
   // Met navigate ga je in de code naar een andere URL.
   const navigate = useNavigate();
 
@@ -42,24 +48,30 @@ function App() {
     getEmployees()
       .then((loadedEmployees) => setEmployees(loadedEmployees))
       .catch((error) => setEmployeesError(error.message));
+
+    // Ook de rollen en skills komen nu uit de database.
+    getJobRoles()
+      .then((loadedRoles) => setJobRoles(loadedRoles))
+      .catch((error) => setEmployeesError(error.message));
+
+    getSkills()
+      .then((loadedSkills) => setSkills(loadedSkills))
+      .catch((error) => setEmployeesError(error.message));
   }, []);
 
-  // Maakt van de formuliergegevens een nieuwe medewerker
-  // en zet die achteraan in de lijst.
-  const handleAddEmployee = (formData) => {
-    const selectedRoles = employeeRoles.filter((role) => formData.roleIds.includes(role.id));
-    const nextNumber = employees.length + 1;
+
+  // Slaat een nieuwe medewerker op in de database
+  // en zet hem daarna achteraan in de lijst.
+  // "async": we wachten op de backend. Gaat er iets mis, dan gooit
+  // createEmployee een fout; die vangt de pagina AddEmployee op.
+  const handleAddEmployee = async (formData) => {
+    const savedEmployee = await createEmployee(formData);
+
+    // De namen van de gekozen rollen, voor in de lijst.
+    const selectedRoles = jobRoles.filter((role) => formData.roleIds.includes(role.id));
 
     const newEmployee = {
-      id: `EMP${String(nextNumber).padStart(3, "0")}`,
-      name: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
-      firstName: formData.firstName.trim(),
-      lastName: formData.lastName.trim(),
-      birthDate: formData.birthDate,
-      country: formData.country,
-      address: formData.address.trim(),
-      email: formData.email.trim(),
-      phone: formData.phone.trim(),
+      ...savedEmployee,
       roleIds: formData.roleIds,
       role: selectedRoles.map((role) => role.name).join(", "),
       skills: formData.skillIds,
@@ -151,7 +163,7 @@ function App() {
           }
         />
 
-        <main className="main-content">
+        <main className={`main-content${isSidebarCollapsed ? " sidebar-collapsed" : ""}`}>
           {employeesError && (
             <p className="auth-error" role="alert">
               {employeesError} Draait de backend?
@@ -176,6 +188,8 @@ function App() {
               path="/medewerkers/toevoegen"
               element={
                 <AddEmployee
+                  employeeRoles={jobRoles}
+                  skills={skills}
                   onSave={handleAddEmployee}
                   onCancel={() => navigate("/medewerkers")}
                 />

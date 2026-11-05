@@ -1,0 +1,117 @@
+/* Zoekveld met chips (TagPicker). */
+.tag-picker-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tag-picker-label {
+  color: #34443d;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tag-picker-hint {
+  margin: 0;
+  color: #718079;
+  font-size: 13px;
+}
+
+/* Het "veld": een rand om de chips en het invoerveld heen. */
+.tag-picker {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 6px 8px;
+  background: #ffffff;
+  border: 1px solid #d5dfda;
+  border-radius: 8px;
+}
+
+/* Klik je in het veld, dan krijgt het hele veld een rand. */
+.tag-picker:focus-within {
+  outline: 2px solid #123c32;
+  outline-offset: 1px;
+}
+
+.tag-picker-chips {
+  display: contents;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag-picker-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 4px 4px 10px;
+  color: #123c32;
+  background: #e7f0ec;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.tag-picker-chip-remove {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  color: #123c32;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.tag-picker-chip-remove:hover {
+  background: #cfe0d8;
+}
+
+/* Het invoerveld neemt de rest van de regel in. */
+.tag-picker-input {
+  flex: 1;
+  min-width: 140px;
+  padding: 6px 4px;
+  font: inherit;
+  font-size: 14px;
+  border: none;
+  outline: none;
+}
+
+/* De lijst met keuzes. Alleen zichtbaar als je in het veld klikt. */
+.tag-picker-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: none;
+  max-height: 220px;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  list-style: none;
+  background: #ffffff;
+  border: 1px solid #d5dfda;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(23 36 58 / 12%);
+}
+
+.tag-picker:focus-within .tag-picker-menu {
+  display: block;
+}
+
+.tag-picker-option {
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.tag-picker-option:hover {
+  background: #f0f4f2;
+}
