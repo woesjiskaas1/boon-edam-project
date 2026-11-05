@@ -57,7 +57,7 @@ export default function PortalAccessSettings({ currentUser, portalUsers, accessR
 
           </div>
 
-          {/* Nog zonder functie: wordt later gekoppeld */}
+          {/* Nog niet gekoppeld: wordt later toegevoegd */}
           <Button type="button" variant="primary">
             + Gebruiker uitnodigen
           </Button>
@@ -92,7 +92,7 @@ export default function PortalAccessSettings({ currentUser, portalUsers, accessR
                       </span>
                     </td>
                     <td>
-                      {/* Nog zonder functie: wordt later gekoppeld */}
+                      {/* Nog niet gekoppeld: wordt later toegevoegd */}
                       <Button
                         type="button"
                         variant="secondary"

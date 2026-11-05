@@ -63,7 +63,7 @@ function Employee({ employees, onBack }) {
         <div className="employee-avatar" aria-hidden="true">{initials}</div>
         <div className="employee-summary-info">
           <h2>{employee.name}</h2>
-          <p>{employee.role || "Geen functie vastgelegd"}</p>
+          <p>{employee.role || "Geen rol vastgelegd"}</p>
           <span>{employee.id}</span>
         </div>
         {employee.country && (
@@ -102,7 +102,7 @@ function Employee({ employees, onBack }) {
               <dd>{employee.id}</dd>
             </div>
             <div>
-              <dt>Functie</dt>
+              <dt>Rol</dt>
               <dd>{employee.role || "Niet ingevuld"}</dd>
             </div>
             <div>

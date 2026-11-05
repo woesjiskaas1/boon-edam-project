@@ -22,7 +22,7 @@ export default function EmployeeDetails({ employee, skills }) {
         <Avatar name={employee.name} className="employee-avatar" firstAndLast />
         <div className="employee-summary-info">
           <h2>{employee.name}</h2>
-          <p>{employee.role || "Geen functie vastgelegd"}</p>
+          <p>{employee.role || "Geen rol vastgelegd"}</p>
           <span>{employee.id}</span>
         </div>
         {employee.country && (
@@ -61,7 +61,7 @@ export default function EmployeeDetails({ employee, skills }) {
               <dd>{employee.id}</dd>
             </div>
             <div>
-              <dt>Functie</dt>
+              <dt>Rol</dt>
               <dd>{employee.role || "Niet ingevuld"}</dd>
             </div>
             <div>
