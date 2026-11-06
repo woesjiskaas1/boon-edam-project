@@ -1,5 +1,5 @@
 // Toegangsrollen bepalen wat iemand in het PORTAAL mag doen.
-// Dit is iets anders dan employeeRoles.js. Dat zijn functies van
+// Dit is iets anders dan employeeRoles.js. Dat zijn rollen van
 // medewerkers (bijv. Software Developer). Dit zijn toegangsrechten in de app.
 
 // Alle rechten die er zijn. Named export, want dit bestand

@@ -21,7 +21,7 @@ function AddEmployee({ onSave, onCancel }) {
   const [formData, setFormData] = useState(emptyForm);
   const [errors, setErrors] = useState({});
 
-  // Eén functie voor alle gewone invoervelden.
+  // Eén handler voor alle gewone invoervelden.
   // "name" van het veld bepaalt welke waarde in formData verandert.
   const handleChange = (event) => {
     const { name, value } = event.target;

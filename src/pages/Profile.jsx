@@ -67,7 +67,7 @@ export default function Profile() {
           <h2>Werkgegevens</h2>
 
           <div className="profile-field">
-            <span>Functie</span>
+            <span>Rol</span>
             <p>{profile.jobTitle}</p>
           </div>
 

@@ -69,7 +69,7 @@ function Settings({ currentUser, portalUsers }) {
 
               </div>
 
-              {/* Nog zonder functie: wordt later gekoppeld */}
+              {/* Nog niet gekoppeld: wordt later toegevoegd */}
               <button type="button" className="primary-button">
                 + Gebruiker uitnodigen
               </button>
@@ -104,7 +104,7 @@ function Settings({ currentUser, portalUsers }) {
                           </span>
                         </td>
                         <td>
-                          {/* Nog zonder functie: wordt later gekoppeld */}
+                          {/* Nog niet gekoppeld: wordt later toegevoegd */}
                           <button
                             type="button"
                             className="secondary-button"

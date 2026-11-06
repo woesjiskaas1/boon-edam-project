@@ -6,7 +6,7 @@ import Sidebar from "./components/organisms/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
 import Employee from "./pages/Employee";
-import EmployeeFunctions from "./pages/EmployeeFunctions";
+import Roles from "./pages/Roles";
 
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -187,7 +187,7 @@ function App() {
                 />
               }
             />
-            <Route path="/functies" element={<EmployeeFunctions />} />
+            <Route path="/rollen" element={<Roles />} />
             <Route path="/skills" element={<Skills />} />
             <Route
               path="/instellingen"

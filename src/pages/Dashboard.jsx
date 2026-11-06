@@ -40,7 +40,7 @@ function Dashboard({ currentUser, employees }) {
         <article className="dashboard-stat">
           <span className="dashboard-stat-icon" aria-hidden="true">▤</span>
           <div>
-            <p className="dashboard-stat-label">Functies</p>
+            <p className="dashboard-stat-label">Rollen</p>
             <p className="dashboard-stat-value">{rolesCount}</p>
           </div>
         </article>
@@ -80,7 +80,7 @@ function Dashboard({ currentUser, employees }) {
                     </span>
                     <span className="dashboard-employee-details">
                       <strong>{employee.name}</strong>
-                      <span>{employee.role || "Geen functie opgegeven"}</span>
+                      <span>{employee.role || "Geen rol opgegeven"}</span>
                     </span>
                     <span className="dashboard-employee-arrow" aria-hidden="true">→</span>
                   </Link>
@@ -103,8 +103,8 @@ function Dashboard({ currentUser, employees }) {
           <p className="dashboard-quick-description">
             Bekijk rollen en vaardigheden of pas de portaalinstellingen aan.
           </p>
-          <Link className="dashboard-quick-link" to="/functies">
-            <span>Functies beheren</span><span aria-hidden="true">→</span>
+          <Link className="dashboard-quick-link" to="/rollen">
+            <span>Rollen beheren</span><span aria-hidden="true">→</span>
           </Link>
           <Link className="dashboard-quick-link" to="/skills">
             <span>Skills bekijken</span><span aria-hidden="true">→</span>
