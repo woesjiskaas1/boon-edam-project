@@ -195,7 +195,7 @@ function AddEmployee({ employeeRoles, skills, onSave, onCancel }) {
                 {formData.country === "" ? "Kies eerst een land" : "Kies een vestiging"}
               </option>
               {countryLocations.map((location) => (
-                <option key={location.id} value={location.id}>{location.name}</option>
+                <option key={location.id} value={location.name}>{location.name}</option>
               ))}
             </select>
           </label>

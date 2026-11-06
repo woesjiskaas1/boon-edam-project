@@ -11,13 +11,14 @@ const fromDatabase = (row) => ({
   // Het nummer uit de database. Nodig voor de verzoeken over rollen en skills.
   databaseId: row.employee_id,
   // Alleen de delen die ingevuld zijn, met één spatie ertussen.
-  name: [row.first_name, row.middle_name, row.last_name].filter(Boolean).join(" "),  firstName: row.first_name ?? "",
+  name: [row.first_name, row.middle_name, row.last_name].filter(Boolean).join(" "),
+  firstName: row.first_name ?? "",
   middleName: row.middle_name ?? "",
   lastName: row.last_name ?? "",
   email: row.email ?? "",
   country: row.country ?? "",
-location: row.location ?? "",
-  // Deze velden bestaan nog niet in de database.
+  location: row.location ?? "",
+  // Rollen en skills staan in andere tabellen; getEmployees vult de rollen hieronder aan.
   role: "",
   skills: [],
 });
@@ -31,7 +32,29 @@ export async function getEmployees() {
   }
 
   const rows = await response.json();
-  return rows.map(fromDatabase);
+
+  // De rollen staan in een andere tabel (employee_job_role).
+  // Die halen we voor alle medewerkers in één keer op.
+  const rolesResponse = await fetch(`${API_URL}/employee-job-roles`);
+
+  if (!rolesResponse.ok) {
+    throw new Error("De rollen van de medewerkers konden niet worden opgehaald.");
+  }
+
+  const roleLinks = await rolesResponse.json();
+
+  return rows.map((row) => {
+    // Alleen de rollen van deze medewerker.
+    const employeeRoles = roleLinks.filter(
+      (link) => link.employee_id === row.employee_id
+    );
+
+    return {
+      ...fromDatabase(row),
+      roleIds: employeeRoles.map((link) => link.job_role_id),
+      role: employeeRoles.map((link) => link.name).join(", "),
+    };
+  });
 }
 
 // GET: haalt alle rollen op, met hun standaard skills.
