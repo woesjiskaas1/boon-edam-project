@@ -2,19 +2,6 @@ import Avatar from "../atoms/Avatar";
 import CountryLabel from "../molecules/CountryLabel";
 import "../../styles/employee.css";
 
-function formatBirthDate(birthDate) {
-  if (!birthDate) return "Niet ingevuld";
-
-  const date = new Date(`${birthDate}T00:00:00`);
-  if (Number.isNaN(date.getTime())) return "Niet ingevuld";
-
-  return date.toLocaleDateString("nl-NL", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
 export default function EmployeeDetails({ employee, skills }) {
   return (
     <>
@@ -38,17 +25,10 @@ export default function EmployeeDetails({ employee, skills }) {
               <dt>Naam</dt>
               <dd>{employee.name}</dd>
             </div>
-            <div>
-              <dt>Geboortedatum</dt>
-              <dd>{formatBirthDate(employee.birthDate)}</dd>
-            </div>
+
             <div>
               <dt>Land</dt>
               <dd><CountryLabel country={employee.country} /></dd>
-            </div>
-            <div>
-              <dt>Adres</dt>
-              <dd>{employee.address || "Niet ingevuld"}</dd>
             </div>
           </dl>
         </section>
@@ -69,14 +49,6 @@ export default function EmployeeDetails({ employee, skills }) {
               <dd>
                 {employee.email
                   ? <a href={`mailto:${employee.email}`}>{employee.email}</a>
-                  : "Niet ingevuld"}
-              </dd>
-            </div>
-            <div>
-              <dt>Telefoonnummer</dt>
-              <dd>
-                {employee.phone
-                  ? <a href={`tel:${employee.phone.replace(/\s/g, "")}`}>{employee.phone}</a>
                   : "Niet ingevuld"}
               </dd>
             </div>

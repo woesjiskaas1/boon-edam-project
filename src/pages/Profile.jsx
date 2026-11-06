@@ -5,7 +5,6 @@ const profile = {
   firstName: "Jan",
   lastName: "Jansen",
   email: "jan.jansen@example.com",
-  phone: "+31 6 12345678",
   jobTitle: "Medewerker",
   department: "IT",
 };
@@ -57,12 +56,7 @@ export default function Profile() {
             <p>{profile.email}</p>
           </div>
 
-          <div className="profile-field">
-            <span>Telefoonnummer</span>
-            <p>{profile.phone}</p>
-          </div>
         </section>
-
         <section className="profile-card">
           <h2>Werkgegevens</h2>
 

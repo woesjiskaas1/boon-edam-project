@@ -1,6 +1,12 @@
 .add-employee-page {
   width: 100%;
   max-width: 760px;
+  margin: 0 auto;
+  transform: translateX(-120px);
+}
+
+.main-content.sidebar-collapsed .add-employee-page {
+  transform: translateX(-36px);
 }
 
 .add-employee-form {
@@ -29,6 +35,38 @@
   grid-column: 1 / -1;
 }
 
+/* Voornaam, tussenvoegsel en achternaam naast elkaar.
+   Het tussenvoegsel is smaller dan de andere twee. */
+.form-grid-names {
+  grid-template-columns: 2fr 1fr 2fr;
+}
+
+/* Kopje boven elk deel van het formulier. */
+.form-section-title {
+  margin: 28px 0 14px;
+  padding-bottom: 8px;
+  color: #123c32;
+  font-size: 16px;
+  border-bottom: 1px solid #e0e6e3;
+}
+
+.form-section-title:first-child {
+  margin-top: 0;
+}
+
+/* Velden onder elkaar, met ruimte ertussen. */
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-field select:disabled {
+  color: #9aa6a0;
+  background: #f5f7f6;
+  cursor: not-allowed;
+}
+
 .form-field input,
 .form-field select {
   padding: 10px 12px;
@@ -50,6 +88,40 @@
   color: #b42318;
   font-size: 13px;
   font-weight: 400;
+}
+
+.roles-fieldset {
+  margin: 24px 0 0;
+  padding: 16px 20px 20px;
+  border: 1px solid #e0e6e3;
+  border-radius: 10px;
+}
+
+.roles-fieldset legend {
+  padding: 0 6px;
+  color: #34443d;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.roles-hint {
+  margin: 0 0 14px;
+  color: #718079;
+  font-size: 13px;
+}
+
+.roles-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.role-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .skills-fieldset {
@@ -86,6 +158,10 @@
   cursor: pointer;
 }
 
+.form-save-error {
+  margin: 20px 0 0;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -94,7 +170,13 @@
 }
 
 @media (max-width: 700px) {
-  .form-grid {
+  .add-employee-page,
+  .main-content.sidebar-collapsed .add-employee-page {
+    transform: none;
+  }
+
+  .form-grid,
+  .form-grid-names {
     grid-template-columns: 1fr;
   }
 

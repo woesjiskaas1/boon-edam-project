@@ -4,7 +4,9 @@ import "../styles/dashboard.css";
 
 function Dashboard({ currentUser, employees }) {
   const firstName = currentUser?.name.trim().split(/\s+/)[0] || "welkom";
-  const rolesCount = new Set(employees.map((employee) => employee.role).filter(Boolean)).size;
+  const rolesCount = new Set(
+    employees.flatMap((employee) => employee.roleIds || (employee.role ? [employee.role] : []))
+  ).size;
   const countriesCount = new Set(employees.map((employee) => employee.country).filter(Boolean)).size;
   const featuredEmployees = employees.slice(0, 4);
 
