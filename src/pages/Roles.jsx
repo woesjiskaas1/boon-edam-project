@@ -5,7 +5,7 @@ import skills from "../data/skills";
 import "../styles/roles.css";
 
 // Overzicht van alle rollen, met per rol de skills die erbij horen.
-function Roles() {
+function Roles({ onAddRole }) {
   return (
     <section className="roles-page">
       <div className="employees-header">
@@ -13,7 +13,11 @@ function Roles() {
           <h1>Rollen</h1>
           <p>Beheer de rollen en de standaard skills die erbij horen.</p>
         </div>
-        <Button variant="primary">Rol toevoegen</Button>
+
+        <Button variant="primary" onClick={onAddRole}>
+          Rol toevoegen
+        </Button>
+
       </div>
 
       <div className="roles-grid">

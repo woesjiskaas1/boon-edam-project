@@ -1,0 +1,127 @@
+/* Zoekpaneel voor ESCO (boven het formulier van Rol toevoegen). */
+.esco-search {
+  margin-bottom: 20px;
+  padding: 20px 24px;
+  background: #f3f7f5;
+  border: 1px solid #cfe0d8;
+  border-radius: 12px;
+}
+
+.esco-search-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.esco-search-header h2 {
+  margin: 0 0 6px;
+  color: #123c32;
+  font-size: 16px;
+}
+
+.esco-search-header p {
+  margin: 0;
+  color: #718079;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.esco-search-close {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: #123c32;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.esco-search-close:hover {
+  background: #e1ece7;
+}
+
+/* Zoekveld en knop naast elkaar. */
+.esco-search-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.esco-search-bar input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+  background: #ffffff;
+  border: 1px solid #d5dfda;
+  border-radius: 8px;
+}
+
+.esco-search-bar input:focus {
+  outline: 2px solid #123c32;
+  outline-offset: 1px;
+}
+
+/* De resultaten als lijst met kaartjes. */
+.esco-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.esco-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #e0e6e3;
+  border-radius: 8px;
+}
+
+.esco-result strong {
+  display: block;
+  color: #26332f;
+  font-size: 14px;
+}
+
+/* ESCO-namen beginnen met een kleine letter: maak de eerste letter groot. */
+.esco-result strong::first-letter {
+  text-transform: uppercase;
+}
+
+.esco-result-code {
+  color: #718079;
+  font-size: 12px;
+}
+
+/* Melding onder het zoekveld: "niets gevonden". */
+.esco-message {
+  margin: 12px 0 0;
+  color: #718079;
+  font-size: 13px;
+}
+
+/* Foutmelding: rood (van .form-error), alleen met wat ruimte erboven. */
+.esco-error {
+  margin: 12px 0 0;
+}
+
+/* Melding boven het formulier: op welk ESCO-beroep de rol is gebaseerd. */
+.esco-chosen {
+  margin: 0 0 20px;
+  padding: 10px 12px;
+  color: #123c32;
+  background: #e7f0ec;
+  border-radius: 8px;
+  font-size: 13px;
+}

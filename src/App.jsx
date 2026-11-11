@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
 import Employee from "./pages/Employee";
 import Roles from "./pages/Roles";
+import AddRole from "./pages/AddRole";
 
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -213,8 +214,19 @@ function App() {
                 />
               }
             />
-            <Route path="/rollen" element={<Roles />} />
-            <Route path="/skills" element={<Skills />} />
+            <Route
+              path="/rollen"
+              element={<Roles onAddRole={() => navigate("/rollen/nieuw")} />}
+            />
+            <Route
+              path="/rollen/nieuw"
+              element={
+                <AddRole
+                  skills={skills}
+                  onCancel={() => navigate("/rollen")}
+                />
+              }
+            />            <Route path="/skills" element={<Skills />} />
             <Route
               path="/instellingen"
               element={
