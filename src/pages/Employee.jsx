@@ -1,5 +1,4 @@
 import { useParams } from "react-router";
-import skills from "../data/skills";
 import CountryLabel from "../components/molecules/CountryLabel";
 import "../styles/employee.css";
 
@@ -16,7 +15,7 @@ function formatBirthDate(birthDate) {
   });
 }
 
-function Employee({ employees, onBack }) {
+function Employee({ employees, skills, onBack }) {
   const { employeeId } = useParams();
   const employee = employees.find((item) => item.id === employeeId);
   const backButton = (

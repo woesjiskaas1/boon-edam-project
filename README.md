@@ -147,6 +147,21 @@ Het formulier controleert verplichte velden, het e-mailformaat en of de
 geboortedatum in de toekomst ligt. Skills zijn optioneel. **Annuleren** keert
 terug naar het overzicht zonder de medewerker toe te voegen.
 
+### Skills beheren
+
+Open **Skills** voor de beheertabel met vaardigheid en het aantal gekoppelde
+medewerkers. Gebruik **Skill toevoegen** of **Bewerken** om de naam vast te
+leggen. Lege en dubbele namen worden tegengehouden. De knop **Verwijderen**
+staat in de pop-up van **Bewerken** en opent een bevestigingsvenster. Pas na
+**Ja, verwijderen** wordt de skill verwijderd, ook bij gekoppelde medewerkers.
+**Annuleren** of Escape in de bevestiging keert terug naar het bewerkformulier
+en behoudt de ingevulde naam. Verwijderde skills worden niet meer
+automatisch aangevinkt bij het kiezen van een functie.
+Wijzigingen zijn direct beschikbaar in het medewerkersformulier en op de
+detailpagina. Ze blijven binnen de huidige sessie bewaard; verversen herstelt
+de begingegevens. Standaard skills bij een functie tellen pas mee als ze
+daadwerkelijk aan een medewerker zijn gekoppeld.
+
 ## Pagina's en routes
 
 | Route | Scherm | Huidige werking |
@@ -158,7 +173,7 @@ terug naar het overzicht zonder de medewerker toe te voegen.
 | `/medewerkers/toevoegen` | Medewerker toevoegen | Formulier met validatie, landenkeuze en skills per functie. |
 | `/medewerkers/:employeeId` | Medewerkerdetails | Persoonlijke gegevens, contactgegevens en skills van een medewerker. |
 | `/functies` | Functies | Voorlopige pagina; functiebeheer moet nog worden gebouwd. |
-| `/skills` | Skills | Voorlopige pagina; skillbeheer moet nog worden gebouwd. |
+| `/skills` | Skills | Beheertabel met aantallen en toevoegen, bewerken en verwijderen binnen de sessie. |
 | `/instellingen` | Instellingen | Overzicht van portaalgebruikers, toegangsrollen en bijbehorende rechten. |
 | `/profiel` | Mijn profiel | Toont vaste voorbeeldgegevens van Jan Jansen. |
 
@@ -254,7 +269,7 @@ De mappen volgen vijf lagen met elk een eigen verantwoordelijkheid:
 | --- | --- | --- |
 | Atoms | Kleine UI-bouwstenen | `Button`, `Input`, `Select`, `Logo`, `Avatar`, `CountryFlag`, `NavItem` |
 | Molecules | Kleine combinaties met één taak | `FormField`, `CountryLabel`, `CountrySelect`, `NavItem`, `ProfileMenu`, `Pagination`, `SkillSelect`, `AccessRoleCard` |
-| Organisms | Complete delen van een scherm | `TopNavbar`, `Sidebar`, `EmployeesTable`, `EmployeeDetails`, `EmployeeForm`, `LoginForm`, `RegisterForm`, `PortalAccessSettings` |
+| Organisms | Complete delen van een scherm | `TopNavbar`, `Sidebar`, `EmployeesTable`, `EmployeeDetails`, `EmployeeForm`, `SkillsTable`, `SkillFormDialog`, `SkillDeleteDialog`, `LoginForm`, `RegisterForm`, `PortalAccessSettings` |
 | Templates | Pagina-indeling met ruimte voor inhoud | `PortalLayout`, `AuthLayout` |
 | Pages | Concrete schermen met gegevens en acties | De routepagina's in `src/pages/` |
 
@@ -285,7 +300,7 @@ koppen, tekst en containers mogen in een pagina blijven staan.
 - `forms.css`: gedeelde formuliervelden en foutmeldingen.
 - `auth.css`: inloggen en registreren.
 - `dashboard.css`: dashboard, statistieken en snelkoppelingen.
-- `add-employee.css`, `employee.css`, `profile.css` en `settings.css`: specifieke
+- `add-employee.css`, `employee.css`, `skills.css`, `profile.css` en `settings.css`: specifieke
   schermen en onderdelen.
 - `country.css` en `country-select.css`: landlabels, vlaggen en de landenkeuze.
 
@@ -343,8 +358,8 @@ toevoegen van een medewerker, de detailpagina en de navigatie op een smal scherm
   bestaande medewerkers bewerken en verwijderen zijn nog niet beschikbaar.
   De PHP-endpoints bieden momenteel alleen leesacties en hebben nog geen
   authenticatie of autorisatie.
-- **Functies en skills:** de gegevens worden gebruikt bij het toevoegen van
-  medewerkers, maar de beheerpagina's zijn nog placeholders.
+- **Functies en skills:** skills beheren werkt binnen de sessie. Functiebeheer
+  is nog een placeholder; de standaard skills per functie staan vast in de code.
 - **Profiel:** de profielpagina gebruikt vaste voorbeeldgegevens en is nog
   niet gekoppeld aan de ingelogde gebruiker.
 - **Componentstructuur:** de aanwezige Atomic Design-componenten en templates

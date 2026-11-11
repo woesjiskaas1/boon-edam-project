@@ -1,7 +1,6 @@
 import { useState } from "react";
 import CountrySelect from "../components/molecules/CountrySelect";
 import employeeRoles from "../data/employeeRoles";
-import skills from "../data/skills";
 import "../styles/add-employee.css";
 
 // Zo ziet het formulier eruit als je de pagina opent: alles leeg.
@@ -17,7 +16,7 @@ const emptyForm = {
   skillIds: [],
 };
 
-function AddEmployee({ onSave, onCancel }) {
+function AddEmployee({ skills, onSave, onCancel }) {
   const [formData, setFormData] = useState(emptyForm);
   const [errors, setErrors] = useState({});
 
@@ -40,7 +39,9 @@ function AddEmployee({ onSave, onCancel }) {
     setFormData((current) => ({
       ...current,
       roleId: roleId,
-      skillIds: selectedRole ? [...selectedRole.defaultSkills] : [],
+      skillIds: selectedRole
+        ? selectedRole.defaultSkills.filter((id) => skills.some((skill) => skill.id === id))
+        : [],
     }));
   };
 

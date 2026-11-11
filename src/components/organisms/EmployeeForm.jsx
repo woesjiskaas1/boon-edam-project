@@ -42,7 +42,9 @@ function EmployeeForm({ employeeRoles, skills, onSave, onCancel }) {
     setFormData((current) => ({
       ...current,
       roleId: roleId,
-      skillIds: selectedRole ? [...selectedRole.defaultSkills] : [],
+      skillIds: selectedRole
+        ? selectedRole.defaultSkills.filter((id) => skills.some((skill) => skill.id === id))
+        : [],
     }));
   };
 

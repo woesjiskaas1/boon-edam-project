@@ -19,6 +19,7 @@ import AddEmployee from "./pages/AddEmployee";
 
 import initialEmployees from "./data/employees";
 import employeeRoles from "./data/employeeRoles";
+import initialSkills from "./data/skills";
 
 import initialPortalUsers, { invitations as initialInvitations } from "./data/portalUsers";
 
@@ -33,10 +34,27 @@ function App() {
   const [invitations, setInvitations] = useState(initialInvitations);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [employees, setEmployees] = useState(initialEmployees);
+  const [skills, setSkills] = useState(initialSkills);
 
   // Met navigate ga je in de code naar een andere URL.
   const navigate = useNavigate();
 
+  const handleSaveSkill = (skill) => {
+    setSkills((current) =>
+      skill.id
+        ? current.map((item) => item.id === skill.id ? skill : item)
+        : [...current, { ...skill, id: `skill-${crypto.randomUUID()}` }]
+    );
+  };
+
+  const handleDeleteSkill = (skillId) => {
+    setSkills((current) => current.filter((skill) => skill.id !== skillId));
+    setEmployees((current) => current.map((employee) =>
+      employee.skills?.includes(skillId)
+        ? { ...employee, skills: employee.skills.filter((id) => id !== skillId) }
+        : employee
+    ));
+  };
 
   // Maakt van de formuliergegevens een nieuwe medewerker
   // en zet die achteraan in de lijst.
@@ -164,6 +182,7 @@ function App() {
               path="/medewerkers/toevoegen"
               element={
                 <AddEmployee
+                  skills={skills}
                   onSave={handleAddEmployee}
                   onCancel={() => navigate("/medewerkers")}
                 />
@@ -174,12 +193,23 @@ function App() {
               element={
                 <Employee
                   employees={employees}
+                  skills={skills}
                   onBack={() => navigate("/medewerkers")}
                 />
               }
             />
             <Route path="/functies" element={<EmployeeFunctions />} />
-            <Route path="/skills" element={<Skills />} />
+            <Route
+              path="/skills"
+              element={
+                <Skills
+                  skills={skills}
+                  employees={employees}
+                  onSaveSkill={handleSaveSkill}
+                  onDeleteSkill={handleDeleteSkill}
+                />
+              }
+            />
             <Route
               path="/instellingen"
               element={
