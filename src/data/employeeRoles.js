@@ -1,5 +1,5 @@
-// All employee functions within Boon Edam.
-// Each function has default skills that can be adjusted per employee.
+// All employee roles within Boon Edam.
+// Each role has default skills that can be adjusted per employee.
 const employeeRoles = [
   { id: "hr-manager", name: "HR Manager", defaultSkills: ["communicatie", "personeelsbeleid"] },
   { id: "software-developer", name: "Software Developer", defaultSkills: ["javascript", "react"] },

@@ -1,0 +1,214 @@
+@startuml erd
+' ERD van het Boon Edam HR-portaal (MySQL)
+' Notatie: crow's foot (Information Engineering)
+'   ||--o{  = precies één  ->  nul of meer
+'   PK = primaire sleutel, FK = vreemde sleutel
+
+!theme plain
+skinparam dpi 200
+skinparam linetype ortho
+skinparam shadowing false
+skinparam defaultFontName "Helvetica"
+skinparam defaultFontSize 11
+skinparam ArrowColor #555555
+skinparam ClassBorderColor #3A4A5C
+skinparam ClassHeaderBackgroundColor #E8EEF5
+skinparam PackageBorderColor #9AA8B8
+skinparam PackageFontStyle bold
+skinparam nodesep 40
+skinparam ranksep 50
+hide circle
+hide empty methods
+
+title ERD – Boon Edam HR-portaal
+
+package "Medewerkers en competenties" {
+
+  entity "employee" as employee {
+    * employee_id : BIGINT <<PK>>
+    --
+    * employee_number : VARCHAR(50) <<UNIQUE>>
+    first_name : VARCHAR(100)
+    middle_name : VARCHAR(50)
+    last_name : VARCHAR(100)
+    email : VARCHAR(255)
+    country : VARCHAR(100)
+    location : VARCHAR(100)
+    employment_status : VARCHAR(50)
+  }
+
+  entity "job_role" as job_role <<nieuw>> {
+    * job_role_id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(150) <<UNIQUE>>
+    description : TEXT
+    is_active : BOOLEAN
+  }
+
+  entity "employee_job_role" as employee_job_role <<nieuw>> {
+    * employee_id : BIGINT <<PK, FK>>
+    * job_role_id : BIGINT <<PK, FK>>
+    --
+    assigned_date : DATE
+  }
+
+  entity "job_role_skill" as job_role_skill <<nieuw>> {
+    * job_role_skill_id : BIGINT <<PK>>
+    --
+    * job_role_id : BIGINT <<FK>>
+    * skill_id : BIGINT <<FK>>
+    required_level : TINYINT (1-5)
+    is_mandatory : BOOLEAN
+  }
+
+  entity "skill" as skill {
+    * skill_id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(255) <<UNIQUE>>
+    description : TEXT
+    source : ENUM('BOON_EDAM','ESCO') <<nieuw>>
+    esco_id : VARCHAR(255) <<nieuw>>
+    is_active : BOOLEAN
+  }
+
+  entity "employee_skill" as employee_skill {
+    * employee_skill_id : BIGINT <<PK>>
+    --
+    * employee_id : BIGINT <<FK>>
+    * skill_id : BIGINT <<FK>>
+    skill_level : INT (1-5)
+    origin : VARCHAR(100)  (ROLE / MANUAL)
+    assigned_date : DATE
+    certification_date : DATE
+    valid_until : DATE
+    notes : TEXT
+  }
+
+  entity "certificate_type" as certificate_type {
+    * certificate_type_id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(255) <<UNIQUE>>
+    description : TEXT
+    validity_period_months : INT
+    is_active : BOOLEAN
+  }
+
+  entity "employee_certificate" as employee_certificate {
+    * employee_certificate_id : BIGINT <<PK>>
+    --
+    * employee_id : BIGINT <<FK>>
+    * certificate_type_id : BIGINT <<FK>>
+    certificate_number : VARCHAR(100)
+    issue_date : DATE
+    expiry_date : DATE
+    status : VARCHAR(50)
+    notes : TEXT
+  }
+
+  entity "training" as training {
+    * training_id : BIGINT <<PK>>
+    --
+    * employee_id : BIGINT <<FK>>
+    * name : VARCHAR(255)
+    description : TEXT
+    provider : VARCHAR(255)
+    completion_date : DATE
+    valid_until : DATE
+    status : VARCHAR(50)
+  }
+
+  entity "file" as file {
+    * file_id : BIGINT <<PK>>
+    --
+    * employee_id : BIGINT <<FK>>
+    employee_certificate_id : BIGINT <<FK>>
+    * file_name : VARCHAR(255)
+    file_type : VARCHAR(100)
+    file_location : VARCHAR(500)
+    upload_date : TIMESTAMP
+    description : TEXT
+  }
+}
+
+package "Portaaltoegang (login)" {
+
+  entity "portal_user" as portal_user {
+    * portal_user_id : BIGINT <<PK>>
+    --
+    * first_name : VARCHAR(100)
+    * last_name : VARCHAR(100)
+    * email : VARCHAR(255) <<UNIQUE>>
+    * password_hash : VARCHAR(255)
+    * is_active : BOOLEAN
+    * created_at : TIMESTAMP
+    last_login_at : TIMESTAMP
+  }
+
+  entity "portal_user_role" as portal_user_role {
+    * portal_user_id : BIGINT <<PK, FK>>
+    * system_role_id : BIGINT <<PK, FK>>
+  }
+
+  entity "system_role" as system_role {
+    * system_role_id : BIGINT <<PK>>
+    --
+    * code : VARCHAR(50) <<UNIQUE>>
+    * name : VARCHAR(100) <<UNIQUE>>
+    description : TEXT
+    * rank : INT
+  }
+
+  entity "role_permission" as role_permission {
+    * system_role_id : BIGINT <<PK, FK>>
+    * permission_id : BIGINT <<PK, FK>>
+  }
+
+  entity "permission" as permission {
+    * permission_id : BIGINT <<PK>>
+    --
+    * code : VARCHAR(50) <<UNIQUE>>
+    * name : VARCHAR(100) <<UNIQUE>>
+    description : TEXT
+  }
+
+  entity "invitation" as invitation {
+    * invitation_id : BIGINT <<PK>>
+    --
+    * email : VARCHAR(255)
+    * system_role_id : BIGINT <<FK>>
+    * expires_at : TIMESTAMP
+    accepted_at : TIMESTAMP
+    * created_at : TIMESTAMP
+  }
+}
+
+' --- Relaties: medewerkers en competenties ---
+employee ||--o{ employee_job_role
+job_role ||--o{ employee_job_role
+job_role ||--o{ job_role_skill
+skill ||--o{ job_role_skill
+employee ||--o{ employee_skill
+skill ||--o{ employee_skill
+employee ||--o{ employee_certificate
+certificate_type ||--o{ employee_certificate
+employee ||--o{ training
+employee ||--o{ file
+employee_certificate |o--o{ file
+
+' --- Relaties: portaaltoegang ---
+portal_user ||--o{ portal_user_role
+system_role ||--o{ portal_user_role
+system_role ||--o{ role_permission
+permission ||--o{ role_permission
+system_role ||--o{ invitation
+
+legend right
+  <b>Legenda</b>
+  ||--o{   precies één  →  nul of meer
+  |o--o{   nul of één  →  nul of meer
+  ○ = verplicht veld (NOT NULL)
+  PK = primaire sleutel, FK = vreemde sleutel
+  <<nieuw>> = ontworpen, nog niet gebouwd
+endlegend
+
+@enduml

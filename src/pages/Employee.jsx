@@ -2,19 +2,6 @@ import { useParams } from "react-router";
 import CountryLabel from "../components/molecules/CountryLabel";
 import "../styles/employee.css";
 
-function formatBirthDate(birthDate) {
-  if (!birthDate) return "Niet ingevuld";
-
-  const date = new Date(`${birthDate}T00:00:00`);
-  if (Number.isNaN(date.getTime())) return "Niet ingevuld";
-
-  return date.toLocaleDateString("nl-NL", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
 function Employee({ employees, skills, onBack }) {
   const { employeeId } = useParams();
   const employee = employees.find((item) => item.id === employeeId);
@@ -62,7 +49,7 @@ function Employee({ employees, skills, onBack }) {
         <div className="employee-avatar" aria-hidden="true">{initials}</div>
         <div className="employee-summary-info">
           <h2>{employee.name}</h2>
-          <p>{employee.role || "Geen functie vastgelegd"}</p>
+          <p>{employee.role || "Geen rol vastgelegd"}</p>
           <span>{employee.id}</span>
         </div>
         {employee.country && (
@@ -79,16 +66,12 @@ function Employee({ employees, skills, onBack }) {
               <dd>{employee.name}</dd>
             </div>
             <div>
-              <dt>Geboortedatum</dt>
-              <dd>{formatBirthDate(employee.birthDate)}</dd>
-            </div>
-            <div>
               <dt>Land</dt>
               <dd><CountryLabel country={employee.country} /></dd>
             </div>
             <div>
-              <dt>Adres</dt>
-              <dd>{employee.address || "Niet ingevuld"}</dd>
+              <dt>Vestiging</dt>
+              <dd>{employee.location || "Niet ingevuld"}</dd>
             </div>
           </dl>
         </section>
@@ -101,7 +84,7 @@ function Employee({ employees, skills, onBack }) {
               <dd>{employee.id}</dd>
             </div>
             <div>
-              <dt>Functie</dt>
+              <dt>Rol</dt>
               <dd>{employee.role || "Niet ingevuld"}</dd>
             </div>
             <div>
@@ -109,14 +92,6 @@ function Employee({ employees, skills, onBack }) {
               <dd>
                 {employee.email
                   ? <a href={`mailto:${employee.email}`}>{employee.email}</a>
-                  : "Niet ingevuld"}
-              </dd>
-            </div>
-            <div>
-              <dt>Telefoonnummer</dt>
-              <dd>
-                {employee.phone
-                  ? <a href={`tel:${employee.phone.replace(/\s/g, "")}`}>{employee.phone}</a>
                   : "Niet ingevuld"}
               </dd>
             </div>

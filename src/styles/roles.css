@@ -1,0 +1,81 @@
+/* Rollen-pagina: een raster van kaarten, één per rol. */
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.role-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid #e4e9f0;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.role-card h2 {
+  margin: 0;
+  color: #123c32;
+  font-size: 18px;
+}
+
+.role-skills-title {
+  margin: 4px 0 0;
+  color: #535d6f;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* De skills als "chips" naast elkaar. */
+.role-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.role-skill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 12px;
+  color: #123c32;
+  background: #e7f0ec;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.role-skill-remove {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  color: #123c32;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.role-skill-remove:hover {
+  background: #cfe0d8;
+}
+
+/* Keuzelijst + knop onderaan de kaart. */
+.role-add-skill {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.role-add-skill select {
+  flex: 1;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #d5dfda;
+  border-radius: 8px;
+}
