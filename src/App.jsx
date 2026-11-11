@@ -25,6 +25,9 @@ import {
   getJobRoles,
   getSkills,
   createEmployee,
+  createSkill,
+  updateSkill,
+  deactivateSkill,
 } from "./services/employeeService";
 
 import initialPortalUsers, { invitations as initialInvitations } from "./data/portalUsers";
@@ -41,7 +44,7 @@ function App() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [employeesError, setEmployeesError] = useState("");
-    const [jobRoles, setJobRoles] = useState([]);
+  const [jobRoles, setJobRoles] = useState([]);
   const [skills, setSkills] = useState([]);
   // Met navigate ga je in de code naar een andere URL.
   const navigate = useNavigate();
@@ -62,6 +65,37 @@ function App() {
       .catch((error) => setEmployeesError(error.message));
   }, []);
 
+
+  // Skill toevoegen of bewerken (Skills-pagina van Senn), opgeslagen in de database.
+  const handleSaveSkill = async (skill) => {
+    try {
+      if (skill.id) {
+        const updated = await updateSkill(skill.id, skill.name);
+        setSkills((current) => current.map((item) => (item.id === updated.id ? updated : item)));
+      } else {
+        const created = await createSkill(skill.name);
+        setSkills((current) => [...current, created]);
+      }
+    } catch (error) {
+      setEmployeesError(error.message);
+    }
+  };
+
+  // Skill "verwijderen": in de database zetten we hem uit (is_active = false),
+  // zodat oude koppelingen met medewerkers en rollen niet kapotgaan.
+  const handleDeleteSkill = async (skillId) => {
+    try {
+      await deactivateSkill(skillId);
+      setSkills((current) => current.filter((skill) => skill.id !== skillId));
+      setEmployees((current) => current.map((employee) =>
+        employee.skills?.includes(skillId)
+          ? { ...employee, skills: employee.skills.filter((id) => id !== skillId) }
+          : employee
+      ));
+    } catch (error) {
+      setEmployeesError(error.message);
+    }
+  };
 
   // Slaat een nieuwe medewerker op in de database
   // en zet hem daarna achteraan in de lijst.
@@ -210,6 +244,7 @@ function App() {
               element={
                 <Employee
                   employees={employees}
+                  skills={skills}
                   onBack={() => navigate("/medewerkers")}
                 />
               }
@@ -226,7 +261,18 @@ function App() {
                   onCancel={() => navigate("/rollen")}
                 />
               }
-            />            <Route path="/skills" element={<Skills />} />
+            />
+            <Route
+              path="/skills"
+              element={
+                <Skills
+                  skills={skills}
+                  employees={employees}
+                  onSaveSkill={handleSaveSkill}
+                  onDeleteSkill={handleDeleteSkill}
+                />
+              }
+            />
             <Route
               path="/instellingen"
               element={

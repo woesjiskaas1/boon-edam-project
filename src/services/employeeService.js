@@ -164,3 +164,27 @@ export async function createEmployee(formData) {
 
   return fromDatabase(row);
 }
+// Zet een skill uit de database om naar de vorm van de front-end.
+const skillFromDatabase = (row) => ({
+  id: row.skill_id,
+  name: row.name,
+});
+
+// POST: maakt een nieuwe skill aan (Skills-pagina).
+export async function createSkill(name) {
+  const row = await sendJson("POST", `${API_URL}/skills`, { name: name });
+  return skillFromDatabase(row);
+}
+
+// PATCH: wijzigt de naam van een skill.
+export async function updateSkill(skillId, name) {
+  const row = await sendJson("PATCH", `${API_URL}/skills/${skillId}`, { name: name });
+  return skillFromDatabase(row);
+}
+
+// PATCH: zet een skill uit (is_active = false). Hij verdwijnt dan uit
+// GET /skills, maar bestaande koppelingen blijven heel.
+export async function deactivateSkill(skillId) {
+  const row = await sendJson("PATCH", `${API_URL}/skills/${skillId}`, { is_active: false });
+  return skillFromDatabase(row);
+}
