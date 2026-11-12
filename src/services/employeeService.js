@@ -91,6 +91,7 @@ export async function getSkills() {
   return rows.map((row) => ({
     id: row.skill_id,
     name: row.name,
+    category: row.category ?? "",
   }));
 }
 

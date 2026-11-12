@@ -149,9 +149,31 @@ terug naar het overzicht zonder de medewerker toe te voegen.
 
 ### Skills beheren
 
-Open **Skills** voor de beheertabel met vaardigheid en het aantal gekoppelde
-medewerkers. Gebruik **Skill toevoegen** of **Bewerken** om de naam vast te
-leggen. Lege en dubbele namen worden tegengehouden. De knop **Verwijderen**
+Als de skills-API leeg of niet beschikbaar is, toont de app twintig
+voorbeeldskills: vier per categorie. Deze staan in `src/data/skills.js` en
+kunnen binnen de sessie worden bewerkt en verwijderd. Zodra de API skills
+oplevert, gebruikt de app die gegevens.
+
+Open **Skills** voor de beheertabel met vaardigheid, categorie en het aantal
+gekoppelde medewerkers. Gebruik **Skill toevoegen** of **Bewerken** om de naam
+en categorie vast te leggen. Kies een suggestie of typ zelf een nieuwe
+categorie. Skills zonder indeling tonen **Zonder categorie**. Klik op
+**Categorieën** in de tabelkop om de filterkeuzes te openen. Na het kiezen
+sluit de lijst en toont de tabel de gekozen categorie. **Alle categorieën**
+toont alles weer. Escape, het kruisje of buiten de lijst klikken sluit het
+filter zonder de selectie te veranderen. De actieve categorie staat onder
+de tabel en een markering in de tabelkop geeft aan dat er een filter actief is.
+Klik op **Vaardigheid** om tussen A–Z en Z–A te wisselen, of op **Medewerkers**
+om op het aantal gekoppelde medewerkers te sorteren, van laag naar hoog of
+andersom. Een pijltje toont de richting. Beide sorteringen blijven actief:
+de laatst aangeklikte kolom krijgt voorrang, bij gelijke waarden wordt de
+andere sortering gebruikt met de eerder gekozen richting. De cijfers 1 en 2
+en de uitleg onder de tabel tonen deze volgorde. Sorteren werkt ook binnen
+het categoriefilter.
+Bij toevoegen binnen een categoriefilter wordt die categorie alvast
+ingevuld. Categorieën worden, net als de overige skillwijzigingen, binnen de
+huidige sessie bewaard. Lege en dubbele skillnamen worden tegengehouden.
+De knop **Verwijderen**
 staat in de pop-up van **Bewerken** en opent een bevestigingsvenster. Pas na
 **Ja, verwijderen** wordt de skill verwijderd, ook bij gekoppelde medewerkers.
 **Annuleren** of Escape in de bevestiging keert terug naar het bewerkformulier
@@ -173,7 +195,7 @@ daadwerkelijk aan een medewerker zijn gekoppeld.
 | `/medewerkers/toevoegen` | Medewerker toevoegen | Formulier met validatie, landenkeuze en skills per functie. |
 | `/medewerkers/:employeeId` | Medewerkerdetails | Persoonlijke gegevens, contactgegevens en skills van een medewerker. |
 | `/functies` | Functies | Voorlopige pagina; functiebeheer moet nog worden gebouwd. |
-| `/skills` | Skills | Beheertabel met aantallen en toevoegen, bewerken en verwijderen binnen de sessie. |
+| `/skills` | Skills | Sorteerbare beheertabel met categorieën, categoriefilter, aantallen en toevoegen, bewerken en verwijderen binnen de sessie. |
 | `/instellingen` | Instellingen | Overzicht van portaalgebruikers, toegangsrollen en bijbehorende rechten. |
 | `/profiel` | Mijn profiel | Toont vaste voorbeeldgegevens van Jan Jansen. |
 
@@ -268,7 +290,7 @@ De mappen volgen vijf lagen met elk een eigen verantwoordelijkheid:
 | Laag | Verantwoordelijkheid | Componenten in dit project |
 | --- | --- | --- |
 | Atoms | Kleine UI-bouwstenen | `Button`, `Input`, `Select`, `Logo`, `Avatar`, `CountryFlag`, `NavItem` |
-| Molecules | Kleine combinaties met één taak | `FormField`, `CountryLabel`, `CountrySelect`, `NavItem`, `ProfileMenu`, `Pagination`, `SkillSelect`, `AccessRoleCard` |
+| Molecules | Kleine combinaties met één taak | `FormField`, `CountryLabel`, `CountrySelect`, `NavItem`, `ProfileMenu`, `Pagination`, `SkillSelect`, `SkillCategoryFilter`, `AccessRoleCard` |
 | Organisms | Complete delen van een scherm | `TopNavbar`, `Sidebar`, `EmployeesTable`, `EmployeeDetails`, `EmployeeForm`, `SkillsTable`, `SkillFormDialog`, `SkillDeleteDialog`, `LoginForm`, `RegisterForm`, `PortalAccessSettings` |
 | Templates | Pagina-indeling met ruimte voor inhoud | `PortalLayout`, `AuthLayout` |
 | Pages | Concrete schermen met gegevens en acties | De routepagina's in `src/pages/` |

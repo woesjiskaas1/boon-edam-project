@@ -18,6 +18,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 
 import AddEmployee from "./pages/AddEmployee";
+import exampleSkills from "./data/skills";
 
 import {
   getEmployees,
@@ -57,8 +58,11 @@ function App() {
       .catch((error) => setEmployeesError(error.message));
 
     getSkills()
-      .then((loadedSkills) => setSkills(loadedSkills))
-      .catch((error) => setEmployeesError(error.message));
+      .then((loadedSkills) => setSkills(loadedSkills.length > 0 ? loadedSkills : exampleSkills))
+      .catch((error) => {
+        setSkills(exampleSkills);
+        setEmployeesError(error.message);
+      });
   }, []);
 
   const handleSaveSkill = (skill) => {

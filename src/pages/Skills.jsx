@@ -3,12 +3,30 @@ import Button from "../components/atoms/Button";
 import SkillsTable from "../components/organisms/SkillsTable";
 import SkillFormDialog from "../components/organisms/SkillFormDialog";
 import SkillDeleteDialog from "../components/organisms/SkillDeleteDialog";
+import suggestedCategories from "../data/skillCategories";
 import "../styles/skills.css";
 
 function Skills({ skills, employees, onSaveSkill, onDeleteSkill }) {
   const [editor, setEditor] = useState(null);
   const [skillToDelete, setSkillToDelete] = useState(null);
   const [status, setStatus] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const selectedCategory = categoryFilter.startsWith("category:")
+    ? categoryFilter.slice("category:".length)
+    : "";
+  const categories = [...new Set([
+    ...suggestedCategories,
+    ...skills.map((skill) => skill.category?.trim()).filter(Boolean),
+    ...(selectedCategory ? [selectedCategory] : []),
+  ])].sort((first, second) => first.localeCompare(second, "nl"));
+  const visibleSkills = skills.filter((skill) => {
+    if (!categoryFilter) return true;
+
+    const category = skill.category?.trim() || "";
+    return categoryFilter === "uncategorized"
+      ? category === ""
+      : category === selectedCategory;
+  });
 
   const openEditor = (skill = null) => {
     setStatus("");
@@ -39,14 +57,23 @@ function Skills({ skills, employees, onSaveSkill, onDeleteSkill }) {
       </header>
 
       <SkillsTable
-        skills={skills}
+        skills={visibleSkills}
+        allSkills={skills}
         employees={employees}
+        categories={categories}
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
         onEdit={openEditor}
+        emptyMessage={skills.length > 0
+          ? "Geen vaardigheden gevonden in deze categorie. Kies een andere categorie of wis het filter."
+          : undefined}
       />
 
       <div className="skills-footer">
-        <span>
+        <span role="status" aria-atomic="true">
+          {categoryFilter ? `${visibleSkills.length} van ` : ""}
           {skills.length} {skills.length === 1 ? "vaardigheid" : "vaardigheden"}
+          {categoryFilter ? ` · ${selectedCategory || "Zonder categorie"}` : ""}
         </span>
         <span>Centraal overzicht van alle vaardigheden</span>
       </div>
@@ -56,6 +83,8 @@ function Skills({ skills, employees, onSaveSkill, onDeleteSkill }) {
         <SkillFormDialog
           skill={editor.skill}
           skills={skills}
+          categories={categories}
+          defaultCategory={selectedCategory}
           onSave={handleSave}
           onDelete={(skill) => {
             setStatus("");

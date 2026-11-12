@@ -2,11 +2,22 @@ import { useEffect, useId, useRef, useState } from "react";
 import Button from "../atoms/Button";
 import FormField from "../molecules/FormField";
 
-export default function SkillFormDialog({ skill, skills, onSave, onDelete, onClose }) {
+export default function SkillFormDialog({
+  skill,
+  skills,
+  categories,
+  defaultCategory = "",
+  onSave,
+  onDelete,
+  onClose,
+}) {
   const dialogRef = useRef(null);
   const nameRef = useRef(null);
   const titleId = useId();
+  const categoryListId = useId();
+  const categoryHintId = useId();
   const [name, setName] = useState(skill?.name || "");
+  const [category, setCategory] = useState(skill ? (skill.category || "") : defaultCategory);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -27,7 +38,12 @@ export default function SkillFormDialog({ skill, skills, onSave, onDelete, onClo
       return;
     }
 
-    onSave({ id: skill?.id, name: trimmedName });
+    const trimmedCategory = category.trim();
+    const existingCategory = categories.find((item) =>
+      item.toLocaleLowerCase("nl") === trimmedCategory.toLocaleLowerCase("nl")
+    );
+
+    onSave({ id: skill?.id, name: trimmedName, category: existingCategory || trimmedCategory });
     dialogRef.current.close();
   };
 
@@ -51,6 +67,25 @@ export default function SkillFormDialog({ skill, skills, onSave, onDelete, onClo
           required
           error={error}
         />
+        <div className="skills-category-field">
+          <FormField
+            label="Categorie"
+            name="category"
+            value={category}
+            onChange={(event) => setCategory(event.target.value)}
+            list={categoryListId}
+            autoComplete="off"
+            placeholder="Bijvoorbeeld: Communicatie"
+            maxLength={60}
+            aria-describedby={categoryHintId}
+          />
+          <datalist id={categoryListId}>
+            {categories.map((item) => <option key={item} value={item} />)}
+          </datalist>
+          <p id={categoryHintId} className="skills-category-hint">
+            Kies een bestaande categorie of typ een nieuwe. Laat leeg voor Zonder categorie.
+          </p>
+        </div>
         <div className="skills-dialog-footer">
           {skill && (
             <Button
