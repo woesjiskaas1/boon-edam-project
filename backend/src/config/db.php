@@ -26,10 +26,6 @@ class db {
       $this->dbpass,
       $options
     );
-    $hasEmployeeTable = (int) $dbConn->query(
-      "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'employee'"
-    )->fetchColumn() > 0;
-
     $schema = file_get_contents(__DIR__ . '/database.sql');
     if ($schema === false) {
       throw new RuntimeException('Could not read database.sql');
@@ -48,6 +44,9 @@ class db {
     if (!in_array('adress', $employeeColumns, true)) {
       $dbConn->exec('ALTER TABLE employee ADD adress VARCHAR(255) NULL');
     }
+    if (!in_array('middle_name', $employeeColumns, true)) {
+      $dbConn->exec('ALTER TABLE employee ADD middle_name VARCHAR(50) NULL');
+    }
     if (!in_array('phone', $employeeColumns, true)) {
       if (in_array('phone_number', $employeeColumns, true)) {
         $dbConn->exec('ALTER TABLE employee CHANGE phone_number phone VARCHAR(20) NULL');
@@ -58,12 +57,22 @@ class db {
       }
     }
 
-    foreach ($seedStatements as $statement) {
-      if ($hasEmployeeTable) {
-        break;
+    $employeeCount = (int) $dbConn->query('SELECT COUNT(*) FROM employee')->fetchColumn();
+    if ($employeeCount === 0) {
+      foreach ($seedStatements as $statement) {
+        $dbConn->exec($statement);
       }
+    }
 
-      $dbConn->exec($statement);
+    $jobRoleSeed = file_get_contents(__DIR__ . '/job-role-seed.sql');
+    if ($jobRoleSeed === false) {
+      throw new RuntimeException('Could not read job-role-seed.sql');
+    }
+    $jobRoleCount = (int) $dbConn->query('SELECT COUNT(*) FROM job_role')->fetchColumn();
+    if ($jobRoleCount === 0) {
+      foreach (array_filter(array_map('trim', explode(';', $jobRoleSeed))) as $statement) {
+        $dbConn->exec($statement);
+      }
     }
 
     return $dbConn;
