@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "oxlint",
     "test": "node --test",
+    "esco:sync": "node scripts/sync-esco-skills.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

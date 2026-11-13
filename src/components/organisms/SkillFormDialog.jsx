@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import Button from "../atoms/Button";
-import FormField from "../molecules/FormField";
+import EscoAutocomplete from "../molecules/EscoAutocomplete";
 
 export default function SkillFormDialog({
   skill,
@@ -14,10 +14,12 @@ export default function SkillFormDialog({
   const dialogRef = useRef(null);
   const nameRef = useRef(null);
   const titleId = useId();
-  const categoryListId = useId();
-  const categoryHintId = useId();
   const [name, setName] = useState(skill?.name || "");
+  const [escoSkill, setEscoSkill] = useState(skill?.escoUri ? { name: skill.name, uri: skill.escoUri } : null);
   const [category, setCategory] = useState(skill ? (skill.category || "") : defaultCategory);
+  const [escoCategory, setEscoCategory] = useState(skill?.escoCategoryUri
+    ? { name: skill.category, uri: skill.escoCategoryUri, code: skill.escoCategoryCode }
+    : null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -29,7 +31,8 @@ export default function SkillFormDialog({
     const trimmedName = name.trim();
     const duplicate = skills.some((item) =>
       item.id !== skill?.id &&
-      item.name.toLocaleLowerCase("nl") === trimmedName.toLocaleLowerCase("nl")
+      (item.name.trim().toLocaleLowerCase("nl") === trimmedName.toLocaleLowerCase("nl") ||
+        (escoSkill && item.escoUri === escoSkill.uri))
     );
 
     if (!trimmedName || duplicate) {
@@ -43,7 +46,13 @@ export default function SkillFormDialog({
       item.toLocaleLowerCase("nl") === trimmedCategory.toLocaleLowerCase("nl")
     );
 
-    onSave({ id: skill?.id, name: trimmedName, category: existingCategory || trimmedCategory });
+    onSave({
+      ...skill, id: skill?.id, name: trimmedName,
+      category: escoCategory ? escoCategory.name : existingCategory || trimmedCategory,
+      escoUri: escoSkill?.uri || null,
+      escoCategoryUri: escoCategory?.uri || null,
+      escoCategoryCode: escoCategory?.code || null,
+    });
     dialogRef.current.close();
   };
 
@@ -56,36 +65,36 @@ export default function SkillFormDialog({
     >
       <h2 id={titleId}>{skill ? "Skill bewerken" : "Skill toevoegen"}</h2>
       <form className="skills-form" onSubmit={handleSubmit} noValidate>
-        <FormField
+        <EscoAutocomplete
           ref={nameRef}
-          label="Naam van de vaardigheid"
-          name="skillName"
           value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="Bijvoorbeeld: preventief onderhoud"
-          maxLength={60}
-          required
+          selectedItem={escoSkill}
+          onChange={(value) => {
+            setName(value);
+            setEscoSkill(null);
+            setError("");
+          }}
+          onSelect={(selected) => {
+            setName(selected.name);
+            setEscoSkill(selected);
+            setError("");
+          }}
           error={error}
         />
-        <div className="skills-category-field">
-          <FormField
-            label="Categorie"
-            name="category"
-            value={category}
-            onChange={(event) => setCategory(event.target.value)}
-            list={categoryListId}
-            autoComplete="off"
-            placeholder="Bijvoorbeeld: Communicatie"
-            maxLength={60}
-            aria-describedby={categoryHintId}
-          />
-          <datalist id={categoryListId}>
-            {categories.map((item) => <option key={item} value={item} />)}
-          </datalist>
-          <p id={categoryHintId} className="skills-category-hint">
-            Kies een bestaande categorie of typ een nieuwe. Laat leeg voor Zonder categorie.
-          </p>
-        </div>
+        <EscoAutocomplete
+          kind="category"
+          value={category}
+          selectedItem={escoCategory}
+          existingOptions={categories}
+          onChange={(value) => {
+            setCategory(value);
+            setEscoCategory(null);
+          }}
+          onSelect={(selected) => {
+            setCategory(selected.name);
+            setEscoCategory(selected.uri ? selected : null);
+          }}
+        />
         <div className="skills-dialog-footer">
           {skill && (
             <Button

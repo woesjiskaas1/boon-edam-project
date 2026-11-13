@@ -310,6 +310,70 @@
   gap: 6px;
 }
 
+.esco-skill-control {
+  position: relative;
+  min-width: 0;
+}
+
+.esco-suggestions {
+  margin-top: 4px;
+  background: #fff;
+  border: 1px solid #dfe7e2;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(23 45 31 / 14%);
+  overflow: hidden;
+}
+
+.esco-suggestions-heading {
+  margin: 0;
+  padding: 10px 14px;
+  color: #52645b;
+  background: #f5f7f6;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.esco-suggestions ul {
+  max-height: min(240px, 35dvh);
+  padding: 4px;
+  margin: 0;
+  list-style: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.esco-suggestions li {
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+  border-radius: 5px;
+  color: #123c32;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.esco-suggestions li:hover,
+.esco-suggestions li.is-active {
+  background: #e7f0ec;
+}
+
+.esco-suggestions small {
+  color: #52645b;
+  font-size: 12px;
+}
+
+.esco-hint {
+  margin: 6px 0 0;
+  color: #718079;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.esco-hint.is-linked {
+  color: #26705c;
+}
+
 .skills-category-hint {
   margin: 0;
   color: #718079;

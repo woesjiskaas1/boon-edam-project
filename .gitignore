@@ -7,7 +7,13 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
+# Dependencies and npm cache
+node_modules/
+.npm/
+.npm-cache/
+npm/
+
+# Build output
 dist
 dist-ssr
 *.local
