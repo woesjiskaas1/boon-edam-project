@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS employee (
     employee_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     employee_number VARCHAR(50) UNIQUE NOT NULL,
     first_name VARCHAR(100),
+    middle_name VARCHAR(50),
     last_name VARCHAR(100),
     email VARCHAR(255),
     country VARCHAR(100),
@@ -28,6 +29,30 @@ CREATE TABLE IF NOT EXISTS skill (
     skill_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
     description TEXT
+);
+
+CREATE TABLE IF NOT EXISTS job_role (
+    job_role_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150) UNIQUE NOT NULL,
+    description TEXT,
+    is_active BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE IF NOT EXISTS job_role_skill (
+    job_role_id BIGINT UNSIGNED NOT NULL,
+    skill_id BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY (job_role_id, skill_id),
+    FOREIGN KEY (job_role_id) REFERENCES job_role(job_role_id),
+    FOREIGN KEY (skill_id) REFERENCES skill(skill_id)
+);
+
+CREATE TABLE IF NOT EXISTS employee_job_role (
+    employee_id BIGINT UNSIGNED NOT NULL,
+    job_role_id BIGINT UNSIGNED NOT NULL,
+    assigned_date DATE,
+    PRIMARY KEY (employee_id, job_role_id),
+    FOREIGN KEY (employee_id) REFERENCES employee(employee_id),
+    FOREIGN KEY (job_role_id) REFERENCES job_role(job_role_id)
 );
 
 CREATE TABLE IF NOT EXISTS employee_certificate (

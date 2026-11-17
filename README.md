@@ -56,9 +56,11 @@ php -S localhost:3333 index.php
 
 De databasecode maakt bij een databaseaanroep de database en ontbrekende
 tabellen aan met [database.sql](backend/src/config/database.sql). Als de tabel
-`employee` nog niet bestond, worden ook de voorbeeldgegevens toegevoegd. De
-MySQL-gebruiker moet dus rechten hebben om de database en tabellen aan te maken
-en te wijzigen.
+`employee` leeg is, worden ook de voorbeeldgegevens toegevoegd. De functie- en
+skillcatalogus wordt aangemaakt vanuit
+[job-role-seed.sql](backend/src/config/job-role-seed.sql) als er nog geen
+functies bestaan. De MySQL-gebruiker moet dus rechten hebben om de database en
+tabellen aan te maken en te wijzigen.
 
 De backend is bereikbaar op [localhost:3333](http://localhost:3333). De route
 `/` geeft een eenvoudig JSON-testantwoord; voor `/employees` is een werkende
@@ -75,12 +77,13 @@ npm run dev
 [vite.config.js](vite.config.js) stuurt ontwikkelverzoeken naar `/api/...`
 door naar `http://localhost:3333`, waarbij `/api` uit het pad wordt verwijderd.
 Zo gaat `fetch("/api/employees")` naar `http://localhost:3333/employees`.
-Deze proxy is beschikbaar voor toekomstige koppelingen; de huidige
-React-pagina's halen hun gegevens nog niet via deze endpoints op.
+De React-pagina's halen medewerkers, functies en skills via deze API op.
+Nieuwe medewerkers en hun functie- en skillkoppelingen worden in MySQL
+opgeslagen.
 
 ### Beschikbare API-endpoints
 
-Alle onderstaande endpoints gebruiken `GET` en staan in
+De bestaande leesendpoints gebruiken `GET` en staan in
 [backend/public/index.php](backend/public/index.php). De paden hieronder zijn
 de rechtstreekse backendpaden. Zet er `/api` voor bij gebruik via de
 Vite-ontwikkelserver.
@@ -98,9 +101,16 @@ Vite-ontwikkelserver.
 | `/employee_skills` en `/employee_skills/{id}` | Skills van alle medewerkers of één medewerker. |
 | `/employee_files` en `/employee_files/{id}` | Bestanden van alle medewerkers of één medewerker. |
 
+De website gebruikt ook `GET /employee-job-roles`, `GET /job-roles` en
+`GET /skills`. Medewerkers toevoegen gebruikt `POST /employees`,
+`POST /employees/{id}/job-roles`, `POST /employees/{id}/skills` en
+`DELETE /employees/{id}/skills/{skillId}`. Het koppelen van een functie voegt
+de standaard skills van die functie toe. Bestaande voorbeeldmedewerkers
+krijgen niet automatisch een functie toegewezen.
+
 De `{id}`-parameters zijn numerieke database-ID's, bijvoorbeeld `1`. Ze
 verschillen van de demo-ID's in de frontend, zoals `EMP001`. De backend heeft
-nog geen endpoints voor het opslaan, wijzigen of verwijderen van gegevens.
+nog geen endpoints voor het wijzigen of verwijderen van medewerkers.
 
 ## Demo gebruiken
 
