@@ -91,6 +91,7 @@ export async function getSkills() {
   return rows.map((row) => ({
     id: row.skill_id,
     name: row.name,
+    category: row.category ?? "",
   }));
 }
 
@@ -168,6 +169,7 @@ export async function createEmployee(formData) {
 const skillFromDatabase = (row) => ({
   id: row.skill_id,
   name: row.name,
+  category: row.category ?? "",
 });
 
 // POST: maakt een nieuwe skill aan (Skills-pagina).

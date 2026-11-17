@@ -20,6 +20,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 
 import AddEmployee from "./pages/AddEmployee";
+import exampleSkills from "./data/skills";
 
 import {
   getEmployees,
@@ -62,8 +63,11 @@ function App() {
       .catch((error) => setEmployeesError(error.message));
 
     getSkills()
-      .then((loadedSkills) => setSkills(loadedSkills))
-      .catch((error) => setEmployeesError(error.message));
+      .then((loadedSkills) => setSkills(loadedSkills.length > 0 ? loadedSkills : exampleSkills))
+      .catch((error) => {
+        setSkills(exampleSkills);
+        setEmployeesError(error.message);
+      });
   }, []);
 
 
@@ -71,10 +75,11 @@ function App() {
   const handleSaveSkill = async (skill) => {
     try {
       if (skill.id) {
-        const updated = await updateSkill(skill.id, skill.name);
+        // De categorie staat (nog) niet in de database; we houden hem in de state.
+        const updated = { ...(await updateSkill(skill.id, skill.name)), category: skill.category ?? "" };
         setSkills((current) => current.map((item) => (item.id === updated.id ? updated : item)));
       } else {
-        const created = await createSkill(skill.name);
+        const created = { ...(await createSkill(skill.name)), category: skill.category ?? "" };
         setSkills((current) => [...current, created]);
       }
     } catch (error) {

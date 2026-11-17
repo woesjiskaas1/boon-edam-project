@@ -50,7 +50,8 @@ function AddEmployee({ employeeRoles, skills, onSave, onCancel }) {
         ? current.roleIds.filter((id) => id !== roleId)
         : [...current.roleIds, roleId];
       const selectedRoles = employeeRoles.filter((role) => roleIds.includes(role.id));
-      const skillIds = [...new Set(selectedRoles.flatMap((role) => role.defaultSkills))];
+      const skillIds = [...new Set(selectedRoles.flatMap((role) => role.defaultSkills))]
+        .filter((id) => skills.some((skill) => skill.id === id));
 
       return {
         ...current,
@@ -107,7 +108,7 @@ function AddEmployee({ employeeRoles, skills, onSave, onCancel }) {
   };
 
   const handleSubmit = async (event) => {
-    
+
     event.preventDefault();
 
     const newErrors = validate();

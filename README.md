@@ -149,9 +149,31 @@ terug naar het overzicht zonder de medewerker toe te voegen.
 
 ### Skills beheren
 
-Open **Skills** voor de beheertabel met vaardigheid en het aantal gekoppelde
-medewerkers. Gebruik **Skill toevoegen** of **Bewerken** om de naam vast te
-leggen. Lege en dubbele namen worden tegengehouden. De knop **Verwijderen**
+Als de skills-API leeg of niet beschikbaar is, toont de app twintig
+voorbeeldskills: vier per categorie. Deze staan in `src/data/skills.js` en
+kunnen binnen de sessie worden bewerkt en verwijderd. Zodra de API skills
+oplevert, gebruikt de app die gegevens.
+
+Open **Skills** voor de beheertabel met vaardigheid, categorie en het aantal
+gekoppelde medewerkers. Gebruik **Skill toevoegen** of **Bewerken** om de naam
+en categorie vast te leggen. Kies een suggestie of typ zelf een nieuwe
+categorie. Skills zonder indeling tonen **Zonder categorie**. Klik op
+**Categorieën** in de tabelkop om de filterkeuzes te openen. Na het kiezen
+sluit de lijst en toont de tabel de gekozen categorie. **Alle categorieën**
+toont alles weer. Escape, het kruisje of buiten de lijst klikken sluit het
+filter zonder de selectie te veranderen. De actieve categorie staat onder
+de tabel en een markering in de tabelkop geeft aan dat er een filter actief is.
+Klik op **Vaardigheid** om tussen A–Z en Z–A te wisselen, of op **Medewerkers**
+om op het aantal gekoppelde medewerkers te sorteren, van laag naar hoog of
+andersom. Een pijltje toont de richting. Beide sorteringen blijven actief:
+de laatst aangeklikte kolom krijgt voorrang, bij gelijke waarden wordt de
+andere sortering gebruikt met de eerder gekozen richting. De cijfers 1 en 2
+en de uitleg onder de tabel tonen deze volgorde. Sorteren werkt ook binnen
+het categoriefilter.
+Bij toevoegen binnen een categoriefilter wordt die categorie alvast
+ingevuld. Categorieën worden, net als de overige skillwijzigingen, binnen de
+huidige sessie bewaard. Lege en dubbele skillnamen worden tegengehouden.
+De knop **Verwijderen**
 staat in de pop-up van **Bewerken** en opent een bevestigingsvenster. Pas na
 **Ja, verwijderen** wordt de skill verwijderd, ook bij gekoppelde medewerkers.
 **Annuleren** of Escape in de bevestiging keert terug naar het bewerkformulier
@@ -161,6 +183,60 @@ Wijzigingen zijn direct beschikbaar in het medewerkersformulier en op de
 detailpagina. Ze blijven binnen de huidige sessie bewaard; verversen herstelt
 de begingegevens. Standaard skills bij een functie tellen pas mee als ze
 daadwerkelijk aan een medewerker zijn gekoppeld.
+
+### ESCO-autocomplete en autocorrect
+
+Bij **Skill toevoegen** en **Bewerken** verschijnen na twee letters suggesties
+uit de officiële ESCO-classificatie. Klik op een suggestie of kies met ↑/↓ en
+Enter. De naam wordt vervangen door het officiële Nederlandse label en de
+ESCO-URI wordt bij de skill bewaard als `escoUri`. Escape sluit eerst de
+suggestielijst. Zelf een naam invoeren blijft mogelijk; na verder typen vervalt
+een eerder gekozen ESCO-koppeling. Dubbele namen en dubbele ESCO-koppelingen
+worden tegengehouden.
+
+De app gebruikt de openbare
+[ESCO-API](https://esco.ec.europa.eu/en/use-esco/use-esco-services-api/esco-web-service-api)
+(`suggest2`, versie `v1.2.0`, taal `nl`) zonder API-sleutel. Verzoeken starten
+300 ms na het typen, worden afgebroken bij nieuwe invoer en hebben een timeout
+van vier seconden. Alleen de ingevoerde zoekterm gaat naar ESCO.
+
+Daarnaast bevat [public/data/esco-skills.json](public/data/esco-skills.json)
+alle **13.939 skills** uit die API-versie, met officiële URI's en Nederlandse
+en Engelse labels. Waar een Nederlandse vertaling ontbreekt, wordt het officiële
+Engelse label gebruikt. De lokale lijst wordt pas geladen wanneer je het
+skillformulier opent, en daarna binnen de sessie hergebruikt. Het zoeken herkent
+ook Engelse namen, ontbrekende letters en omgewisselde letters, bijvoorbeeld
+`javscript` → `JavaScript` en `project managment` → `projectbeheer`.
+De lijst blijft werken wanneer de ESCO-API niet bereikbaar is. Voor dit onderdeel
+hoeft de PHP-backend niet te draaien.
+
+Het veld **Categorie** gebruikt dezelfde autocomplete en typefoutcorrectie.
+[public/data/esco-categories.json](public/data/esco-categories.json) bevat alle
+**640 officiële categoriegroepen** van de ESCO-hiërarchie, met Nederlandse en
+Engelse labels, codes en bovenliggende groepen. In de lijst staat bijvoorbeeld
+`werken met computers` met code `S5`. Je kunt ook op een code zoeken. Een gekozen
+ESCO-categorie wordt bewaard als `category`, `escoCategoryUri` en
+`escoCategoryCode`. Bij verder typen wordt die koppeling verwijderd.
+
+De categorieën komen via de API uitsluitend uit het officiële concept scheme
+`skills-hierarchy`. Bij verbindingsproblemen werkt de aparte lokale categorielijst
+door. Bestaande eigen categorieën zijn herkenbaar aan **Eigen categorie**; een
+exacte eigen naam blijft beschikbaar. Leeglaten betekent **Zonder categorie**.
+Het kiezen van een skill bepaalt de categorie niet automatisch.
+
+Ververs beide JSON-exports met:
+
+```bash
+npm run esco:sync
+```
+
+Voor alleen de categorieën: `npm run esco:sync -- categories`.
+Voor alleen de skills: `npm run esco:sync -- skills`.
+
+Hiervoor is internet nodig. Het script controleert volledigheid en unieke URI's
+voordat het het bestaande bestand vervangt. Herkomst, versie en ophaaldatum staan
+in het JSON-bestand. De koppeling blijft, net als de overige skillwijzigingen,
+binnen de huidige sessie bewaard.
 
 ## Pagina's en routes
 
@@ -173,7 +249,7 @@ daadwerkelijk aan een medewerker zijn gekoppeld.
 | `/medewerkers/toevoegen` | Medewerker toevoegen | Formulier met validatie, landenkeuze en skills per functie. |
 | `/medewerkers/:employeeId` | Medewerkerdetails | Persoonlijke gegevens, contactgegevens en skills van een medewerker. |
 | `/functies` | Functies | Voorlopige pagina; functiebeheer moet nog worden gebouwd. |
-| `/skills` | Skills | Beheertabel met aantallen en toevoegen, bewerken en verwijderen binnen de sessie. |
+| `/skills` | Skills | Sorteerbare beheertabel met categorieën, categoriefilter, aantallen en toevoegen, bewerken en verwijderen binnen de sessie. |
 | `/instellingen` | Instellingen | Overzicht van portaalgebruikers, toegangsrollen en bijbehorende rechten. |
 | `/profiel` | Mijn profiel | Toont vaste voorbeeldgegevens van Jan Jansen. |
 
@@ -268,7 +344,7 @@ De mappen volgen vijf lagen met elk een eigen verantwoordelijkheid:
 | Laag | Verantwoordelijkheid | Componenten in dit project |
 | --- | --- | --- |
 | Atoms | Kleine UI-bouwstenen | `Button`, `Input`, `Select`, `Logo`, `Avatar`, `CountryFlag`, `NavItem` |
-| Molecules | Kleine combinaties met één taak | `FormField`, `CountryLabel`, `CountrySelect`, `NavItem`, `ProfileMenu`, `Pagination`, `SkillSelect`, `AccessRoleCard` |
+| Molecules | Kleine combinaties met één taak | `FormField`, `CountryLabel`, `CountrySelect`, `NavItem`, `ProfileMenu`, `Pagination`, `SkillSelect`, `SkillCategoryFilter`, `AccessRoleCard` |
 | Organisms | Complete delen van een scherm | `TopNavbar`, `Sidebar`, `EmployeesTable`, `EmployeeDetails`, `EmployeeForm`, `SkillsTable`, `SkillFormDialog`, `SkillDeleteDialog`, `LoginForm`, `RegisterForm`, `PortalAccessSettings` |
 | Templates | Pagina-indeling met ruimte voor inhoud | `PortalLayout`, `AuthLayout` |
 | Pages | Concrete schermen met gegevens en acties | De routepagina's in `src/pages/` |
@@ -337,7 +413,7 @@ zoals `/medewerkers/EMP001` ook rechtstreeks geopend kunnen worden.
 De `/api`-proxy is een ontwikkelinstelling. Voor een gepubliceerde versie moet
 de koppeling tussen de frontend en PHP-backend apart worden ingericht.
 
-Er is nog geen geautomatiseerde testsuite of `npm test`-script opgenomen.
+Voer `npm test` uit voor de automatische controles op sortering en ESCO-zoeken.
 Controleer na functionele wijzigingen ook handmatig het inloggen, registreren,
 toevoegen van een medewerker, de detailpagina en de navigatie op een smal scherm.
 

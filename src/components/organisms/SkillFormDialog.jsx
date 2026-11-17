@@ -1,12 +1,25 @@
 import { useEffect, useId, useRef, useState } from "react";
 import Button from "../atoms/Button";
-import FormField from "../molecules/FormField";
+import EscoAutocomplete from "../molecules/EscoAutocomplete";
 
-export default function SkillFormDialog({ skill, skills, onSave, onDelete, onClose }) {
+export default function SkillFormDialog({
+  skill,
+  skills,
+  categories,
+  defaultCategory = "",
+  onSave,
+  onDelete,
+  onClose,
+}) {
   const dialogRef = useRef(null);
   const nameRef = useRef(null);
   const titleId = useId();
   const [name, setName] = useState(skill?.name || "");
+  const [escoSkill, setEscoSkill] = useState(skill?.escoUri ? { name: skill.name, uri: skill.escoUri } : null);
+  const [category, setCategory] = useState(skill ? (skill.category || "") : defaultCategory);
+  const [escoCategory, setEscoCategory] = useState(skill?.escoCategoryUri
+    ? { name: skill.category, uri: skill.escoCategoryUri, code: skill.escoCategoryCode }
+    : null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -18,7 +31,8 @@ export default function SkillFormDialog({ skill, skills, onSave, onDelete, onClo
     const trimmedName = name.trim();
     const duplicate = skills.some((item) =>
       item.id !== skill?.id &&
-      item.name.toLocaleLowerCase("nl") === trimmedName.toLocaleLowerCase("nl")
+      (item.name.trim().toLocaleLowerCase("nl") === trimmedName.toLocaleLowerCase("nl") ||
+        (escoSkill && item.escoUri === escoSkill.uri))
     );
 
     if (!trimmedName || duplicate) {
@@ -27,7 +41,18 @@ export default function SkillFormDialog({ skill, skills, onSave, onDelete, onClo
       return;
     }
 
-    onSave({ id: skill?.id, name: trimmedName });
+    const trimmedCategory = category.trim();
+    const existingCategory = categories.find((item) =>
+      item.toLocaleLowerCase("nl") === trimmedCategory.toLocaleLowerCase("nl")
+    );
+
+    onSave({
+      ...skill, id: skill?.id, name: trimmedName,
+      category: escoCategory ? escoCategory.name : existingCategory || trimmedCategory,
+      escoUri: escoSkill?.uri || null,
+      escoCategoryUri: escoCategory?.uri || null,
+      escoCategoryCode: escoCategory?.code || null,
+    });
     dialogRef.current.close();
   };
 
@@ -40,16 +65,35 @@ export default function SkillFormDialog({ skill, skills, onSave, onDelete, onClo
     >
       <h2 id={titleId}>{skill ? "Skill bewerken" : "Skill toevoegen"}</h2>
       <form className="skills-form" onSubmit={handleSubmit} noValidate>
-        <FormField
+        <EscoAutocomplete
           ref={nameRef}
-          label="Naam van de vaardigheid"
-          name="skillName"
           value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="Bijvoorbeeld: preventief onderhoud"
-          maxLength={60}
-          required
+          selectedItem={escoSkill}
+          onChange={(value) => {
+            setName(value);
+            setEscoSkill(null);
+            setError("");
+          }}
+          onSelect={(selected) => {
+            setName(selected.name);
+            setEscoSkill(selected);
+            setError("");
+          }}
           error={error}
+        />
+        <EscoAutocomplete
+          kind="category"
+          value={category}
+          selectedItem={escoCategory}
+          existingOptions={categories}
+          onChange={(value) => {
+            setCategory(value);
+            setEscoCategory(null);
+          }}
+          onSelect={(selected) => {
+            setCategory(selected.name);
+            setEscoCategory(selected.uri ? selected : null);
+          }}
         />
         <div className="skills-dialog-footer">
           {skill && (
