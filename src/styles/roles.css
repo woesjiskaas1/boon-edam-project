@@ -1,81 +1,227 @@
-/* Rollen-pagina: een raster van kaarten, één per rol. */
-.roles-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-}
+/* Rollen-pagina: een tabel met één regel per rol.
+   De breedte van .roles-page staat in layout.css (zelfde als elke pagina). */
 
-.role-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px;
-  border: 1px solid #e4e9f0;
-  border-radius: 10px;
-  background: #ffffff;
-}
-
-.role-card h2 {
-  margin: 0;
-  color: #123c32;
-  font-size: 18px;
-}
-
-.role-skills-title {
-  margin: 4px 0 0;
-  color: #535d6f;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-/* De skills als "chips" naast elkaar. */
-.role-skills {
+/* Zoekveld en sorteren boven de tabel. */
+.roles-tools {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+/* Telefoon: zoekveld en keuzelijsten over de hele breedte. */
+.roles-search {
+  flex: 1 1 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+  background: #ffffff;
+  border: 1px solid #d5dfda;
+  border-radius: 8px;
+}
+
+.roles-sort {
+  flex: 1 1 100%;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+  color: #34443d;
+  background: #ffffff;
+  border: 1px solid #d5dfda;
+  border-radius: 8px;
+}
+
+.roles-search:focus,
+.roles-sort:focus {
+  outline: 2px solid #123c32;
+  outline-offset: 1px;
+}
+
+/* De tabel zelf gebruikt .employees-table (zelfde als Medewerkers). */
+.roles-table {
+  min-width: 760px;
+}
+
+.roles-table td {
+  vertical-align: middle;
+}
+
+/* Eerste kolom: naam (link) met de omschrijving eronder. */
+.roles-table td:first-child {
+  width: 34%;
+}
+
+.roles-name {
+  display: block;
+  color: #123c32;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.roles-name:hover,
+.roles-name:focus-visible {
+  text-decoration: underline;
+}
+
+.roles-description {
+  display: block;
+  margin-top: 3px;
+  color: #718079;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* Skills als kleine chips, altijd op één regel. */
+.roles-chips {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.role-skill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 6px 4px 12px;
+.roles-chip {
+  /* Lange namen (vaak uit ESCO) worden afgekort met "...". */
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 3px 10px;
   color: #123c32;
   background: #e7f0ec;
   border-radius: 20px;
+  font-size: 12px;
+}
+
+.roles-chip-more {
+  color: #718079;
+  background: transparent;
+  border: 1px dashed #cfd8d3;
+}
+
+/* Getallen rechts uitlijnen, zodat ze onder elkaar staan. */
+.roles-number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.roles-muted {
+  color: #9aa6a0;
+}
+
+.roles-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.roles-actions a {
+  color: #123c32;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.roles-actions a:hover {
+  text-decoration: underline;
+}
+
+.roles-footer {
+  margin: 14px 4px 0;
+  color: #718079;
   font-size: 13px;
 }
 
-.role-skill-remove {
-  width: 20px;
-  height: 20px;
-  padding: 0;
+/* Alleen voor schermlezers: onzichtbaar, maar wel voorgelezen. */
+.roles-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Detailpagina van een rol ---------- */
+
+/* De cijfers. Telefoon: onder elkaar, vanaf tablet naast elkaar. */
+.role-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.role-stat {
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.role-stat strong {
+  display: block;
   color: #123c32;
-  background: transparent;
-  border: none;
-  border-radius: 50%;
-  line-height: 1;
-  cursor: pointer;
+  font-size: 24px;
 }
 
-.role-skill-remove:hover {
-  background: #cfe0d8;
+.role-stat span {
+  color: #718079;
+  font-size: 14px;
 }
 
-/* Keuzelijst + knop onderaan de kaart. */
-.role-add-skill {
+/* Een blok op de detailpagina (skills, medewerkers). */
+.role-section {
+  margin-bottom: 16px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.role-section h2 {
+  margin: 0 0 14px;
+  color: #123c32;
+  font-size: 16px;
+}
+
+/* Hier mogen de skills wél over meerdere regels. */
+.role-skill-list {
   display: flex;
-  gap: 8px;
-  margin-top: auto;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.role-add-skill select {
-  flex: 1;
-  min-width: 0;
-  padding: 8px;
-  border: 1px solid #d5dfda;
-  border-radius: 8px;
+.role-skill-list .roles-chip {
+  max-width: none;
+  font-size: 13px;
+}
+
+   /* De medewerkerstabel op de detailpagina. */
+   .role-employees-table {
+     min-width: 560px;
+   }
+
+   .role-employees-table th:first-child,
+   .role-employees-table td:first-child {
+     padding-left: 12px;
+   }
+
+/* ---------- Tablet (vanaf 600px) ---------- */
+@media (min-width: 600px) {
+  .roles-search {
+    flex: 0 1 340px;
+  }
+
+  .roles-sort {
+    flex: 0 0 auto;
+  }
+
+  .role-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }

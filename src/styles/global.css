@@ -1,4 +1,22 @@
 
+/* Vaste waarden voor de hele website (CSS-variabelen).
+   Gebruik ze met var(--naam). Pas je hier iets aan, dan verandert
+   het op elke pagina tegelijk. */
+:root {
+  --page-max-width: 1200px; /* breedte van elke pagina */
+  --form-max-width: 760px;  /* breedte van formulieren */
+  --color-primary: #123c32; /* donkergroen: titels, knoppen */
+  --color-muted: #718079;   /* grijs: uitleg en bijzaken */
+  --color-border: #e0e6e3;  /* randen van kaarten en tabellen */
+  --radius-card: 12px;      /* afronding van kaarten */
+}
+
+/* Schermbreedtes (breakpoints), mobile first:
+   - basis:        telefoon (alle CSS zonder @media)
+   - vanaf 600px:  tablet   -> @media (min-width: 600px)
+   - vanaf 900px:  desktop  -> @media (min-width: 900px)
+   In een @media mag geen var(), daarom staan ze hier als uitleg. */
+
 :root {
   font-family: Arial, Helvetica, sans-serif;
   color: #535d6f;

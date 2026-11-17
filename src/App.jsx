@@ -8,6 +8,7 @@ import Employees from "./pages/Employees";
 import Employee from "./pages/Employee";
 import Roles from "./pages/Roles";
 import AddRole from "./pages/AddRole";
+import Role from "./pages/Role";
 
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -251,14 +252,33 @@ function App() {
             />
             <Route
               path="/rollen"
-              element={<Roles onAddRole={() => navigate("/rollen/nieuw")} />}
-            />
+
+              element={
+                <Roles
+                  jobRoles={jobRoles}
+                  skills={skills}
+                  employees={employees}
+                  onAddRole={() => navigate("/rollen/nieuw")}
+                />
+              }
+/>
             <Route
               path="/rollen/nieuw"
               element={
                 <AddRole
                   skills={skills}
                   onCancel={() => navigate("/rollen")}
+                />
+              }
+            />
+            <Route
+              path="/rollen/:roleId"
+              element={
+                <Role
+                  jobRoles={jobRoles}
+                  skills={skills}
+                  employees={employees}
+                  onBack={() => navigate("/rollen")}
                 />
               }
             />

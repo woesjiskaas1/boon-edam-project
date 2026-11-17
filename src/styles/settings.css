@@ -32,11 +32,12 @@
   padding: 24px;
 }
 
+/* Telefoon: tekst en knop onder elkaar. */
 .settings-section-header {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
+  align-items: stretch;
+  flex-direction: column;
+  gap: 16px;
   margin-bottom: 24px;
 }
 
@@ -46,6 +47,7 @@
 
 .settings-section-header .primary-button {
   flex-shrink: 0;
+  align-self: flex-start;
 }
 
 /* Wie er ingelogd is, en het labeltje "jij" in de tabel */
@@ -80,14 +82,16 @@
   font-size: 12px;
 }
 
-@media (max-width: 600px) {
+/* ---------- Tablet (vanaf 600px) ---------- */
+@media (min-width: 600px) {
   .settings-section-header {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 16px;
+    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 24px;
   }
 
   .settings-section-header .primary-button {
-    align-self: flex-start;
+    align-self: auto;
   }
 }

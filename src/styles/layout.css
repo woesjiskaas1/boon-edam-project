@@ -24,7 +24,7 @@ button {
   align-items: center;
   justify-content: space-between;
   min-height: 76px;
-  padding: 12px 28px;
+  padding: 12px 16px;
   background: #ffffff;
   color: #26332f;
   box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
@@ -54,6 +54,11 @@ button {
 
 .profile-menu {
   position: relative;
+}
+
+/* Op een telefoon alleen de avatar, de naam pas vanaf tablet. */
+.profile-label {
+  display: none;
 }
 
 .profile-button {
@@ -123,27 +128,21 @@ button {
 
 .app-body {
   display: flex;
+  flex-direction: column; /* telefoon: menu boven de inhoud */
   min-height: calc(100vh - 76px);
 }
 
+/* Telefoon: het menu is een balk boven de pagina. */
 .sidebar {
-  flex: 0 0 240px;
-  width: 240px;
-  padding: 24px 16px;
+  padding: 12px 16px;
   background: #ffffff;
-  border-right: 1px solid #e0e6e3;
-  transition: width 0.2s ease, flex-basis 0.2s ease;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.sidebar.collapsed {
-  flex-basis: 72px;
-  width: 72px;
-  padding-right: 8px;
-  padding-left: 8px;
-}
-
+/* Inklappen heeft alleen zin naast de pagina (desktop). */
 .sidebar-toggle {
-width: 100%;
+  display: none;
+  width: 100%;
   padding: 12px 8px;
   margin-bottom: 16px;
   text-align: center;
@@ -159,25 +158,27 @@ width: 100%;
 }
 
 .sidebar-heading {
-  margin: 0 12px 16px;
+  margin: 0 12px 8px;
   color: #718079;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 1px;
 }
 
+/* Telefoon: de links naast elkaar, schuiven als het niet past. */
 .sidebar nav {
   display: flex;
-  flex-direction: column;
   gap: 6px;
+  overflow-x: auto;
 }
 
 .sidebar-link {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
   gap: 12px;
-  width: 100%;
   padding: 12px;
+  white-space: nowrap;
   text-align: left;
   color: #34443d;
   text-decoration: none;
@@ -200,12 +201,6 @@ width: 100%;
   font-size: 20px;
 }
 
-.sidebar.collapsed .sidebar-link {
-  justify-content: center;
-  padding-right: 8px;
-  padding-left: 8px;
-}
-
 .sidebar-link.active {
   color: #123c32;
   background: #e7f0ec;
@@ -215,21 +210,30 @@ width: 100%;
 .main-content {
   flex: 1;
   min-width: 0;
-  padding: 32px;
+  padding: 20px 16px;
 }
 
-.page {
+/* Elke pagina even breed en in het midden.
+   (De skills-pagina regelt dit zelf in skills.css, ook 1200px.) */
+.page,
+.dashboard-page,
+.employees-page,
+.employee-page,
+.roles-page,
+.profile-page,
+.add-employee-page {
   width: 100%;
-  max-width: 1440px;
+  max-width: var(--page-max-width);
   margin: 0 auto;
 }
 
+/* Telefoon: titel en knoppen onder elkaar. */
 .page-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 32px;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .page-eyebrow {
@@ -241,15 +245,15 @@ width: 100%;
 }
 
 .page-header h1 {
-  margin: 0;
-  color: #17243a;
-  font-size: 30px;
+  margin: 0 0 8px;
+  color: var(--color-primary);
+  font-size: 28px;
   font-weight: 700;
 }
 
 .page-description {
-  margin: 12px 0 0;
-  color: #64748b;
+  margin: 0;
+  color: var(--color-muted);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -286,26 +290,26 @@ width: 100%;
 .employees-header-actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap; /* telefoon: knoppen naar de volgende regel */
   gap: 12px;
 }
 
 .content-card {
-  padding: 28px;
-  border: 1px solid #e4e9f0;
-  border-radius: 10px;
+  padding: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
   background: #ffffff;
-  box-shadow: 0 3px 12px rgb(23 36 58 / 3%);
 }
 
 .content-card h2 {
   margin: 0 0 12px;
-  color: #202938;
+  color: var(--color-primary);
   font-size: 18px;
 }
 
 .content-card p {
   margin: 0;
-  color: #64748b;
+  color: var(--color-muted);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -326,64 +330,24 @@ width: 100%;
   cursor: pointer;
 }
 
-@media (max-width: 700px) {
-  .top-navbar {
-    padding: 12px 16px;
-  }
-
-  .profile-label {
-    display: none;
-  }
-
-  .app-body {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    flex-basis: auto;
-    padding: 12px;
-    border-right: 0;
-    border-bottom: 1px solid #e0e6e3;
-  }
-
-  .sidebar-heading {
-    margin-bottom: 8px;
-  }
-
-  .sidebar nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .sidebar-link {
-    width: auto;
-  }
-
-  .main-content {
-    padding: 20px 16px;
-  }
-}
-.employees-page {
-  width: 100%;
-}
-
+/* Kop van een pagina. Telefoon: titel en knoppen onder elkaar. */
 .employees-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
   gap: 16px;
   margin-bottom: 24px;
 }
 
 .employees-header h1 {
   margin: 0 0 8px;
-  color: #123c32;
+  color: var(--color-primary);
   font-size: 28px;
 }
 
 .employees-header p {
   margin: 0;
-  color: #718079;
+  color: var(--color-muted);
 }
 
 .employee-count {
@@ -395,11 +359,14 @@ width: 100%;
   white-space: nowrap;
 }
 
+/* Is de tabel te breed (telefoon), dan schuif je binnen dit vak
+   naar links en rechts, in plaats van de hele pagina. */
 .employees-table-container {
+  position: relative;
   overflow-x: auto;
   background: #ffffff;
-  border: 1px solid #e0e6e3;
-  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
 }
 
 .employees-table {
@@ -409,7 +376,7 @@ width: 100%;
 }
 
 .employees-table th {
-  padding: 16px 20px;
+  padding: 14px 12px;
   color: #52645b;
   background: #f5f7f6;
   font-size: 13px;
@@ -418,13 +385,18 @@ width: 100%;
 }
 
 .employees-table td {
-  padding: 18px 20px;
+  padding: 14px 12px;
   border-top: 1px solid #e9eeeb;
   font-size: 14px;
 }
 
 .employees-table tbody tr:hover {
   background: #f8faf9;
+}
+
+/* De medewerkerstabel heeft veel kolommen: niet smaller dan dit. */
+.employees-page .employees-table {
+  min-width: 640px;
 }
 
 .employees-table td:first-child {
@@ -441,12 +413,12 @@ width: 100%;
   font-size: 12px;
 }
 
+/* Telefoon: tekst boven de knoppen. */
 .pagination {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
   gap: 16px;
-  flex-wrap: wrap;
   margin-top: 20px;
   padding: 16px 0;
 }
@@ -460,7 +432,9 @@ width: 100%;
 .pagination-controls {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
 }
 
 .pagination-button {
@@ -488,25 +462,96 @@ width: 100%;
   white-space: nowrap;
 }
 
-@media (max-width: 600px) {
-  .employees-header {
-    align-items: flex-start;
-    flex-direction: column;
+/* ---------- Tablet (vanaf 600px) ---------- */
+@media (min-width: 600px) {
+  .profile-label {
+    display: inline;
   }
 
-  .employees-table th,
+  .page-header,
+  .employees-header {
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .content-card {
+    padding: 28px;
+  }
+
+  .employees-table th {
+    padding: 16px 20px;
+  }
+
   .employees-table td {
-    padding: 14px 12px;
+    padding: 18px 20px;
   }
 
   .pagination {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .pagination-controls {
+    justify-content: flex-start;
+    gap: 12px;
+    width: auto;
+  }
+}
+
+/* ---------- Desktop (vanaf 900px) ---------- */
+@media (min-width: 900px) {
+  .top-navbar {
+    padding: 12px 28px;
+  }
+
+  /* Menu links naast de pagina. */
+  .app-body {
+    flex-direction: row;
+  }
+
+  .sidebar {
+    flex: 0 0 240px;
+    width: 240px;
+    padding: 24px 16px;
+    border-right: 1px solid var(--color-border);
+    border-bottom: 0;
+    transition: width 0.2s ease, flex-basis 0.2s ease;
+  }
+
+  .sidebar.collapsed {
+    flex-basis: 72px;
+    width: 72px;
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .sidebar-toggle {
+    display: block;
+  }
+
+  .sidebar-heading {
+    margin-bottom: 16px;
+  }
+
+  .sidebar nav {
+    flex-direction: column;
+    overflow-x: visible;
+  }
+
+  .sidebar-link {
     width: 100%;
-    justify-content: space-between;
-    gap: 8px;
+  }
+
+  .sidebar.collapsed .sidebar-link {
+    justify-content: center;
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .main-content {
+    padding: 32px;
   }
 }
