@@ -30,6 +30,9 @@ import {
   createSkill,
   updateSkill,
   deactivateSkill,
+  addEmployeeToRole,
+  updateJobRoleSkills,
+  removeEmployeeFromRole,
 } from "./services/employeeService";
 
 import initialPortalUsers, { invitations as initialInvitations } from "./data/portalUsers";
@@ -101,6 +104,51 @@ function App() {
     } catch (error) {
       setEmployeesError(error.message);
     }
+  };
+
+  // Slaat de nieuwe lijst skills van een rol op, en zet de bijgewerkte
+  // rol daarna in de state. Gaat het mis, dan vangt de pagina Role de fout op.
+  const handleUpdateRoleSkills = async (roleId, skillIds) => {
+    const updatedRole = await updateJobRoleSkills(roleId, skillIds);
+    setJobRoles((current) =>
+      current.map((role) => (role.id === updatedRole.id ? updatedRole : role))
+    );
+  };
+
+  // Geeft een medewerker een extra rol, in de database én in de state.
+  // Gaat het mis, dan vangt de pagina Role de fout op.
+  const handleAddEmployeeToRole = async (employee, role) => {
+    await addEmployeeToRole(employee.databaseId, role.id);
+    setEmployees((current) =>
+      current.map((item) => {
+        if (item.id !== employee.id) {
+          return item;
+        }
+        return {
+          ...item,
+          roleIds: [...(item.roleIds ?? []), role.id],
+          role: item.role ? `${item.role}, ${role.name}` : role.name,
+        };
+      })
+    );
+  };
+
+  // Haalt een rol weg bij een medewerker, in de database én in de state.
+  const handleRemoveEmployeeFromRole = async (employee, role) => {
+    await removeEmployeeFromRole(employee.databaseId, role.id);
+    setEmployees((current) =>
+      current.map((item) => {
+        if (item.id !== employee.id) {
+          return item;
+        }
+        const roleIds = (item.roleIds ?? []).filter((id) => id !== role.id);
+        // De tekst met rolnamen opnieuw maken uit de rollen die overblijven.
+        const roleNames = jobRoles
+          .filter((jobRole) => roleIds.includes(jobRole.id))
+          .map((jobRole) => jobRole.name);
+        return { ...item, roleIds, role: roleNames.join(", ") };
+      })
+    );
   };
 
   // Slaat een nieuwe medewerker op in de database
@@ -284,6 +332,9 @@ function App() {
                   skills={skills}
                   employees={employees}
                   onBack={() => navigate("/rollen")}
+                  onAddEmployee={handleAddEmployeeToRole}
+                  onUpdateSkills={handleUpdateRoleSkills}
+                  onRemoveEmployee={handleRemoveEmployeeFromRole}
                 />
               }
             />

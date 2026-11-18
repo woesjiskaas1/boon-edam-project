@@ -57,6 +57,15 @@ export async function getEmployees() {
   });
 }
 
+// Zet een rol uit de database om naar de vorm van de front-end.
+// Zelfde vorm als eerst in src/data/employeeRoles.js.
+const roleFromDatabase = (row) => ({
+  id: row.job_role_id,
+  name: row.name,
+  description: row.description ?? "",
+  defaultSkills: row.skills.map((skill) => skill.skill_id),
+});
+
 // GET: haalt alle rollen op, met hun standaard skills.
 export async function getJobRoles() {
   const response = await fetch(`${API_URL}/job-roles`);
@@ -66,15 +75,7 @@ export async function getJobRoles() {
   }
 
   const rows = await response.json();
-
-  // Zelfde vorm als eerst in src/data/employeeRoles.js,
-  // zodat de rest van de code niet hoeft te veranderen.
-  return rows.map((row) => ({
-    id: row.job_role_id,
-    name: row.name,
-    description: row.description ?? "",
-    defaultSkills: row.skills.map((skill) => skill.skill_id),
-  }));
+  return rows.map(roleFromDatabase);
 }
 
 // GET: haalt alle skills op.
@@ -189,4 +190,37 @@ export async function updateSkill(skillId, name) {
 export async function deactivateSkill(skillId) {
   const row = await sendJson("PATCH", `${API_URL}/skills/${skillId}`, { is_active: false });
   return skillFromDatabase(row);
+}
+
+// POST: geeft een medewerker een rol.
+// De backend kopieert dan ook de standaard skills van die rol naar de medewerker.
+// Let op: de backend wil het database-nummer (databaseId), niet "EMP001".
+export async function addEmployeeToRole(employeeDatabaseId, roleId) {
+  await sendJson("POST", `${API_URL}/employees/${employeeDatabaseId}/job-roles`, {
+    job_role_id: roleId,
+  });
+}
+
+// PUT: vervangt de standaard skills van een rol door een nieuwe lijst.
+// Je stuurt dus altijd de hele lijst mee, niet alleen wat er verandert.
+// Let op: deze route moet Alex nog bouwen in de backend.
+export async function updateJobRoleSkills(roleId, skillIds) {
+  const row = await sendJson("PUT", `${API_URL}/job-roles/${roleId}/skills`, {
+    skills: skillIds,
+  });
+  return roleFromDatabase(row);
+}
+
+// DELETE: haalt een rol weg bij een medewerker.
+// Let op: deze route moet Alex nog bouwen in de backend.
+export async function removeEmployeeFromRole(employeeDatabaseId, roleId) {
+  const response = await fetch(`${API_URL}/employees/${employeeDatabaseId}/job-roles/${roleId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    // De backend stuurt meestal { error: "..." }; lukt dat niet, een eigen melding.
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data.error || "De rol kon niet worden weggehaald.");
+  }
 }
