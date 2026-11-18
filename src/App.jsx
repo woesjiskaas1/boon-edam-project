@@ -13,6 +13,7 @@ import Role from "./pages/Role";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Skills from "./pages/Skills";
+import Certificates from "./pages/Certificates";
 
 import ImportEmployees from "./pages/ImportEmployees";
 
@@ -21,6 +22,8 @@ import Register from "./pages/Register";
 
 import AddEmployee from "./pages/AddEmployee";
 import exampleSkills from "./data/skills";
+import exampleCertificates from "./data/certificates";
+import { getCertificates } from "./services/certificateService";
 
 import {
   getEmployees,
@@ -51,6 +54,8 @@ function App() {
   const [employeesError, setEmployeesError] = useState("");
   const [jobRoles, setJobRoles] = useState([]);
   const [skills, setSkills] = useState([]);
+  const [certificates, setCertificates] = useState([]);
+  const [certificatesError, setCertificatesError] = useState("");
   // Met navigate ga je in de code naar een andere URL.
   const navigate = useNavigate();
 
@@ -70,6 +75,13 @@ function App() {
       .catch((error) => {
         setSkills(exampleSkills);
         setEmployeesError(error.message);
+      });
+
+    getCertificates()
+      .then((loadedCertificates) => setCertificates(loadedCertificates.length > 0 ? loadedCertificates : exampleCertificates))
+      .catch(() => {
+        setCertificates(exampleCertificates);
+        setCertificatesError("De certificaten konden niet worden opgehaald.");
       });
   }, []);
 
@@ -150,6 +162,20 @@ function App() {
       })
     );
   };
+
+  // Certificaten (Senn): nog voorbeelddata, niet in de database.
+  const handleSaveCertificate = (certificate) => {
+    setCertificates((current) =>
+      certificate.id
+        ? current.map((item) => item.id === certificate.id ? certificate : item)
+        : [...current, { ...certificate, id: `certificate-${crypto.randomUUID()}` }]
+    );
+  };
+
+  const handleDeleteCertificate = (certificateId) => {
+    setCertificates((current) => current.filter((certificate) => certificate.id !== certificateId));
+  };
+
 
   // Slaat een nieuwe medewerker op in de database
   // en zet hem daarna achteraan in de lijst.
@@ -346,6 +372,17 @@ function App() {
                   employees={employees}
                   onSaveSkill={handleSaveSkill}
                   onDeleteSkill={handleDeleteSkill}
+                />
+              }
+            />
+            <Route
+              path="/certificaten"
+              element={
+                <Certificates
+                  certificates={certificates}
+                  error={certificatesError}
+                  onSaveCertificate={handleSaveCertificate}
+                  onDeleteCertificate={handleDeleteCertificate}
                 />
               }
             />

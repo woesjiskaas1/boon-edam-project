@@ -103,13 +103,16 @@ function Dashboard({ currentUser, employees }) {
           <p className="dashboard-eyebrow">SNEL NAAR</p>
           <h2>Beheer je portaal</h2>
           <p className="dashboard-quick-description">
-            Bekijk rollen en vaardigheden of pas de portaalinstellingen aan.
+            Bekijk rollen, vaardigheden en certificaten of pas de portaalinstellingen aan.
           </p>
           <Link className="dashboard-quick-link" to="/rollen">
             <span>Rollen beheren</span><span aria-hidden="true">→</span>
           </Link>
           <Link className="dashboard-quick-link" to="/skills">
             <span>Skills bekijken</span><span aria-hidden="true">→</span>
+          </Link>
+          <Link className="dashboard-quick-link" to="/certificaten">
+            <span>Certificaten bekijken</span><span aria-hidden="true">→</span>
           </Link>
           <Link className="dashboard-quick-link" to="/instellingen">
             <span>Instellingen openen</span><span aria-hidden="true">→</span>

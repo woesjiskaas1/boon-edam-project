@@ -6,6 +6,7 @@ const navigationItems = [
   { path: "/medewerkers", label: "Medewerkers", icon: "♙" },
   { path: "/rollen", label: "Rollen", icon: "◫" },
   { path: "/skills", label: "Skills", icon: "★" },
+  { path: "/certificaten", label: "Certificaten", icon: "▤" },
   { path: "/instellingen", label: "Instellingen", icon: "⚙" },
 ];
 
