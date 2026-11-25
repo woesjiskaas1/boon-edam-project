@@ -1,6 +1,8 @@
+import Button from "../atoms/Button";
+import Input from "../atoms/Input";
+
 // Een zoekveld met "chips": de gekozen items staan als chip in het veld,
 // en onder het veld staat een lijst met items die je nog kunt kiezen.
-// Voor nu alleen het uiterlijk: zoeken, kiezen en verwijderen komt later.
 function TagPicker({
   label,
   hint,
@@ -23,19 +25,18 @@ function TagPicker({
           {selectedItems.map((item) => (
             <li key={item.id} className="tag-picker-chip">
               {item.name}
-              <button
-                type="button"
+              <Button
                 className="tag-picker-chip-remove"
                 aria-label={`${item.name} verwijderen`}
                 onClick={() => onRemove?.(item.id)}
               >
                 ×
-              </button>
+              </Button>
             </li>
           ))}
         </ul>
 
-        <input
+        <Input
           type="text"
           className="tag-picker-input"
           placeholder={placeholder}
@@ -47,9 +48,9 @@ function TagPicker({
             {options.map((item) => (
               !selectedIds.has(item.id) && (
                 <li key={item.id} className="tag-picker-option">
-                  <button type="button" onClick={() => onSelect?.(item.id)}>
+                  <Button onClick={() => onSelect?.(item.id)}>
                     {item.name}
-                  </button>
+                  </Button>
                 </li>
               )
             ))}

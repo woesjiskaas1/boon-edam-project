@@ -1,7 +1,7 @@
 # Boon Edam-medewerkersportaal
 
-HR-portaal voor Boon Edam om medewerkers, rollen en skills te bekijken.
-De React-frontend haalt de catalogi en medewerkers op via een
+HR-portaal voor Boon Edam om medewerkers, rollen, skills en certificaten te
+bekijken. De React-frontend haalt de catalogi en medewerkers op via een
 PHP-API met Slim en MySQL. Nieuwe medewerkers en hun rol- en skillkoppelingen
 worden opgeslagen in MySQL. Inloggen en registreren werken met demoaccounts
 in het geheugen van de frontend.
@@ -60,8 +60,8 @@ bijvoorbeeld `http://localhost:3333/employees`. Zie
 [vite.config.js](vite.config.js).
 
 Zonder PHP en MySQL kun je inloggen en de demo-interface openen. De lijsten
-met medewerkers en rollen blijven dan leeg. Skills hebben voorbeeldgegevens
-voor als de API leeg of onbereikbaar is.
+met medewerkers en rollen blijven dan leeg. Skills en certificaten hebben
+voorbeeldgegevens voor als hun API leeg of onbereikbaar is.
 
 ## De demo gebruiken
 
@@ -138,6 +138,19 @@ skillcatalogus. Daardoor worden veranderingen aan skillnamen, categorieën
 en ESCO-koppelingen nog niet opgeslagen. De API kan bestaande skills wel aan
 medewerkers koppelen en die koppelingen verwijderen.
 
+### Certificaten
+
+Open **Certificaten** om certificaattypen te bekijken, te filteren op
+categorie en te sorteren op naam of het aantal unieke gekoppelde medewerkers.
+Het overzicht leest de typen en koppelingen via de API. Bij ontbrekende
+gegevens toont het fictieve voorbeelden.
+
+In de kaartweergave opent de naam een detailvenster.
+Voor herkende certificaten bevat het venster uitleg en bronlinks. Het aantal
+medewerkers opent de lijst met koppelingen. Toevoegen, bewerken en verwijderen
+werkt binnen de sessie. Bij verversen laadt het portaal de begingegevens
+opnieuw.
+
 ## Routes
 
 | Route | Scherm en werking |
@@ -153,6 +166,7 @@ medewerkers koppelen en die koppelingen verwijderen.
 | `/rollen/nieuw` | Formulier met skillkeuze en ESCO-beroepszoeker. Opslag volgt nog. |
 | `/rollen/:roleId` | Rol, standaardskills, statistieken en filterbare medewerkerslijst. |
 | `/skills` | Skilloverzicht met categoriefilter, sortering en ESCO-suggesties. |
+| `/certificaten` | Certificaattypen en aantallen gekoppelde medewerkers. |
 | `/instellingen` | Overzicht van portaalgebruikers, toegangsrollen en rechten. |
 | `/profiel` | Profielpagina met vaste voorbeeldgegevens. |
 
@@ -216,17 +230,26 @@ src/data/            Voorbeelddata, landen, vestigingen en portaalrollen
 src/services/        Verzoeken naar PHP en ESCO
 src/utils/           Sortering, zoeklogica en gegevensverwerking
 src/styles/          Gedeelde stijlen en stijlen per scherm
-src/App.jsx          Routes, portaalindeling, status en acties
+src/App.jsx          Routes, applicatiestatus en API-acties
 tests/               Tests met de ingebouwde Node.js-testrunner
 ```
 
 De componentmappen volgen [Atomic Design van Brad Frost](https://atomicdesign.bradfrost.com/chapter-2/).
-Een atom zoals `Button` is een basisbouwsteen. Een molecule zoals
-`EscoAutocomplete` of `TagPicker` combineert bouwstenen voor één taak.
-Organisms zoals `RolesTable` en `SkillFormDialog` vormen grotere onderdelen
-van een pagina. Templates bieden gedeelde indelingen. In de huidige code
-bouwt `App.jsx` de portaalindeling rechtstreeks op met `TopNavbar` en
-`Sidebar`, en een aantal formulieren staat nog rechtstreeks in de pagina's.
+
+| Laag | Taak | Voorbeelden |
+| --- | --- | --- |
+| Atoms | Basisbouwstenen | `Button`, `Input`, `Select`, `Avatar`, `Logo` |
+| Molecules | Bouwstenen combineren voor één taak | `FormField`, `NavItem`, `TagPicker`, `CertificateCard` |
+| Organisms | Een formulier, tabel of ander zelfstandig schermonderdeel | `EmployeeForm`, `RolesTable`, `SkillsTable`, `CertificatesGrid` |
+| Templates | Gedeelde indeling voor meerdere pagina’s | `PortalLayout` voor het portaal en `AuthLayout` voor inloggen en registreren |
+| Pages | Onderdelen samenstellen met de gegevens en acties voor een route | `Employees`, `AddEmployee`, `Skills`, `Certificates` |
+
+`App.jsx` beheert de routes, applicatiestatus en API-acties. `PortalLayout`
+plaatst de bovenbalk, het zijmenu en de pagina-inhoud. Pagina’s geven hun
+gegevens en acties door aan de onderdelen die ze samenstellen. Zo gebruikt
+`AddEmployee` het `EmployeeForm` met onder meer `FormField` en `TagPicker`.
+Een component kan andere UI-componenten uit dezelfde of een lagere laag
+gebruiken. Gedeelde formuliervelden gebruiken `src/styles/forms.css`.
 
 ## Scripts en controles
 
@@ -234,7 +257,7 @@ bouwt `App.jsx` de portaalindeling rechtstreeks op met `TopNavbar` en
 | --- | --- |
 | `npm run dev` | Start Vite met automatisch verversen. |
 | `npm run lint` | Controleert de code met Oxlint. |
-| `npm test` | Draait tests voor skillsortering en ESCO-zoeken. |
+| `npm test` | Draait tests voor sortering, ESCO-zoeken en certificaten. |
 | `npm run build` | Maakt een frontendbuild in `dist/`. |
 | `npm run preview` | Opent de bestaande build lokaal, standaard op poort 4173. |
 | `npm run esco:sync` | Ververst beide lokale ESCO-catalogi via internet. |
@@ -249,5 +272,5 @@ eigen route naar de PHP-backend nodig.
 
 De demo is bedoeld voor lokaal gebruik met testgegevens. Voor gebruik met
 echte accounts en medewerkersgegevens zijn onder meer serverauthenticatie
-en autorisatie nodig. Medewerkers bewerken, verwijderen en importeren
-zijn nog niet beschikbaar. Nieuwe rollen opslaan moet nog worden aangesloten.
+en autorisatie nodig. Medewerkers bewerken of verwijderen, importeren,
+rollen opslaan en certificaten blijvend wijzigen zijn nog niet beschikbaar.

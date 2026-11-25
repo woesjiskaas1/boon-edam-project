@@ -12,7 +12,8 @@
 }
 
 .form-field input,
-.form-field select {
+.form-field select,
+.form-field textarea {
   padding: 10px 12px;
   font: inherit;
   font-weight: 400;
@@ -20,6 +21,12 @@
   background: #ffffff;
   border: 1px solid #d5dfda;
   border-radius: 8px;
+}
+
+.form-field select:disabled {
+  color: #9aa6a0;
+  background: #f5f7f6;
+  cursor: not-allowed;
 }
 
 .form-field input:focus,

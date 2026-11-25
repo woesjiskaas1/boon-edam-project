@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router";
-import TopNavbar from "./components/organisms/TopNavbar";
-import Sidebar from "./components/organisms/Sidebar";
+import PortalLayout from "./templates/PortalLayout";
 
 import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
@@ -13,6 +12,7 @@ import Role from "./pages/Role";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Skills from "./pages/Skills";
+import Certificates from "./pages/Certificates";
 
 import ImportEmployees from "./pages/ImportEmployees";
 
@@ -21,6 +21,9 @@ import Register from "./pages/Register";
 
 import AddEmployee from "./pages/AddEmployee";
 import exampleSkills from "./data/skills";
+import exampleCertificates from "./data/certificates";
+import exampleEmployees from "./data/employees";
+import { getCertificates } from "./services/certificateService";
 
 import {
   getEmployees,
@@ -48,6 +51,9 @@ function App() {
   const [employeesError, setEmployeesError] = useState("");
   const [jobRoles, setJobRoles] = useState([]);
   const [skills, setSkills] = useState([]);
+  const [certificates, setCertificates] = useState([]);
+  const [certificatesNotice, setCertificatesNotice] = useState("");
+  const [usesExampleCertificates, setUsesExampleCertificates] = useState(false);
   // Met navigate ga je in de code naar een andere URL.
   const navigate = useNavigate();
 
@@ -67,6 +73,23 @@ function App() {
       .catch((error) => {
         setSkills(exampleSkills);
         setEmployeesError(error.message);
+      });
+
+    const exampleNotice = "Je ziet voorbeeldcertificaten met fictieve medewerkeraantallen.";
+    getCertificates()
+      .then((loadedCertificates) => {
+        if (loadedCertificates.length > 0) {
+          setCertificates(loadedCertificates);
+        } else {
+          setCertificates(exampleCertificates);
+          setUsesExampleCertificates(true);
+          setCertificatesNotice(exampleNotice);
+        }
+      })
+      .catch(() => {
+        setCertificates(exampleCertificates);
+        setUsesExampleCertificates(true);
+        setCertificatesNotice(`De certificaten konden niet worden opgehaald. ${exampleNotice}`);
       });
   }, []);
 
@@ -102,6 +125,19 @@ function App() {
       setEmployeesError(error.message);
     }
   };
+
+  const handleSaveCertificate = (certificate) => {
+    setCertificates((current) =>
+      certificate.id
+        ? current.map((item) => item.id === certificate.id ? certificate : item)
+        : [...current, { ...certificate, id: `certificate-${crypto.randomUUID()}` }]
+    );
+  };
+
+  const handleDeleteCertificate = (certificateId) => {
+    setCertificates((current) => current.filter((certificate) => certificate.id !== certificateId));
+  };
+
 
   // Slaat een nieuwe medewerker op in de database
   // en zet hem daarna achteraan in de lijst.
@@ -191,127 +227,128 @@ function App() {
   }
 
   return (
-    <div className="app-layout">
-      <TopNavbar
-        currentUser={currentUser}
-        onNavigate={navigate}
-        onLogout={handleLogout}
-      />
-
-      <div className="app-body">
-        <Sidebar
-          isCollapsed={isSidebarCollapsed}
-          onToggle={() =>
-            setIsSidebarCollapsed((collapsed) => !collapsed)
+    <PortalLayout
+      currentUser={currentUser}
+      onNavigate={navigate}
+      onLogout={handleLogout}
+      isSidebarCollapsed={isSidebarCollapsed}
+      onSidebarToggle={() => setIsSidebarCollapsed((collapsed) => !collapsed)}
+      notice={employeesError && (
+        <p className="auth-error" role="alert">
+          {employeesError} Draait de backend?
+        </p>
+      )}
+    >
+      <Routes>
+        <Route
+          path="/"
+          element={<Dashboard currentUser={currentUser} employees={employees} />}
+        />
+        <Route
+          path="/medewerkers"
+          element={
+            <Employees
+              employees={employees}
+              onAddEmployee={() => navigate("/medewerkers/toevoegen")}
+              onImportEmployees={() => navigate("/medewerkers/importeren")}
+              onSelectEmployee={(employeeId) => navigate(`/medewerkers/${employeeId}`)}
+            />
           }
         />
+        <Route
+          path="/medewerkers/toevoegen"
+          element={
+            <AddEmployee
+              employeeRoles={jobRoles}
+              skills={skills}
+              onSave={handleAddEmployee}
+              onCancel={() => navigate("/medewerkers")}
+            />
+          }
+        />
+        <Route
+          path="/medewerkers/importeren"
+          element={
+            <ImportEmployees onCancel={() => navigate("/medewerkers")} />
+          }
+        />
+        <Route
+          path="/medewerkers/:employeeId"
+          element={
+            <Employee
+              employees={employees}
+              skills={skills}
+              onBack={() => navigate("/medewerkers")}
+            />
+          }
+        />
+        <Route
+          path="/rollen"
+          element={
+            <Roles
+              jobRoles={jobRoles}
+              skills={skills}
+              employees={employees}
+              onAddRole={() => navigate("/rollen/nieuw")}
+            />
+          }
+        />
+        <Route
+          path="/rollen/nieuw"
+          element={
+            <AddRole
+              skills={skills}
+              onCancel={() => navigate("/rollen")}
+            />
+          }
+        />
+        <Route
+          path="/rollen/:roleId"
+          element={
+            <Role
+              jobRoles={jobRoles}
+              skills={skills}
+              employees={employees}
+              onBack={() => navigate("/rollen")}
+            />
+          }
+        />
+        <Route
+          path="/skills"
+          element={
+            <Skills
+              skills={skills}
+              employees={employees}
+              onSaveSkill={handleSaveSkill}
+              onDeleteSkill={handleDeleteSkill}
+            />
+          }
+        />
+        <Route
+          path="/certificaten"
+          element={
+            <Certificates
+              certificates={certificates}
+              employees={usesExampleCertificates ? exampleEmployees : employees}
+              isExample={usesExampleCertificates}
+              notice={certificatesNotice}
+              onSaveCertificate={handleSaveCertificate}
+              onDeleteCertificate={handleDeleteCertificate}
+            />
+          }
+        />
+        <Route
+          path="/instellingen"
+          element={
+            <Settings currentUser={currentUser} portalUsers={portalUsers} />
+          }
+        />
+        <Route path="/profiel" element={<Profile />} />
 
-        <main className={`main-content${isSidebarCollapsed ? " sidebar-collapsed" : ""}`}>
-          {employeesError && (
-            <p className="auth-error" role="alert">
-              {employeesError} Draait de backend?
-            </p>
-          )}
-          <Routes>
-            <Route
-              path="/"
-              element={<Dashboard currentUser={currentUser} employees={employees} />}
-            />
-            <Route
-              path="/medewerkers"
-              element={
-                <Employees
-                  employees={employees}
-                  onAddEmployee={() => navigate("/medewerkers/toevoegen")}
-                  onImportEmployees={() => navigate("/medewerkers/importeren")}
-                  onSelectEmployee={(employeeId) => navigate(`/medewerkers/${employeeId}`)}
-                />
-              }
-            />
-            <Route
-              path="/medewerkers/toevoegen"
-              element={
-                <AddEmployee
-                  employeeRoles={jobRoles}
-                  skills={skills}
-                  onSave={handleAddEmployee}
-                  onCancel={() => navigate("/medewerkers")}
-                />
-              }
-            />
-            <Route
-              path="/medewerkers/importeren"
-              element={
-                <ImportEmployees onCancel={() => navigate("/medewerkers")} />
-              }
-            />
-            <Route
-              path="/medewerkers/:employeeId"
-              element={
-                <Employee
-                  employees={employees}
-                  skills={skills}
-                  onBack={() => navigate("/medewerkers")}
-                />
-              }
-            />
-            <Route
-              path="/rollen"
-
-              element={
-                <Roles
-                  jobRoles={jobRoles}
-                  skills={skills}
-                  employees={employees}
-                  onAddRole={() => navigate("/rollen/nieuw")}
-                />
-              }
-/>
-            <Route
-              path="/rollen/nieuw"
-              element={
-                <AddRole
-                  skills={skills}
-                  onCancel={() => navigate("/rollen")}
-                />
-              }
-            />
-            <Route
-              path="/rollen/:roleId"
-              element={
-                <Role
-                  jobRoles={jobRoles}
-                  skills={skills}
-                  employees={employees}
-                  onBack={() => navigate("/rollen")}
-                />
-              }
-            />
-            <Route
-              path="/skills"
-              element={
-                <Skills
-                  skills={skills}
-                  employees={employees}
-                  onSaveSkill={handleSaveSkill}
-                  onDeleteSkill={handleDeleteSkill}
-                />
-              }
-            />
-            <Route
-              path="/instellingen"
-              element={
-                <Settings currentUser={currentUser} portalUsers={portalUsers} />
-              }
-            />
-            <Route path="/profiel" element={<Profile />} />
-
-            {/* Al ingelogd of onbekende URL: naar het dashboard */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-      </div>
-    </div>
+        {/* Al ingelogd of onbekende URL: naar het dashboard */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </PortalLayout>
   );
 }
 

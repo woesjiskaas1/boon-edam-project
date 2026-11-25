@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Button from "../atoms/Button";
+import Input from "../atoms/Input";
 import { searchEscoOccupations, getEscoOccupation } from "../../services/escoService";
 
 // Je zoekt een beroep, en met "Kiezen" haalt het paneel de details op
@@ -72,18 +73,17 @@ function EscoSearch({ onSelect, onClose }) {
             en de essentiële skills worden dan voor je ingevuld.
           </p>
         </div>
-        <button
-          type="button"
+        <Button
           className="esco-search-close"
           onClick={onClose}
           aria-label="ESCO-zoeken sluiten"
         >
           ×
-        </button>
+        </Button>
       </div>
 
       <form className="esco-search-bar" onSubmit={handleSearch}>
-        <input
+        <Input
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}

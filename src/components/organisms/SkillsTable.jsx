@@ -6,15 +6,18 @@ import { sortSkills, updateSkillSort } from "../../utils/skillSorting";
 export default function SkillsTable({
   skills,
   allSkills,
-  employees,
+  employees = [],
   categories,
   categoryFilter,
   onCategoryChange,
   onEdit,
+  nameLabel = "Vaardigheid",
+  collectionLabel = "Vaardigheden",
+  employeeCounts: providedEmployeeCounts,
   emptyMessage = "Er zijn nog geen vaardigheden. Voeg je eerste skill toe.",
 }) {
   const [sorts, setSorts] = useState([{ column: "name", direction: "ascending" }]);
-  const employeeCounts = new Map(skills.map((skill) => [
+  const employeeCounts = providedEmployeeCounts ?? new Map(skills.map((skill) => [
     skill.id,
     employees.filter((employee) => employee.skills?.includes(skill.id)).length,
   ]));
@@ -33,7 +36,7 @@ export default function SkillsTable({
     const direction = sort.column === "name"
       ? (sort.direction === "ascending" ? "A–Z" : "Z–A")
       : (sort.direction === "ascending" ? "laag naar hoog" : "hoog naar laag");
-    return `${index === 0 ? "Eerst" : "daarna bij gelijke waarden"} op ${sort.column === "name" ? "vaardigheid" : "aantal medewerkers"} (${direction})`;
+    return `${index === 0 ? "Eerst" : "daarna bij gelijke waarden"} op ${sort.column === "name" ? nameLabel.toLocaleLowerCase("nl") : "aantal medewerkers"} (${direction})`;
   }).join(", ");
 
   return (
@@ -41,8 +44,8 @@ export default function SkillsTable({
       <div className="employees-table-container">
         <table className="employees-table skills-table">
           <caption className="skills-visually-hidden">
-            Vaardigheden met categorie en het aantal gekoppelde medewerkers.
-            Klik op Vaardigheid of Medewerkers om de richting te wisselen en die kolom voorrang te geven.
+            {collectionLabel} met categorie en het aantal gekoppelde medewerkers.
+            Klik op {nameLabel} of Medewerkers om de richting te wisselen en die kolom voorrang te geven.
             De andere sortering blijft actief bij gelijke waarden.
           </caption>
           <thead>
@@ -52,10 +55,10 @@ export default function SkillsTable({
                   className={`skills-sort-trigger${nameSort ? " is-active" : ""}`}
                   onClick={() => handleSort("name")}
                   aria-label={nameSort?.direction === "ascending"
-                    ? "Sorteer eerst op vaardigheid, van Z tot A"
-                    : "Sorteer eerst op vaardigheid, van A tot Z"}
+                    ? `Sorteer eerst op ${nameLabel.toLocaleLowerCase("nl")}, van Z tot A`
+                    : `Sorteer eerst op ${nameLabel.toLocaleLowerCase("nl")}, van A tot Z`}
                 >
-                  <span className="skills-sort-label">Vaardigheid</span>
+                  <span className="skills-sort-label">{nameLabel}</span>
                   <span className="skills-sort-arrow" aria-hidden="true">{sortArrow(nameSort)}</span>
                   {sorts.length > 1 && nameSort && (
                     <span className="skills-sort-priority" aria-hidden="true">
