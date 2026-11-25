@@ -1,5 +1,7 @@
 import { useState } from "react";
 import Button from "../components/atoms/Button";
+import Input from "../components/atoms/Input";
+import Select from "../components/atoms/Select";
 import RolesTable from "../components/organisms/RolesTable";
 import "../styles/roles.css";
 
@@ -52,7 +54,7 @@ function Roles({ jobRoles, skills, employees, onAddRole }) {
       </div>
 
       <div className="roles-tools">
-        <input
+        <Input
           type="search"
           className="roles-search"
           value={search}
@@ -60,7 +62,7 @@ function Roles({ jobRoles, skills, employees, onAddRole }) {
           placeholder="Zoek een rol..."
           aria-label="Zoek een rol"
         />
-        <select
+        <Select
           className="roles-sort"
           value={sortBy}
           onChange={(event) => setSortBy(event.target.value)}
@@ -68,7 +70,7 @@ function Roles({ jobRoles, skills, employees, onAddRole }) {
         >
           <option value="name">Sorteren: naam (A–Z)</option>
           <option value="employees">Sorteren: meeste medewerkers</option>
-        </select>
+        </Select>
       </div>
 
       <RolesTable

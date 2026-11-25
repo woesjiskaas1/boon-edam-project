@@ -25,10 +25,13 @@ export default function EmployeeDetails({ employee, skills }) {
               <dt>Naam</dt>
               <dd>{employee.name}</dd>
             </div>
-
             <div>
               <dt>Land</dt>
               <dd><CountryLabel country={employee.country} /></dd>
+            </div>
+            <div>
+              <dt>Vestiging</dt>
+              <dd>{employee.location || "Niet ingevuld"}</dd>
             </div>
           </dl>
         </section>

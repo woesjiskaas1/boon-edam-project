@@ -1,123 +1,74 @@
 # Boon Edam-medewerkersportaal
 
-Een HR-portaal voor het bekijken en toevoegen van medewerkers, hun functies en
-vaardigheden. De frontend is gebouwd met React, JavaScript en Vite en gebruikt
-[Atomic Design van Brad Frost](https://atomicdesign.bradfrost.com/chapter-2/)
-als uitgangspunt voor de componentstructuur. Een aparte PHP-backend met Slim
-en MySQL staat in `backend/`.
-
-De huidige versie is een frontenddemo met voorbeeldgegevens. Inloggen,
-registreren op uitnodiging en medewerkers toevoegen werken binnen de lopende
-sessie. De PHP-backend biedt leesendpoints voor de database, maar de
-React-schermen gebruiken momenteel nog de lokale voorbeeldgegevens.
+HR-portaal voor Boon Edam om medewerkers, rollen, skills en certificaten te
+bekijken. De React-frontend haalt de catalogi en medewerkers op via een
+PHP-API met Slim en MySQL. Nieuwe medewerkers en hun rol- en skillkoppelingen
+worden opgeslagen in MySQL. Inloggen en registreren werken met demoaccounts
+in het geheugen van de frontend.
 
 ## Lokaal starten
 
-Benodigdheden:
+Gebruik Git, Node.js **22.22.0 of nieuwer** en npm. Voor de API heb je ook
+**PHP 8.5** met `pdo_mysql` en een draaiende MySQL-server nodig. De PHP-versie
+staat in de [backend-README](backend/README.md). De minimale Node-versie volgt
+uit de versie van React Router in [package-lock.json](package-lock.json).
 
-- Node.js **22.22.0 of nieuwer**, vereist door de huidige React Router-versie.
-- npm, meegeleverd met Node.js.
-- Git om de repository te klonen.
+Kloon het project als je nog geen lokale kopie hebt.
 
 ```bash
 git clone https://github.com/woesjiskaas1/boon-edam-project.git
 cd boon-edam-project
+```
+
+### Backend
+
+Start MySQL en controleer de lokale verbindingsinstellingen in
+[db.php](backend/src/config/db.php). Het standaardschema heet `test_db`.
+De benodigde PHP-dependencies staan al in `backend/vendor/`.
+
+Start de PHP-server vanuit de hoofdmap in een aparte terminal.
+
+```bash
+cd backend/public
+php -S localhost:3333 index.php
+```
+
+De eerste databaseaanroep kan de database en de tabellen aanmaken.
+Bij een lege medewerkerstabel worden voorbeeldmedewerkers geladen. Bij
+een lege roltabel worden de voorbeeldrollen en hun standaardskills geladen.
+De databasegebruiker moet de database, tabellen en gegevens kunnen aanmaken
+en wijzigen. Zie het [schema](backend/src/config/database.sql) en de
+[voorbeeldrollen](backend/src/config/job-role-seed.sql).
+
+Open [localhost:3333](http://localhost:3333) voor een JSON-testantwoord.
+[localhost:3333/employees](http://localhost:3333/employees) controleert ook
+de verbinding met MySQL.
+
+### Frontend
+
+Gebruik in een tweede terminal vanuit de hoofdmap deze commando’s.
+
+```bash
 npm ci
 npm run dev
 ```
 
-Open [localhost:5173](http://localhost:5173). Als die poort bezet is, toont Vite
-in de terminal op welke URL de app beschikbaar is.
+Open [localhost:5173](http://localhost:5173) of gebruik de URL die Vite in de
+terminal toont. Vite stuurt `/api/...` door naar `http://localhost:3333` en
+verwijdert het voorvoegsel `/api`. Een verzoek naar `/api/employees` wordt
+bijvoorbeeld `http://localhost:3333/employees`. Zie
+[vite.config.js](vite.config.js).
 
-`npm ci` installeert de versies uit `package-lock.json`. Voor alleen de
-frontenddemo zijn geen database, API-sleutels of `.env`-bestand nodig.
+Zonder PHP en MySQL kun je inloggen en de demo-interface openen. De lijsten
+met medewerkers en rollen blijven dan leeg. Skills en certificaten hebben
+voorbeeldgegevens voor als hun API leeg of onbereikbaar is.
 
-## Frontend en backend samen starten
+## De demo gebruiken
 
-Gebruik twee aparte terminals. Naast de frontendbenodigdheden heb je PHP 8.5,
-Composer en een draaiende MySQL-server nodig. PHP moet de extensie `pdo_mysql`
-hebben. MySQL kan bijvoorbeeld via XAMPP worden gestart; controleer de versie
-van de PHP-installatie die je via de terminal gebruikt.
+### Inloggen en registreren
 
-### Backend instellen en starten
-
-1. Controleer de verbindingsgegevens in
-   [backend/src/config/db.php](backend/src/config/db.php) en pas ze aan jouw
-   lokale MySQL-installatie aan.
-2. Start MySQL. De verbinding gebruikt standaard de database `test_db`.
-3. Installeer de PHP-dependencies en start de server vanuit de projectmap:
-
-```bash
-cd backend
-composer install
-cd public
-php -S localhost:3333 index.php
-```
-
-De databasecode maakt bij een databaseaanroep de database en ontbrekende
-tabellen aan met [database.sql](backend/src/config/database.sql). Als de tabel
-`employee` leeg is, worden ook de voorbeeldgegevens toegevoegd. De functie- en
-skillcatalogus wordt aangemaakt vanuit
-[job-role-seed.sql](backend/src/config/job-role-seed.sql) als er nog geen
-functies bestaan. De MySQL-gebruiker moet dus rechten hebben om de database en
-tabellen aan te maken en te wijzigen.
-
-De backend is bereikbaar op [localhost:3333](http://localhost:3333). De route
-`/` geeft een eenvoudig JSON-testantwoord; voor `/employees` is een werkende
-databaseverbinding nodig. Zie ook [backend/README.md](backend/README.md).
-
-### Frontend in de tweede terminal
-
-Voer vanuit de hoofdmap uit:
-
-```bash
-npm run dev
-```
-
-[vite.config.js](vite.config.js) stuurt ontwikkelverzoeken naar `/api/...`
-door naar `http://localhost:3333`, waarbij `/api` uit het pad wordt verwijderd.
-Zo gaat `fetch("/api/employees")` naar `http://localhost:3333/employees`.
-De React-pagina's halen medewerkers, functies en skills via deze API op.
-Nieuwe medewerkers en hun functie- en skillkoppelingen worden in MySQL
-opgeslagen.
-
-### Beschikbare API-endpoints
-
-De bestaande leesendpoints gebruiken `GET` en staan in
-[backend/public/index.php](backend/public/index.php). De paden hieronder zijn
-de rechtstreekse backendpaden. Zet er `/api` voor bij gebruik via de
-Vite-ontwikkelserver.
-
-| Pad | Inhoud |
-| --- | --- |
-| `/` | Eenvoudig testantwoord met een naam. |
-| `/name/{userInput}` | Testantwoord met de opgegeven naam. |
-| `/first-names` | Voornamen van medewerkers. |
-| `/employees` | Alle medewerkers uit de database. |
-| `/employees/{id}` | Medewerker met een numeriek database-ID. |
-| `/certificates` en `/certificates/{name}` | Certificaattypen, eventueel geselecteerd op naam. |
-| `/employee_certificates` en `/employee_certificates/{id}` | Certificaten van alle medewerkers of één medewerker. |
-| `/employee_training` en `/employee_training/{id}` | Trainingen van alle medewerkers of één medewerker. |
-| `/employee_skills` en `/employee_skills/{id}` | Skills van alle medewerkers of één medewerker. |
-| `/employee_files` en `/employee_files/{id}` | Bestanden van alle medewerkers of één medewerker. |
-
-De website gebruikt ook `GET /employee-job-roles`, `GET /job-roles` en
-`GET /skills`. Medewerkers toevoegen gebruikt `POST /employees`,
-`POST /employees/{id}/job-roles`, `POST /employees/{id}/skills` en
-`DELETE /employees/{id}/skills/{skillId}`. Het koppelen van een functie voegt
-de standaard skills van die functie toe. Bestaande voorbeeldmedewerkers
-krijgen niet automatisch een functie toegewezen.
-
-De `{id}`-parameters zijn numerieke database-ID's, bijvoorbeeld `1`. Ze
-verschillen van de demo-ID's in de frontend, zoals `EMP001`. De backend heeft
-nog geen endpoints voor het wijzigen of verwijderen van medewerkers.
-
-## Demo gebruiken
-
-### Inloggen
-
-Deze voorbeeldaccounts staan in [portalUsers.js](src/data/portalUsers.js).
-Het wachtwoord voor alle drie is `Welkom123`.
+De volgende demoaccounts gebruiken hetzelfde wachtwoord, `Welkom123`. Zie
+[portalUsers.js](src/data/portalUsers.js).
 
 | Naam | E-mailadres | Toegangsrol |
 | --- | --- | --- |
@@ -125,328 +76,201 @@ Het wachtwoord voor alle drie is `Welkom123`.
 | Jane Doe | `jane.doe@boonedam.com` | Beheerder |
 | Jan de Vries | `jan.devries@boonedam.com` | Bewerker |
 
-Na inloggen opent het dashboard. Via het profielmenu rechtsboven kun je naar
-je profiel, instellingen of uitloggen. Het zijmenu kan worden ingeklapt.
+Na inloggen opent het dashboard. Het uitklapbare zijmenu bevat de
+hoofdonderdelen. Via het profielmenu kun je naar je profiel of instellingen
+en kun je uitloggen.
 
-### Registreren op uitnodiging
+Via **Registreren** kun je een lokaal demoaccount maken met
+`lisa.bakker@boonedam.com` (Bewerker) of `tom.smit@boonedam.com` (Lezer).
+Vul je naam in en kies een wachtwoord van minimaal acht tekens. Je wordt
+automatisch ingelogd en de uitnodiging verdwijnt voor de rest van de sessie.
+Bij verversen word je uitgelogd en vervallen nieuwe accounts. De uitnodigingen
+zijn dan opnieuw beschikbaar. Er wordt geen e-mail gestuurd.
 
-Open **Registreren** op het inlogscherm en gebruik een van deze
-voorbeeldadressen:
+### Medewerkers
 
-| E-mailadres | Toegangsrol na registratie |
+Open **Medewerkers** en klik op een naam voor de gegevens van die medewerker.
+Het overzicht bevat maximaal 50 medewerkers per pagina. Op de detailpagina
+zie je onder meer het medewerkersnummer, land, vestiging, rollen en e-mailadres.
+
+Kies **Medewerker toevoegen** om een medewerker op te slaan. Vul voornaam,
+achternaam, e-mailadres en land in en kies minstens één rol. Tussenvoegsel
+en een vestiging in het gekozen land zijn optioneel. Het formulier selecteert
+de gecombineerde standaardskills van de gekozen rollen. Je kunt vaardigheden
+toevoegen of weghalen voordat je opslaat. Na opslaan ga je terug naar het
+overzicht.
+
+Het portaal haalt na verversen medewerkers en hun rollen opnieuw op.
+De frontend leest de opgeslagen koppelingen tussen medewerkers en skills
+nog niet opnieuw in. Daardoor kunnen de skills op de detailpagina en de
+aantallen in het skilloverzicht onvolledig zijn.
+
+### Rollen
+
+De pagina **Rollen** toont de functiecatalogus uit MySQL. Zoek op naam of
+omschrijving en sorteer op naam of medewerkeraantal. Open een rol voor de
+omschrijving, standaardskills en gekoppelde medewerkers. De medewerkerslijst
+is doorzoekbaar op naam en nummer en heeft filters voor land en vestiging.
+
+Via **Rol toevoegen** kun je naam, omschrijving en standaardskills invullen.
+Met **Zoek in ESCO** kan een Nederlands beroepsprofiel die velden vooraf
+invullen, inclusief essentiële vaardigheden. Dit gebruikt de online ESCO-API.
+Het formulier is al beschikbaar. Opslaan van nieuwe rollen moet nog worden
+aangesloten.
+
+### Skills en ESCO
+
+In **Skills** kun je vaardigheden op categorie filteren en sorteren op naam
+en medewerkeraantal. De laatst gekozen sorteerkolom krijgt voorrang. De
+andere kolom bepaalt de volgorde bij gelijke waarden. Bij ontbrekende of
+lege API-gegevens toont het overzicht voorbeelden uit [skills.js](src/data/skills.js).
+
+Het skillformulier biedt suggesties voor namen en categorieën vanaf twee
+tekens. Je kunt zoeken met Nederlandse en Engelse termen, typefouten en
+categoriecodes. Gebruik de pijltjestoetsen en Enter voor een suggestie of
+voer zelf een naam in. De lokale lijsten bieden dezelfde zoekmogelijkheid
+bij verbindingsproblemen. Zie de [ESCO-API](https://esco.ec.europa.eu/en/use-esco/use-esco-services-api/esco-web-service-api),
+de [skillcatalogus](public/data/esco-skills.json) en de [categorielijst](public/data/esco-categories.json).
+
+De frontend heeft formulieren voor toevoegen, bewerken en verwijderen van
+skills. De PHP-backend heeft momenteel alleen een leesroute voor de
+skillcatalogus. Daardoor worden veranderingen aan skillnamen, categorieën
+en ESCO-koppelingen nog niet opgeslagen. De API kan bestaande skills wel aan
+medewerkers koppelen en die koppelingen verwijderen.
+
+### Certificaten
+
+Open **Certificaten** om certificaattypen te bekijken, te filteren op
+categorie en te sorteren op naam of het aantal unieke gekoppelde medewerkers.
+Het overzicht leest de typen en koppelingen via de API. Bij ontbrekende
+gegevens toont het fictieve voorbeelden.
+
+In de kaartweergave opent de naam een detailvenster.
+Voor herkende certificaten bevat het venster uitleg en bronlinks. Het aantal
+medewerkers opent de lijst met koppelingen. Toevoegen, bewerken en verwijderen
+werkt binnen de sessie. Bij verversen laadt het portaal de begingegevens
+opnieuw.
+
+## Routes
+
+| Route | Scherm en werking |
 | --- | --- |
-| `lisa.bakker@boonedam.com` | Bewerker |
-| `tom.smit@boonedam.com` | Lezer |
+| `/login` | Inloggen met een demoaccount. |
+| `/registreren` | Een demoaccount maken met een bestaande uitnodiging. |
+| `/` | Dashboard met begroeting, teamstatistieken, medewerkers en snelkoppelingen. |
+| `/medewerkers` | Overzicht met naam, medewerkersnummer, rol en land. |
+| `/medewerkers/toevoegen` | Formulier dat de medewerker, rollen en skills opslaat via de API. |
+| `/medewerkers/importeren` | Voorbereide pagina voor CSV- of Excel-import. Importeren is nog niet beschikbaar. |
+| `/medewerkers/:employeeId` | Detailpagina op basis van het zichtbare medewerkersnummer. |
+| `/rollen` | Doorzoekbare en sorteerbare catalogus van medewerkersrollen. |
+| `/rollen/nieuw` | Formulier met skillkeuze en ESCO-beroepszoeker. Opslag volgt nog. |
+| `/rollen/:roleId` | Rol, standaardskills, statistieken en filterbare medewerkerslijst. |
+| `/skills` | Skilloverzicht met categoriefilter, sortering en ESCO-suggesties. |
+| `/certificaten` | Certificaattypen en aantallen gekoppelde medewerkers. |
+| `/instellingen` | Overzicht van portaalgebruikers, toegangsrollen en rechten. |
+| `/profiel` | Profielpagina met vaste voorbeeldgegevens. |
 
-Vul een naam in en kies een wachtwoord van minimaal acht tekens. De herhaling
-moet overeenkomen. Registratie controleert of het adres is uitgenodigd en nog
-geen account heeft. Daarna ben je automatisch ingelogd en wordt de uitnodiging
-uit de huidige sessie verwijderd. Er wordt geen e-mail verstuurd.
+Zonder ingelogde gebruiker verwijst het portaal naar `/login`.
+De registratieroute blijft beschikbaar. Na inloggen verwijzen onbekende
+routes naar het dashboard.
 
-### Medewerker toevoegen
+## API
 
-1. Open **Medewerkers** en klik op **Medewerker toevoegen**.
-2. Vul voornaam, achternaam, geboortedatum, land, adres, e-mailadres en
-   telefoonnummer in en kies een functie via het veld **Rol**.
-3. Bij het kiezen van een functie worden de standaard skills aangevinkt.
-   Pas die selectie aan als dat nodig is.
-4. Klik op **Medewerker opslaan**. Je keert terug naar het overzicht, waar de
-   medewerker direct beschikbaar is.
+Deze paden zijn rechtstreeks beschikbaar op de PHP-server. Voeg `/api`
+toe als je de endpoints via Vite aanroept. De numerieke `{id}` in de API
+is het database-ID `employee_id`. De React-route gebruikt het zichtbare
+medewerkersnummer `employee_number`. Zie [index.php](backend/public/index.php).
 
-Het formulier controleert verplichte velden, het e-mailformaat en of de
-geboortedatum in de toekomst ligt. Skills zijn optioneel. **Annuleren** keert
-terug naar het overzicht zonder de medewerker toe te voegen.
-
-### Skills beheren
-
-Als de skills-API leeg of niet beschikbaar is, toont de app twintig
-voorbeeldskills: vier per categorie. Deze staan in `src/data/skills.js` en
-kunnen binnen de sessie worden bewerkt en verwijderd. Zodra de API skills
-oplevert, gebruikt de app die gegevens.
-
-Open **Skills** voor de beheertabel met vaardigheid, categorie en het aantal
-gekoppelde medewerkers. Gebruik **Skill toevoegen** of **Bewerken** om de naam
-en categorie vast te leggen. Kies een suggestie of typ zelf een nieuwe
-categorie. Skills zonder indeling tonen **Zonder categorie**. Klik op
-**Categorieën** in de tabelkop om de filterkeuzes te openen. Na het kiezen
-sluit de lijst en toont de tabel de gekozen categorie. **Alle categorieën**
-toont alles weer. Escape, het kruisje of buiten de lijst klikken sluit het
-filter zonder de selectie te veranderen. De actieve categorie staat onder
-de tabel en een markering in de tabelkop geeft aan dat er een filter actief is.
-Klik op **Vaardigheid** om tussen A–Z en Z–A te wisselen, of op **Medewerkers**
-om op het aantal gekoppelde medewerkers te sorteren, van laag naar hoog of
-andersom. Een pijltje toont de richting. Beide sorteringen blijven actief:
-de laatst aangeklikte kolom krijgt voorrang, bij gelijke waarden wordt de
-andere sortering gebruikt met de eerder gekozen richting. De cijfers 1 en 2
-en de uitleg onder de tabel tonen deze volgorde. Sorteren werkt ook binnen
-het categoriefilter.
-Bij toevoegen binnen een categoriefilter wordt die categorie alvast
-ingevuld. Categorieën worden, net als de overige skillwijzigingen, binnen de
-huidige sessie bewaard. Lege en dubbele skillnamen worden tegengehouden.
-De knop **Verwijderen**
-staat in de pop-up van **Bewerken** en opent een bevestigingsvenster. Pas na
-**Ja, verwijderen** wordt de skill verwijderd, ook bij gekoppelde medewerkers.
-**Annuleren** of Escape in de bevestiging keert terug naar het bewerkformulier
-en behoudt de ingevulde naam. Verwijderde skills worden niet meer
-automatisch aangevinkt bij het kiezen van een functie.
-Wijzigingen zijn direct beschikbaar in het medewerkersformulier en op de
-detailpagina. Ze blijven binnen de huidige sessie bewaard; verversen herstelt
-de begingegevens. Standaard skills bij een functie tellen pas mee als ze
-daadwerkelijk aan een medewerker zijn gekoppeld.
-
-### ESCO-autocomplete en autocorrect
-
-Bij **Skill toevoegen** en **Bewerken** verschijnen na twee letters suggesties
-uit de officiële ESCO-classificatie. Klik op een suggestie of kies met ↑/↓ en
-Enter. De naam wordt vervangen door het officiële Nederlandse label en de
-ESCO-URI wordt bij de skill bewaard als `escoUri`. Escape sluit eerst de
-suggestielijst. Zelf een naam invoeren blijft mogelijk; na verder typen vervalt
-een eerder gekozen ESCO-koppeling. Dubbele namen en dubbele ESCO-koppelingen
-worden tegengehouden.
-
-De app gebruikt de openbare
-[ESCO-API](https://esco.ec.europa.eu/en/use-esco/use-esco-services-api/esco-web-service-api)
-(`suggest2`, versie `v1.2.0`, taal `nl`) zonder API-sleutel. Verzoeken starten
-300 ms na het typen, worden afgebroken bij nieuwe invoer en hebben een timeout
-van vier seconden. Alleen de ingevoerde zoekterm gaat naar ESCO.
-
-Daarnaast bevat [public/data/esco-skills.json](public/data/esco-skills.json)
-alle **13.939 skills** uit die API-versie, met officiële URI's en Nederlandse
-en Engelse labels. Waar een Nederlandse vertaling ontbreekt, wordt het officiële
-Engelse label gebruikt. De lokale lijst wordt pas geladen wanneer je het
-skillformulier opent, en daarna binnen de sessie hergebruikt. Het zoeken herkent
-ook Engelse namen, ontbrekende letters en omgewisselde letters, bijvoorbeeld
-`javscript` → `JavaScript` en `project managment` → `projectbeheer`.
-De lijst blijft werken wanneer de ESCO-API niet bereikbaar is. Voor dit onderdeel
-hoeft de PHP-backend niet te draaien.
-
-Het veld **Categorie** gebruikt dezelfde autocomplete en typefoutcorrectie.
-[public/data/esco-categories.json](public/data/esco-categories.json) bevat alle
-**640 officiële categoriegroepen** van de ESCO-hiërarchie, met Nederlandse en
-Engelse labels, codes en bovenliggende groepen. In de lijst staat bijvoorbeeld
-`werken met computers` met code `S5`. Je kunt ook op een code zoeken. Een gekozen
-ESCO-categorie wordt bewaard als `category`, `escoCategoryUri` en
-`escoCategoryCode`. Bij verder typen wordt die koppeling verwijderd.
-
-De categorieën komen via de API uitsluitend uit het officiële concept scheme
-`skills-hierarchy`. Bij verbindingsproblemen werkt de aparte lokale categorielijst
-door. Bestaande eigen categorieën zijn herkenbaar aan **Eigen categorie**; een
-exacte eigen naam blijft beschikbaar. Leeglaten betekent **Zonder categorie**.
-Het kiezen van een skill bepaalt de categorie niet automatisch.
-
-Ververs beide JSON-exports met:
-
-```bash
-npm run esco:sync
-```
-
-Voor alleen de categorieën: `npm run esco:sync -- categories`.
-Voor alleen de skills: `npm run esco:sync -- skills`.
-
-Hiervoor is internet nodig. Het script controleert volledigheid en unieke URI's
-voordat het het bestaande bestand vervangt. Herkomst, versie en ophaaldatum staan
-in het JSON-bestand. De koppeling blijft, net als de overige skillwijzigingen,
-binnen de huidige sessie bewaard.
-
-## Pagina's en routes
-
-| Route | Scherm | Huidige werking |
+| Methode | Pad | Werking |
 | --- | --- | --- |
-| `/login` | Inloggen | Controleert e-mailadres en wachtwoord tegen de voorbeeldaccounts. |
-| `/registreren` | Registreren | Maakt binnen de sessie een account aan op basis van een uitnodiging. |
-| `/` | Dashboard | Persoonlijke begroeting, teamstatistieken, vier medewerkers in beeld en snelkoppelingen. |
-| `/medewerkers` | Medewerkers | Tabel met naam, ID, functie en land; maximaal 50 medewerkers per pagina. |
-| `/medewerkers/toevoegen` | Medewerker toevoegen | Formulier met validatie, landenkeuze en skills per functie. |
-| `/medewerkers/:employeeId` | Medewerkerdetails | Persoonlijke gegevens, contactgegevens en skills van een medewerker. |
-| `/functies` | Functies | Voorlopige pagina; functiebeheer moet nog worden gebouwd. |
-| `/skills` | Skills | Sorteerbare beheertabel met categorieën, categoriefilter, aantallen en toevoegen, bewerken en verwijderen binnen de sessie. |
-| `/instellingen` | Instellingen | Overzicht van portaalgebruikers, toegangsrollen en bijbehorende rechten. |
-| `/profiel` | Mijn profiel | Toont vaste voorbeeldgegevens van Jan Jansen. |
+| GET | `/`, `/name/{userInput}` | JSON-testantwoorden. |
+| GET | `/first-names` | Voornamen van medewerkers. |
+| GET | `/employees`, `/employees/{id}` | Alle medewerkers of de medewerker met dit database-ID. |
+| POST | `/employees` | Een medewerker aanmaken. |
+| GET | `/employee-job-roles` | Koppelingen tussen medewerkers en rollen. |
+| GET | `/job-roles` | Rolcatalogus met standaardskills. |
+| POST | `/employees/{id}/job-roles` | Een rol koppelen en de standaardskills aan de medewerker toevoegen. |
+| GET | `/skills` | Skillcatalogus. |
+| POST | `/employees/{id}/skills` | Een bestaande skill aan een medewerker koppelen. |
+| DELETE | `/employees/{id}/skills/{skillId}` | Een skillkoppeling bij een medewerker verwijderen. |
+| GET | `/certificates`, `/certificates/{name}` | Certificaattypen, eventueel gezocht op naam. |
+| GET | `/employee_certificates`, `/employee_certificates/{id}` | Certificaatkoppelingen van alle medewerkers of één medewerker. |
+| GET | `/employee_training`, `/employee_training/{id}` | Trainingen van alle medewerkers of één medewerker. |
+| GET | `/employee_skills`, `/employee_skills/{id}` | Skillkoppelingen van alle medewerkers of één medewerker. |
+| GET | `/employee_files`, `/employee_files/{id}` | Bestandsrecords van alle medewerkers of één medewerker. |
 
-Klik in de medewerkerstabel op een naam om de detailpagina te openen.
-Ontbrekende gegevens krijgen een melding zoals **Niet ingevuld**. Een onbekend
-medewerkers-ID toont **Medewerker niet gevonden**.
+## Toegangsrollen
 
-Zonder ingelogde gebruiker verwijzen alle routes behalve `/login` en
-`/registreren` naar het inlogscherm. Na inloggen verwijzen onbekende routes
-naar het dashboard. De router gebruikt `BrowserRouter`.
-
-## Gegevens en rollen
-
-Alle begingegevens komen uit `src/data/`:
-
-| Bestand | Inhoud |
-| --- | --- |
-| [employees.jsx](src/data/employees.jsx) | Voorbeeldmedewerkers voor het overzicht en de detailpagina. |
-| [employeeRoles.js](src/data/employeeRoles.js) | Medewerkersfuncties met standaard skills. |
-| [skills.js](src/data/skills.js) | Beschikbare vaardigheden. |
-| [countries.js](src/data/countries.js) | Landnamen en codes voor de vlaggen. |
-| [portalUsers.js](src/data/portalUsers.js) | Voorbeeldaccounts en uitnodigingen. |
-| [accessRoles.js](src/data/accessRoles.js) | Toegangsrollen en de rechten die in instellingen worden getoond. |
-| [navigationItems.js](src/data/navigationItems.js) | Labels, routes en symbolen van het zijmenu. |
-
-**Medewerkersfuncties** en **toegangsrollen** zijn twee verschillende dingen.
-Een functie zoals Software Developer bepaalt de standaard skills van een
-medewerker. Een toegangsrol zoals Beheerder beschrijft rechten in het portaal.
-
-Het huidige rechtenmodel bevat:
+Medewerkersrollen horen bij functies en bepalen de standaardskills.
+Toegangsrollen horen bij portaalaccounts. In **Instellingen** staat per rol
+welke rechten zijn bedoeld. Zie [accessRoles.js](src/data/accessRoles.js).
 
 | Toegangsrol | Bekijken | Toevoegen en aanpassen | Instellingen en toegang beheren |
 | --- | --- | --- | --- |
-| Eigenaar (`owner`) | Ja | Ja | Ja |
-| Beheerder (`admin`) | Ja | Ja | Ja |
-| Bewerker (`editor`) | Ja | Ja | Nee |
-| Lezer (`viewer`) | Ja | Nee | Nee |
+| Eigenaar | Ja | Ja | Ja |
+| Beheerder | Ja | Ja | Ja |
+| Bewerker | Ja | Ja | Nee |
+| Lezer | Ja | Nee | Nee |
 
-Dit is het model uit `accessRoles.js`. Het volledig afdwingen van deze rechten
-in routes en acties moet nog worden uitgewerkt. De instellingenpagina toont
-de rechten en bepaalt deels de beschikbaarheid van de knop **Wijzigen**, maar
-de knoppen voor uitnodigen en wijzigen hebben nog geen actie.
+De API dwingt deze rechten nog niet af. De interface toont knoppen voor
+uitnodigen en rolwijzigingen. Die acties moeten nog worden aangesloten.
 
-## Techniek en projectstructuur
-
-| Onderdeel | Technologie |
-| --- | --- |
-| Interface | React 19 en React DOM |
-| Navigatie | React Router 8 |
-| Ontwikkelserver en build | Vite 8 met de React-plugin |
-| Taal | JavaScript met JSX en ES-modules |
-| Vormgeving | CSS-bestanden in `src/styles/` |
-| Codecontrole | Oxlint met React-regels |
-| Backend | PHP met Slim 4 en Slim PSR-7 |
-| Database | MySQL via PDO |
-
-De dependencyversies en npm-scripts staan in [package.json](package.json).
-De vastgelegde installatieversies staan in [package-lock.json](package-lock.json).
+## Projectstructuur
 
 ```text
-boon-edam-project/
-├── backend/
-│   ├── public/             PHP-startpunt en webserverbestanden
-│   ├── src/config/         databaseverbinding en SQL-schema met voorbeelddata
-│   ├── vendor/             PHP-dependencies
-│   ├── composer.json       backenddependencies
-│   └── composer.lock       vastgelegde backendversies
-├── public/                 statische bestanden, zoals favicon en iconen
-├── src/
-│   ├── assets/             logo, vlaggen en overige afbeeldingen
-│   ├── components/
-│   │   ├── atoms/          kleine UI-bouwstenen
-│   │   ├── molecules/      combinaties met één taak
-│   │   └── organisms/      complete delen van een scherm
-│   ├── data/               voorbeeldgegevens en configuratie
-│   ├── pages/              concrete schermen voor de routes
-│   ├── styles/             gedeelde en specifieke CSS
-│   ├── templates/          gedeelde pagina-indelingen
-│   ├── App.jsx             routes, portaalindeling, applicatiestatus en acties
-│   └── main.jsx            start React, StrictMode en BrowserRouter
-├── .oxlintrc.json           lintconfiguratie
-├── index.html              HTML-startpunt voor Vite
-├── package.json            dependencies en npm-scripts
-├── package-lock.json       vastgelegde dependencyversies
-└── vite.config.js          React-plugin en ontwikkelproxy naar de PHP-backend
+backend/public/      Slim-router en PHP-startpunt
+backend/src/config/  MySQL-verbinding, schema en voorbeeldgegevens
+backend/vendor/      PHP-dependencies
+public/data/         Lokale ESCO-catalogi voor skills en categorieën
+scripts/             ESCO-catalogi verversen
+src/components/      Atoms, molecules en organisms
+src/templates/       Gedeelde pagina-indelingen
+src/pages/           Pagina's voor de routes
+src/data/            Voorbeelddata, landen, vestigingen en portaalrollen
+src/services/        Verzoeken naar PHP en ESCO
+src/utils/           Sortering, zoeklogica en gegevensverwerking
+src/styles/          Gedeelde stijlen en stijlen per scherm
+src/App.jsx          Routes, applicatiestatus en API-acties
+tests/               Tests met de ingebouwde Node.js-testrunner
 ```
 
-### Atomic Design
+De componentmappen volgen [Atomic Design van Brad Frost](https://atomicdesign.bradfrost.com/chapter-2/).
 
-De mappen volgen vijf lagen met elk een eigen verantwoordelijkheid:
-
-| Laag | Verantwoordelijkheid | Componenten in dit project |
+| Laag | Taak | Voorbeelden |
 | --- | --- | --- |
-| Atoms | Kleine UI-bouwstenen | `Button`, `Input`, `Select`, `Logo`, `Avatar`, `CountryFlag`, `NavItem` |
-| Molecules | Kleine combinaties met één taak | `FormField`, `CountryLabel`, `CountrySelect`, `NavItem`, `ProfileMenu`, `Pagination`, `SkillSelect`, `SkillCategoryFilter`, `AccessRoleCard` |
-| Organisms | Complete delen van een scherm | `TopNavbar`, `Sidebar`, `EmployeesTable`, `EmployeeDetails`, `EmployeeForm`, `SkillsTable`, `SkillFormDialog`, `SkillDeleteDialog`, `LoginForm`, `RegisterForm`, `PortalAccessSettings` |
-| Templates | Pagina-indeling met ruimte voor inhoud | `PortalLayout`, `AuthLayout` |
-| Pages | Concrete schermen met gegevens en acties | De routepagina's in `src/pages/` |
+| Atoms | Basisbouwstenen | `Button`, `Input`, `Select`, `Avatar`, `Logo` |
+| Molecules | Bouwstenen combineren voor één taak | `FormField`, `NavItem`, `TagPicker`, `CertificateCard` |
+| Organisms | Een formulier, tabel of ander zelfstandig schermonderdeel | `EmployeeForm`, `RolesTable`, `SkillsTable`, `CertificatesGrid` |
+| Templates | Gedeelde indeling voor meerdere pagina’s | `PortalLayout` voor het portaal en `AuthLayout` voor inloggen en registreren |
+| Pages | Onderdelen samenstellen met de gegevens en acties voor een route | `Employees`, `AddEmployee`, `Skills`, `Certificates` |
 
-De afspraak is dat een component alleen UI-componenten uit dezelfde of een
-lagere laag importeert. Templates ontvangen pagina-inhoud via `children` en
-importeren geen pagina's.
-
-De huidige code gebruikt deze indeling gedeeltelijk. `App.jsx` bouwt de
-portaalindeling rechtstreeks met `TopNavbar` en `Sidebar`. Het bewaart ook de
-ingelogde gebruiker, portaalgebruikers, uitnodigingen en medewerkers met
-`useState` en verbindt de routes met acties zoals inloggen en opslaan.
-Formulierstatus en validatie staan momenteel rechtstreeks in de pagina's
-`Login`, `Register` en `AddEmployee`.
-
-De herbruikbare formulierorganisms en templates staan wel in de repository,
-maar zijn nog niet overal aangesloten op de pagina's. Zo combineert
-`EmployeeForm` de molecule `FormField` met functies en skills, terwijl de
-huidige pagina `AddEmployee` haar velden zelf opbouwt. `FormField` koppelt
-eventuele foutmeldingen via `aria-describedby` aan het invoerveld.
-
-Voeg nieuwe bouwstenen toe op basis van hun taak en complexiteit. Gewone
-koppen, tekst en containers mogen in een pagina blijven staan.
-
-### Stijlen
-
-- `global.css`: basisinstellingen en focusstijl voor knoppen.
-- `layout.css`: portaalindeling, navigatie, knoppen, tabellen en paginering.
-- `forms.css`: gedeelde formuliervelden en foutmeldingen.
-- `auth.css`: inloggen en registreren.
-- `dashboard.css`: dashboard, statistieken en snelkoppelingen.
-- `add-employee.css`, `employee.css`, `skills.css`, `profile.css` en `settings.css`: specifieke
-  schermen en onderdelen.
-- `country.css` en `country-select.css`: landlabels, vlaggen en de landenkeuze.
-
-Pagina's, componenten en templates importeren de bijbehorende CSS. De landenkeuze
-ondersteunt ook toetsenbordbediening, zoals pijltjestoetsen, Enter en Escape.
+`App.jsx` beheert de routes, applicatiestatus en API-acties. `PortalLayout`
+plaatst de bovenbalk, het zijmenu en de pagina-inhoud. Pagina’s geven hun
+gegevens en acties door aan de onderdelen die ze samenstellen. Zo gebruikt
+`AddEmployee` het `EmployeeForm` met onder meer `FormField` en `TagPicker`.
+Een component kan andere UI-componenten uit dezelfde of een lagere laag
+gebruiken. Gedeelde formuliervelden gebruiken `src/styles/forms.css`.
 
 ## Scripts en controles
 
 | Commando | Doel |
 | --- | --- |
-| `npm run dev` | Start de ontwikkelserver met automatisch verversen. |
+| `npm run dev` | Start Vite met automatisch verversen. |
 | `npm run lint` | Controleert de code met Oxlint. |
-| `npm run build` | Maakt een productiebuild in `dist/`. |
-| `npm run preview` | Serveert de bestaande productiebuild lokaal. |
+| `npm test` | Draait tests voor sortering, ESCO-zoeken en certificaten. |
+| `npm run build` | Maakt een frontendbuild in `dist/`. |
+| `npm run preview` | Opent de bestaande build lokaal, standaard op poort 4173. |
+| `npm run esco:sync` | Ververst beide lokale ESCO-catalogi via internet. |
 
-Controleer codewijzigingen met:
+Met `npm run esco:sync -- skills` of `npm run esco:sync -- categories`
+ververs je één catalogus. Versie, herkomst en ophaaldatum staan in de
+JSON-bestanden.
 
-```bash
-npm run lint
-npm run build
-```
+Voor hosting van de build moet de webserver onbekende paginapaden naar
+`index.html` sturen voor React Router. Verzoeken naar `/api/` hebben hun
+eigen route naar de PHP-backend nodig.
 
-Voor het bekijken van de productiebuild:
-
-```bash
-npm run build
-npm run preview
-```
-
-De preview is standaard beschikbaar op [localhost:4173](http://localhost:4173).
-Gebruik bij een andere poort de URL uit de terminal. Bij hosting moet de
-webserver onbekende paginapaden terugsturen naar `index.html`, zodat routes
-zoals `/medewerkers/EMP001` ook rechtstreeks geopend kunnen worden.
-De `/api`-proxy is een ontwikkelinstelling. Voor een gepubliceerde versie moet
-de koppeling tussen de frontend en PHP-backend apart worden ingericht.
-
-Voer `npm test` uit voor de automatische controles op sortering en ESCO-zoeken.
-Controleer na functionele wijzigingen ook handmatig het inloggen, registreren,
-toevoegen van een medewerker, de detailpagina en de navigatie op een smal scherm.
-
-## Huidige beperkingen en vervolgstappen
-
-- **Opslag en sessie:** de frontend is nog niet aan de database gekoppeld.
-  Verversen van de pagina herstelt de begingegevens en
-  logt de gebruiker uit. Toegevoegde medewerkers en nieuwe accounts gaan dan
-  verloren; gebruikte uitnodigingen worden opnieuw beschikbaar.
-- **Authenticatie:** de frontenddemo vergelijkt wachtwoorden in de frontend en bevat
-  leesbare voorbeeldwachtwoorden. Voor echt gebruik zijn een backend en veilige
-  account- en sessieafhandeling nodig.
-- **Rechten:** volledige autorisatie en een werkende rangorde tussen
-  toegangsrollen moeten nog worden uitgewerkt.
-- **Gebruikersbeheer:** uitnodigen en toegangsrollen wijzigen zijn nog niet
-  gekoppeld aan acties of opslag.
-- **Medewerkersbeheer:** medewerkers bekijken en toevoegen werken;
-  bestaande medewerkers bewerken en verwijderen zijn nog niet beschikbaar.
-  De PHP-endpoints bieden momenteel alleen leesacties en hebben nog geen
-  authenticatie of autorisatie.
-- **Functies en skills:** skills beheren werkt binnen de sessie. Functiebeheer
-  is nog een placeholder; de standaard skills per functie staan vast in de code.
-- **Profiel:** de profielpagina gebruikt vaste voorbeeldgegevens en is nog
-  niet gekoppeld aan de ingelogde gebruiker.
-- **Componentstructuur:** de aanwezige Atomic Design-componenten en templates
-  moeten nog consequent op alle pagina's worden aangesloten.
+De demo is bedoeld voor lokaal gebruik met testgegevens. Voor gebruik met
+echte accounts en medewerkersgegevens zijn onder meer serverauthenticatie
+en autorisatie nodig. Medewerkers bewerken of verwijderen, importeren,
+rollen opslaan en certificaten blijvend wijzigen zijn nog niet beschikbaar.

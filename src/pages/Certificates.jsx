@@ -1,16 +1,31 @@
 import { useState } from "react";
 import Button from "../components/atoms/Button";
-import SkillsTable from "../components/organisms/SkillsTable";
+import Select from "../components/atoms/Select";
+import ConfirmDeleteDialog from "../components/molecules/ConfirmDeleteDialog";
 import CertificateFormDialog from "../components/organisms/CertificateFormDialog";
-import SkillDeleteDialog from "../components/organisms/SkillDeleteDialog";
+import CertificateEmployeesDialog from "../components/organisms/CertificateEmployeesDialog";
+import CertificateDetailsDialog from "../components/organisms/CertificateDetailsDialog";
+import CertificatesGrid from "../components/organisms/CertificatesGrid";
 import { certificateCategories } from "../data/certificates";
+import { sortSkills } from "../utils/skillSorting";
 import "../styles/skills.css";
+import "../styles/certificates.css";
 
-function Certificates({ certificates, error, onSaveCertificate, onDeleteCertificate }) {
+const sortOptions = [
+  { value: "name:ascending", label: "Naam (A–Z)" },
+  { value: "name:descending", label: "Naam (Z–A)" },
+  { value: "employees:descending", label: "Meeste medewerkers" },
+  { value: "employees:ascending", label: "Minste medewerkers" },
+];
+
+function Certificates({ certificates, employees = [], isExample = false, notice, onSaveCertificate, onDeleteCertificate }) {
   const [editor, setEditor] = useState(null);
+  const [selectedCertificate, setSelectedCertificate] = useState(null);
+  const [certificateDetails, setCertificateDetails] = useState(null);
   const [certificateToDelete, setCertificateToDelete] = useState(null);
   const [status, setStatus] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [sorts, setSorts] = useState([{ column: "name", direction: "ascending" }]);
   const selectedCategory = categoryFilter.startsWith("category:")
     ? categoryFilter.slice("category:".length)
     : "";
@@ -19,7 +34,15 @@ function Certificates({ certificates, error, onSaveCertificate, onDeleteCertific
     ...certificates.map((certificate) => certificate.category?.trim()).filter(Boolean),
     ...(selectedCategory ? [selectedCategory] : []),
   ])].sort((first, second) => first.localeCompare(second, "nl"));
-  const visibleCertificates = certificates.filter((certificate) => {
+  const filters = [
+    { value: "", label: "Alle categorieën" },
+    ...categories.map((category) => ({ value: `category:${category}`, label: category })),
+  ];
+  if (categoryFilter === "uncategorized" || certificates.some((certificate) => !certificate.category?.trim())) {
+    filters.push({ value: "uncategorized", label: "Zonder categorie" });
+  }
+
+  const matchingCertificates = certificates.filter((certificate) => {
     if (!categoryFilter) return true;
     const category = certificate.category?.trim() || "";
     return categoryFilter === "uncategorized" ? category === "" : category === selectedCategory;
@@ -27,6 +50,16 @@ function Certificates({ certificates, error, onSaveCertificate, onDeleteCertific
   const employeeCounts = new Map(certificates.map((certificate) => [
     certificate.id, certificate.employeeIds.length,
   ]));
+  const visibleCertificates = sortSkills(matchingCertificates, employeeCounts, sorts);
+  const primarySort = sorts[0];
+
+  const handleSortChange = (event) => {
+    const [column, direction] = event.target.value.split(":");
+    setSorts((currentSorts) => [
+      { column, direction },
+      ...currentSorts.filter((sort) => sort.column !== column),
+    ]);
+  };
 
   const openEditor = (certificate = null) => {
     setStatus("");
@@ -45,43 +78,67 @@ function Certificates({ certificates, error, onSaveCertificate, onDeleteCertific
   };
 
   return (
-    <section className="skills-page" aria-labelledby="certificates-page-title">
+    <section className="skills-page certificates-page" aria-labelledby="certificates-page-title">
       <header className="employees-header skills-header">
         <div>
           <h1 id="certificates-page-title">Certificaten</h1>
-          <p>Beheer de certificaten binnen je organisatie.</p>
+          <p>{notice || "Beheer de certificaten binnen je organisatie."}</p>
         </div>
         <Button variant="primary" onClick={() => openEditor()}>
           <span aria-hidden="true">+</span> Certificaat toevoegen
         </Button>
       </header>
 
-      {error && <p className="auth-error" role="alert">{error} Voorbeeldcertificaten worden getoond.</p>}
+      <div className="certificates-toolbar">
+        <div className="certificates-filters" role="group" aria-label="Filter op categorie">
+          {filters.map(({ value, label }) => (
+            <Button
+              key={value}
+              className="certificates-filter"
+              aria-pressed={categoryFilter === value}
+              onClick={() => setCategoryFilter(value)}
+            >
+              {label}
+            </Button>
+          ))}
+        </div>
+        <label className="certificates-sort">
+          <span>Sorteren</span>
+          <Select value={`${primarySort.column}:${primarySort.direction}`} onChange={handleSortChange}>
+            {sortOptions.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+          </Select>
+        </label>
+      </div>
 
-      <SkillsTable
-        skills={visibleCertificates}
-        allSkills={certificates}
-        nameLabel="Certificaat"
-        collectionLabel="Certificaten"
-        employeeCounts={employeeCounts}
-        categories={categories}
-        categoryFilter={categoryFilter}
-        onCategoryChange={setCategoryFilter}
+      <CertificatesGrid
+        certificates={visibleCertificates}
+        total={certificates.length}
+        onShowDetails={setCertificateDetails}
+        onShowEmployees={setSelectedCertificate}
         onEdit={openEditor}
-        emptyMessage={certificates.length > 0
-          ? "Geen certificaten gevonden in deze categorie. Kies een andere categorie of wis het filter."
-          : "Er zijn nog geen certificaten. Voeg je eerste certificaat toe."}
       />
 
-      <div className="skills-footer">
-        <span role="status" aria-atomic="true">
-          {categoryFilter ? `${visibleCertificates.length} van ` : ""}
-          {certificates.length} {certificates.length === 1 ? "certificaat" : "certificaten"}
-          {categoryFilter ? ` · ${selectedCategory || "Zonder categorie"}` : ""}
-        </span>
-        <span>Centraal overzicht van alle certificaten</span>
-      </div>
+      <p className="certificates-result" role="status" aria-atomic="true">
+        {categoryFilter ? `${visibleCertificates.length} van ` : ""}
+        {certificates.length} {certificates.length === 1 ? "certificaat" : "certificaten"}
+      </p>
       <p className="skills-status" role="status">{status}</p>
+
+      {certificateDetails && (
+        <CertificateDetailsDialog
+          certificate={certificateDetails}
+          onClose={() => setCertificateDetails(null)}
+        />
+      )}
+
+      {selectedCertificate && (
+        <CertificateEmployeesDialog
+          certificate={selectedCertificate}
+          employees={employees}
+          isExample={isExample}
+          onClose={() => setSelectedCertificate(null)}
+        />
+      )}
 
       {editor && (
         <CertificateFormDialog
@@ -99,11 +156,10 @@ function Certificates({ certificates, error, onSaveCertificate, onDeleteCertific
       )}
 
       {certificateToDelete && (
-        <SkillDeleteDialog
-          skill={certificateToDelete}
+        <ConfirmDeleteDialog
           title="Certificaat verwijderen?"
           description={`Weet je zeker dat je het certificaat “${certificateToDelete.name}” wilt verwijderen? Het certificaat verdwijnt uit dit overzicht, inclusief de medewerkerkoppelingen.`}
-          onConfirm={handleDelete}
+          onConfirm={() => handleDelete(certificateToDelete)}
           onClose={() => setCertificateToDelete(null)}
         />
       )}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "../components/atoms/Button";
-import TagPicker from "../components/molecules/TagPicker";
 import EscoSearch from "../components/organisms/EscoSearch";
+import RoleForm from "../components/organisms/RoleForm";
 import "../styles/add-employee.css";
 import "../styles/tag-picker.css";
 import "../styles/esco-search.css";
@@ -96,57 +96,16 @@ function AddRole({ skills, onCancel }) {
         />
       )}
 
-      <form className="add-employee-form" noValidate>
-        {escoTitle && (
-          <p className="esco-chosen">
-            Gebaseerd op het ESCO-beroep <strong>{escoTitle}</strong>. Je kunt alles nog aanpassen.
-          </p>
-        )}
-
-        <h2 className="form-section-title">Rol</h2>
-        <div className="form-stack">
-          <label className="form-field">
-            Naam van de rol
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Bijv. Servicemonteur"
-            />
-          </label>
-
-          <label className="form-field">
-            Omschrijving (optioneel)
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={3}
-            />
-          </label>
-        </div>
-
-        <h2 className="form-section-title">Standaard skills</h2>
-        <TagPicker
-          label="Skills"
-          hint="Iedereen die deze rol krijgt, krijgt deze skills standaard. Skills uit ESCO die nog niet bestaan, worden bij opslaan aangemaakt."
-          placeholder="Zoek een skill..."
-          selectedItems={selectedSkills}
-          options={skills}
-          onSelect={handleSkillSelect}
-          onRemove={handleSkillRemove}
-        />
-
-        <div className="form-actions">
-          <Button variant="secondary" onClick={onCancel}>
-            Annuleren
-          </Button>
-          <Button type="submit" variant="primary">
-            Rol opslaan
-          </Button>
-        </div>
-      </form>
+      <RoleForm
+        formData={formData}
+        escoTitle={escoTitle}
+        skills={skills}
+        selectedSkills={selectedSkills}
+        onChange={handleChange}
+        onSkillSelect={handleSkillSelect}
+        onSkillRemove={handleSkillRemove}
+        onCancel={onCancel}
+      />
     </section>
   );
 }
