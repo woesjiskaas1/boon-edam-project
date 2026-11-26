@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router";
 import CountryLabel from "../components/molecules/CountryLabel";
 import Pagination from "../components/molecules/Pagination";
 import ConfirmDialog from "../components/organisms/ConfirmDialog";
+import EscoName from "../components/molecules/EscoName";
+import "../styles/esco-search.css";
 import "../styles/employee.css";
 import "../styles/roles.css";
 
@@ -10,7 +12,7 @@ import "../styles/roles.css";
 const EMPLOYEES_PER_PAGE = 20;
 
 // Detailpagina van één rol.
-function Role({ jobRoles, skills, employees, onBack, onAddEmployee, onUpdateSkills, onRemoveEmployee }) {
+function Role({ jobRoles, skills, employees, onBack, onAddEmployee, onUpdateSkills, onRemoveEmployee, onRename }) {
   // Het id uit de URL: /rollen/5 geeft "5". Een URL is altijd tekst.
   const { roleId } = useParams();
 
@@ -22,6 +24,13 @@ function Role({ jobRoles, skills, employees, onBack, onAddEmployee, onUpdateSkil
   const [country, setCountry] = useState("");
   const [location, setLocation] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  // De Boon Edam-naam aanpassen (blok "ESCO-gegevens").
+  // null = nog niet aangeraakt; dan tonen we de huidige naam.
+  const [newName, setNewName] = useState(null);
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [renameMessage, setRenameMessage] = useState("");
+  const [renameError, setRenameError] = useState("");
 
   // Medewerkers toevoegen aan deze rol.
   const [employeeSearch, setEmployeeSearch] = useState("");
@@ -64,6 +73,27 @@ function Role({ jobRoles, skills, employees, onBack, onAddEmployee, onUpdateSkil
   // De skills van deze rol, met naam.
   // role.defaultSkills is een lijst met id's, bijv. [3, 7].
   const roleSkills = skills.filter((skill) => role.defaultSkills.includes(skill.id));
+
+  // Heeft deze rol een eigen Boon Edam-naam (anders dan de ESCO-naam)?
+  const nameValue = newName ?? (role.escoTitle && role.name === role.escoTitle ? "" : role.name);
+
+  // Nieuwe naam opslaan. Leeg = weer de ESCO-naam gebruiken.
+  const saveName = async (event) => {
+    event.preventDefault();
+    const finalName = nameValue.trim() || role.escoTitle;
+    setIsRenaming(true);
+    setRenameError("");
+    setRenameMessage("");
+    try {
+      await onRename(role.id, finalName);
+      setNewName(null);
+      setRenameMessage("Opgeslagen.");
+    } catch (error) {
+      setRenameError(error.message);
+    } finally {
+      setIsRenaming(false);
+    }
+  };
 
   // Suggesties om toe te voegen: skills die de rol nog niet heeft en die
   // passen bij wat je typt. Maximaal 8, anders wordt de lijst te lang.
@@ -210,10 +240,49 @@ function Role({ jobRoles, skills, employees, onBack, onAddEmployee, onUpdateSkil
 
       <header className="employees-header">
         <div>
-          <h1 id="role-title">{role.name}</h1>
+          <EscoName escoTitle={role.escoTitle}>
+            <h1 id="role-title">{role.name}</h1>
+          </EscoName>
           <p>{role.description || "Geen omschrijving."}</p>
         </div>
       </header>
+
+      {/* Alleen bij een rol uit ESCO: de originele gegevens en een eigen naam. */}
+      {role.escoUri && (
+        <section className="role-section" aria-labelledby="role-esco-title">
+          <h2 id="role-esco-title">ESCO-gegevens</h2>
+          <dl className="esco-facts">
+            <dt>ESCO-naam</dt>
+            <dd>{role.escoTitle}</dd>
+            <dt>ESCO-code</dt>
+            <dd>{role.escoCode || "Onbekend"}</dd>
+            <dt>ESCO-id</dt>
+            <dd>
+              <a href={role.escoUri} target="_blank" rel="noreferrer">
+                {role.escoUri}
+              </a>{" "}
+              <span aria-hidden="true">↗</span>
+            </dd>
+            <dt>Boon Edam-naam</dt>
+            <dd>
+              <form className="esco-rename" onSubmit={saveName}>
+                <input
+                  value={nameValue}
+                  onChange={(event) => setNewName(event.target.value)}
+                  placeholder={role.escoTitle}
+                  aria-label="Boon Edam-naam van deze rol"
+                />
+                <button type="submit" className="primary-button" disabled={isRenaming}>
+                  {isRenaming ? "Opslaan..." : "Opslaan"}
+                </button>
+              </form>
+              <span className="form-hint">Leeg maken = weer de ESCO-naam gebruiken.</span>
+              {renameMessage && <p className="form-hint">{renameMessage}</p>}
+              {renameError && <p className="form-error" role="alert">{renameError}</p>}
+            </dd>
+          </dl>
+        </section>
+      )}
 
       {/* De belangrijkste cijfers in één oogopslag. */}
       <div className="role-stats">
@@ -240,7 +309,11 @@ function Role({ jobRoles, skills, employees, onBack, onAddEmployee, onUpdateSkil
         ) : (
           <ul className="role-skill-list">
             {roleSkills.map((skill) => (
-              <li key={skill.id} className="roles-chip">
+              <li
+                key={skill.id}
+                className="roles-chip"
+                title={skill.escoUri ? `ESCO: ${skill.escoTitle || skill.name}\nESCO-id: ${skill.escoUri}` : "Eigen skill, niet in ESCO"}
+              >
                 {skill.name}
                 <button
                   type="button"

@@ -59,11 +59,17 @@ export async function getEmployees() {
 
 // Zet een rol uit de database om naar de vorm van de front-end.
 // Zelfde vorm als eerst in src/data/employeeRoles.js.
+// "name" is de naam die we overal tonen: de Boon Edam-naam, of de
+// ESCO-naam als er geen eigen naam is. De ESCO-velden zijn leeg bij een
+// rol die zelf is aangemaakt (niet uit ESCO).
 const roleFromDatabase = (row) => ({
   id: row.job_role_id,
   name: row.name,
   description: row.description ?? "",
   defaultSkills: row.skills.map((skill) => skill.skill_id),
+  escoTitle: row.esco_title ?? "",
+  escoUri: row.esco_uri ?? "",
+  escoCode: row.esco_code ?? "",
 });
 
 // GET: haalt alle rollen op, met hun standaard skills.
@@ -88,12 +94,7 @@ export async function getSkills() {
 
   const rows = await response.json();
 
-  // Zelfde vorm als eerst in src/data/skills.js.
-  return rows.map((row) => ({
-    id: row.skill_id,
-    name: row.name,
-    category: row.category ?? "",
-  }));
+  return rows.map(skillFromDatabase);
 }
 
 // Stuurt een verzoek met JSON naar de backend en geeft het antwoord terug.
@@ -167,11 +168,16 @@ export async function createEmployee(formData) {
   return fromDatabase(row);
 }
 // Zet een skill uit de database om naar de vorm van de front-end.
-const skillFromDatabase = (row) => ({
-  id: row.skill_id,
-  name: row.name,
-  category: row.category ?? "",
-});
+// Net als bij rollen: escoTitle en escoUri zijn leeg als de skill niet uit ESCO komt.
+function skillFromDatabase(row) {
+  return {
+    id: row.skill_id,
+    name: row.name,
+    category: row.category ?? "",
+    escoTitle: row.esco_title ?? "",
+    escoUri: row.esco_id ?? "",
+  };
+}
 
 // POST: maakt een nieuwe skill aan (Skills-pagina).
 export async function createSkill(name) {
@@ -223,4 +229,126 @@ export async function removeEmployeeFromRole(employeeDatabaseId, roleId) {
     const data = await response.json().catch(() => ({}));
     throw new Error(data.error || "De rol kon niet worden weggehaald.");
   }
+}
+
+// POST: maakt een skill uit ESCO aan, of geeft de bestaande terug als die
+// er al is (zelfde ESCO-id). De ESCO-naam wordt ook de gewone naam.
+// Let op: deze route moet Alex nog bouwen in de backend.
+export async function createEscoSkill(escoSkill) {
+  const row = await sendJson("POST", `${API_URL}/skills/esco`, {
+    name: escoSkill.name,
+    esco_id: escoSkill.escoUri,
+    esco_title: escoSkill.name,
+  });
+  return skillFromDatabase(row);
+}
+
+// POST: maakt een nieuwe rol aan.
+// 1. Skills uit ESCO die nog niet in de database staan, eerst aanmaken.
+// 2. Dan de rol zelf, met de id's van alle skills.
+// Let op: deze routes moet Alex nog bouwen in de backend.
+export async function createJobRole(roleData) {
+  const skillIds = [];
+  for (const skill of roleData.skills) {
+    if (skill.escoUri && typeof skill.id !== "number") {
+      const created = await createEscoSkill(skill);
+      skillIds.push(created.id);
+    } else {
+      skillIds.push(skill.id);
+    }
+  }
+
+  const row = await sendJson("POST", `${API_URL}/job-roles`, {
+    name: roleData.name,
+    description: roleData.description || null,
+    skills: skillIds,
+    esco_uri: roleData.escoUri || null,
+    esco_code: roleData.escoCode || null,
+    esco_title: roleData.escoTitle || null,
+  });
+  return roleFromDatabase(row);
+}
+
+// PATCH: geeft een rol een andere (Boon Edam-)naam.
+// Let op: deze route moet Alex nog bouwen in de backend.
+export async function updateJobRoleName(roleId, name) {
+  const row = await sendJson("PATCH", `${API_URL}/job-roles/${roleId}`, { name: name });
+  return roleFromDatabase(row);
+}
+
+// ---------- Eén medewerker bewerken ----------
+
+// Het niveau van een skill: 1 (beginner) t/m 5 (expert).
+export const SKILL_LEVELS = [
+  { value: 1, label: "Beginner" },
+  { value: 2, label: "Basis" },
+  { value: 3, label: "Gevorderd" },
+  { value: 4, label: "Ervaren" },
+  { value: 5, label: "Expert" },
+];
+
+// GET: de skills van één medewerker, met niveau: [{ id, level }].
+export async function getEmployeeSkills(employeeDatabaseId) {
+  const response = await fetch(`${API_URL}/employee_skills/${employeeDatabaseId}`);
+  if (!response.ok) {
+    throw new Error("De skills van deze medewerker konden niet worden opgehaald.");
+  }
+  const rows = await response.json();
+  return rows.map((row) => ({ id: row.skill_id, level: row.skill_level ?? 1 }));
+}
+
+// GET: de skills van ALLE medewerkers in één keer (voor de skills-matrix).
+// Geeft een object terug: { databaseId: { skillId: niveau } }.
+export async function getAllEmployeeSkills() {
+  const response = await fetch(`${API_URL}/employee_skills`);
+  if (!response.ok) {
+    throw new Error("De skills van de medewerkers konden niet worden opgehaald.");
+  }
+  const rows = await response.json();
+  const result = {};
+  for (const row of rows) {
+    result[row.employee_id] ??= {};
+    result[row.employee_id][row.skill_id] = row.skill_level ?? 1;
+  }
+  return result;
+}
+
+// POST: geeft een medewerker een extra skill (niveau 1).
+export async function addSkillToEmployee(employeeDatabaseId, skillId) {
+  await sendJson("POST", `${API_URL}/employees/${employeeDatabaseId}/skills`, {
+    skill_id: skillId,
+  });
+}
+
+// PATCH: wijzigt het niveau (1-5) van een skill bij een medewerker.
+// Let op: deze route moet Alex nog bouwen in de backend.
+export async function updateEmployeeSkillLevel(employeeDatabaseId, skillId, level) {
+  await sendJson("PATCH", `${API_URL}/employees/${employeeDatabaseId}/skills/${skillId}`, {
+    skill_level: level,
+  });
+}
+
+// DELETE: haalt een skill weg bij een medewerker.
+export async function removeSkillFromEmployee(employeeDatabaseId, skillId) {
+  const response = await fetch(`${API_URL}/employees/${employeeDatabaseId}/skills/${skillId}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data.error || "De skill kon niet worden weggehaald.");
+  }
+}
+
+// PATCH: wijzigt de gegevens van een medewerker (naam, e-mail, land, vestiging).
+// Let op: deze route moet Alex nog bouwen in de backend.
+export async function updateEmployee(employeeDatabaseId, formData) {
+  const row = await sendJson("PATCH", `${API_URL}/employees/${employeeDatabaseId}`, {
+    first_name: formData.firstName.trim(),
+    middle_name: formData.middleName.trim() || null,
+    last_name: formData.lastName.trim(),
+    email: formData.email.trim(),
+    country: formData.country,
+    location: formData.location || null,
+  });
+  return fromDatabase(row);
 }

@@ -1,0 +1,103 @@
+/* Instellingen > Landen en vestigingen. */
+
+/* Telefoon: kaarten onder elkaar. */
+.locations-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.locations-grid .content-card h2 {
+  margin-bottom: 14px;
+}
+
+/* Invoerveld met knop ernaast. */
+.locations-add {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.locations-add .roles-search {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.locations-add .primary-button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* De lijst met landen of vestigingen. */
+.locations-list {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.locations-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px 6px 12px;
+  font-size: 14px;
+}
+
+.locations-list li + li {
+  border-top: 1px solid #e9eeeb;
+}
+
+/* Het gekozen land valt op. */
+.locations-list li.is-selected {
+  background: #e7f0ec;
+}
+
+/* Een land is een knop: klik om de vestigingen te zien. */
+.locations-select {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.locations-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 0;
+}
+
+.locations-name .roles-muted,
+.locations-select .roles-muted {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.locations-list .role-remove-button:disabled {
+  color: #c4ccc8;
+  cursor: not-allowed;
+}
+
+.locations-list .role-remove-button:disabled:hover {
+  border-color: transparent;
+}
+
+/* Desktop: landen links, vestigingen rechts. */
+@media (min-width: 900px) {
+  .locations-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

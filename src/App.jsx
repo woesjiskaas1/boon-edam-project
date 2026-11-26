@@ -12,6 +12,10 @@ import Role from "./pages/Role";
 
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import SkillsMatrix from "./pages/SkillsMatrix";
+import LocationSettings from "./pages/LocationSettings";
+import initialCountries from "./data/countries";
+import initialLocations from "./data/locations";
 import Skills from "./pages/Skills";
 import Certificates from "./pages/Certificates";
 
@@ -21,7 +25,6 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 
 import AddEmployee from "./pages/AddEmployee";
-import exampleSkills from "./data/skills";
 import exampleCertificates from "./data/certificates";
 import { getCertificates } from "./services/certificateService";
 
@@ -34,6 +37,9 @@ import {
   updateSkill,
   deactivateSkill,
   addEmployeeToRole,
+  createJobRole,
+  updateEmployee,
+  updateJobRoleName,
   updateJobRoleSkills,
   removeEmployeeFromRole,
 } from "./services/employeeService";
@@ -55,6 +61,9 @@ function App() {
   const [jobRoles, setJobRoles] = useState([]);
   const [skills, setSkills] = useState([]);
   const [certificates, setCertificates] = useState([]);
+  // Landen en vestigingen: nog geen database, dus we beginnen met de vaste lijsten.
+  const [countries, setCountries] = useState(initialCountries);
+  const [locations, setLocations] = useState(initialLocations);
   const [certificatesError, setCertificatesError] = useState("");
   // Met navigate ga je in de code naar een andere URL.
   const navigate = useNavigate();
@@ -70,12 +79,11 @@ function App() {
       .then((loadedRoles) => setJobRoles(loadedRoles))
       .catch((error) => setEmployeesError(error.message));
 
+    // Alleen skills uit de database. Geen voorbeeldskills meer als terugval:
+    // zo zie je nooit per ongeluk data uit src/data/skills.js.
     getSkills()
-      .then((loadedSkills) => setSkills(loadedSkills.length > 0 ? loadedSkills : exampleSkills))
-      .catch((error) => {
-        setSkills(exampleSkills);
-        setEmployeesError(error.message);
-      });
+      .then((loadedSkills) => setSkills(loadedSkills))
+      .catch((error) => setEmployeesError(error.message));
 
     getCertificates()
       .then((loadedCertificates) => setCertificates(loadedCertificates.length > 0 ? loadedCertificates : exampleCertificates))
@@ -116,6 +124,35 @@ function App() {
     } catch (error) {
       setEmployeesError(error.message);
     }
+  };
+
+  // Gegevens van een medewerker opslaan. Rollen blijven zoals ze waren.
+  // Gaat het mis, dan vangt de pagina Employee de fout op.
+  const handleUpdateEmployee = async (employee, formData) => {
+    const updated = await updateEmployee(employee.databaseId, formData);
+    setEmployees((current) =>
+      current.map((item) =>
+        item.id === employee.id ? { ...updated, roleIds: item.roleIds, role: item.role } : item
+      )
+    );
+  };
+
+  // Nieuwe rol opslaan (Rol toevoegen) en daarna naar de detailpagina.
+  // Gaat het mis, dan vangt de pagina AddRole de fout op.
+  const handleAddRole = async (roleData) => {
+    const newRole = await createJobRole(roleData);
+    setJobRoles((current) => [...current, newRole]);
+    // Nieuwe ESCO-skills die de backend heeft aangemaakt, opnieuw ophalen.
+    getSkills().then(setSkills).catch(() => {});
+    navigate(`/rollen/${newRole.id}`);
+  };
+
+  // Een rol een andere (Boon Edam-)naam geven.
+  const handleRenameRole = async (roleId, name) => {
+    const updatedRole = await updateJobRoleName(roleId, name);
+    setJobRoles((current) =>
+      current.map((role) => (role.id === updatedRole.id ? updatedRole : role))
+    );
   };
 
   // Slaat de nieuwe lijst skills van een rol op, en zet de bijgewerkte
@@ -181,6 +218,26 @@ function App() {
   // en zet hem daarna achteraan in de lijst.
   // "async": we wachten op de backend. Gaat er iets mis, dan gooit
   // createEmployee een fout; die vangt de pagina AddEmployee op.
+  // ---------- Landen en vestigingen (alleen in de state, nog geen database) ----------
+  const handleAddCountry = (name) => {
+    // Nieuwe landen hebben (nog) geen vlag; die staan alleen in assets/flags.svg.
+    setCountries((current) => [...current, { code: "", name }]);
+  };
+
+  const handleDeleteCountry = (name) => {
+    setCountries((current) => current.filter((country) => country.name !== name));
+  };
+
+  const handleAddLocation = (country, name) => {
+    // Een uniek id maken uit land + naam, bijv. "spanje-madrid".
+    const id = `${country}-${name}`.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    setLocations((current) => [...current, { id, name, country }]);
+  };
+
+  const handleDeleteLocation = (id) => {
+    setLocations((current) => current.filter((location) => location.id !== id));
+  };
+
   const handleAddEmployee = async (formData) => {
     const savedEmployee = await createEmployee(formData);
 
@@ -307,6 +364,8 @@ function App() {
               element={
                 <AddEmployee
                   employeeRoles={jobRoles}
+                  countries={countries}
+                  locations={locations}
                   skills={skills}
                   onSave={handleAddEmployee}
                   onCancel={() => navigate("/medewerkers")}
@@ -325,7 +384,13 @@ function App() {
                 <Employee
                   employees={employees}
                   skills={skills}
+                  jobRoles={jobRoles}
+                  countries={countries}
+                  locations={locations}
                   onBack={() => navigate("/medewerkers")}
+                  onUpdate={handleUpdateEmployee}
+                  onAddRole={handleAddEmployeeToRole}
+                  onRemoveRole={handleRemoveEmployeeFromRole}
                 />
               }
             />
@@ -346,6 +411,7 @@ function App() {
               element={
                 <AddRole
                   skills={skills}
+                  onSave={handleAddRole}
                   onCancel={() => navigate("/rollen")}
                 />
               }
@@ -361,6 +427,7 @@ function App() {
                   onAddEmployee={handleAddEmployeeToRole}
                   onUpdateSkills={handleUpdateRoleSkills}
                   onRemoveEmployee={handleRemoveEmployeeFromRole}
+                  onRename={handleRenameRole}
                 />
               }
             />
@@ -389,7 +456,32 @@ function App() {
             <Route
               path="/instellingen"
               element={
-                <Settings currentUser={currentUser} portalUsers={portalUsers} />
+                <Settings
+                  currentUser={currentUser}
+                  portalUsers={portalUsers}
+                  onOpenLocations={() => navigate("/instellingen/landen-en-vestigingen")}
+                />
+              }
+            />
+            <Route
+              path="/instellingen/landen-en-vestigingen"
+              element={
+                <LocationSettings
+                  countries={countries}
+                  locations={locations}
+                  employees={employees}
+                  onAddCountry={handleAddCountry}
+                  onDeleteCountry={handleDeleteCountry}
+                  onAddLocation={handleAddLocation}
+                  onDeleteLocation={handleDeleteLocation}
+                  onBack={() => navigate("/instellingen")}
+                />
+              }
+            />
+            <Route
+              path="/skills-matrix"
+              element={
+                <SkillsMatrix employees={employees} skills={skills} jobRoles={jobRoles} />
               }
             />
             <Route path="/profiel" element={<Profile />} />

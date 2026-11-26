@@ -4,6 +4,8 @@ import { searchEscoOccupations, getEscoOccupation } from "../../services/escoSer
 
 // Je zoekt een beroep, en met "Kiezen" haalt het paneel de details op
 // en geeft die aan de pagina (onSelect).
+// "onClose" is optioneel: zonder onClose is er geen kruisje (dan is ESCO
+// de standaard en kun je het paneel niet wegklikken).
 function EscoSearch({ onSelect, onClose }) {
   // Wat de gebruiker in het zoekveld typt.
   const [query, setQuery] = useState("");
@@ -66,20 +68,23 @@ function EscoSearch({ onSelect, onClose }) {
     <section className="esco-search" aria-label="Zoeken in ESCO">
       <div className="esco-search-header">
         <div>
-          <h2>Zoeken in ESCO</h2>
+          <h2>Zoek een beroep in ESCO</h2>
           <p>
-            Zoek een beroep in de Europese ESCO-lijst. De naam, de omschrijving
-            en de essentiële skills worden dan voor je ingevuld.
+            Kies het beroep dat het best past. De omschrijving en de essentiële
+            skills worden dan ingevuld. Je kunt daarna een eigen Boon Edam-naam
+            geven; de ESCO-naam blijft altijd bewaard.
           </p>
         </div>
-        <button
-          type="button"
-          className="esco-search-close"
-          onClick={onClose}
-          aria-label="ESCO-zoeken sluiten"
-        >
-          ×
-        </button>
+        {onClose && (
+          <button
+            type="button"
+            className="esco-search-close"
+            onClick={onClose}
+            aria-label="ESCO-zoeken sluiten"
+          >
+            ×
+          </button>
+        )}
       </div>
 
       <form className="esco-search-bar" onSubmit={handleSearch}>

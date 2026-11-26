@@ -1,0 +1,113 @@
+/* Skills-matrix: medewerkers x skills. */
+
+.matrix-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.matrix-filters .roles-tools {
+  margin-bottom: 0;
+}
+
+.matrix-who,
+.matrix-columns {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.matrix-who-label {
+  color: #123c32;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.matrix-column-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: none;
+  font-size: 13px;
+}
+
+/* De tabel zelf. */
+.matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.matrix-table th,
+.matrix-table td {
+  padding: 10px 12px;
+  border-top: 1px solid #e9eeeb;
+  text-align: center;
+}
+
+.matrix-table thead th {
+  color: #52645b;
+  background: #f5f7f6;
+  font-size: 12px;
+  font-weight: 700;
+  border-top: 0;
+  vertical-align: bottom;
+}
+
+/* Kolomkop: lange ESCO-namen afkappen. */
+.matrix-skill-head {
+  display: inline-block;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* De naamkolom blijft links staan als je opzij schuift. */
+.matrix-name-cell {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 180px;
+  text-align: left !important;
+  background: #ffffff;
+}
+
+.matrix-table thead .matrix-name-cell {
+  background: #f5f7f6;
+}
+
+/* Niveau als gekleurd vakje: hoe hoger, hoe donkerder groen. */
+.matrix-level {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.matrix-level.level-1 { color: #2f5d4c; background: #e8f3ee; }
+.matrix-level.level-2 { color: #23523f; background: #cfe7db; }
+.matrix-level.level-3 { color: #ffffff; background: #6fb08f; }
+.matrix-level.level-4 { color: #ffffff; background: #3a8a62; }
+.matrix-level.level-5 { color: #ffffff; background: #1f5d40; }
+
+/* Standaard skill van de rol die ontbreekt. */
+.matrix-cell.is-missing {
+  background: #fff4f2;
+}
+
+.matrix-missing {
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.matrix-legend {
+  margin: 0;
+  color: #718079;
+  font-size: 12px;
+}

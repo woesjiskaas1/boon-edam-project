@@ -125,3 +125,144 @@
   border-radius: 8px;
   font-size: 13px;
 }
+/* ---------- ESCO-naam en eigen naam ---------- */
+
+/* Blauw label "ESCO" en geel label "EIGEN". */
+.esco-tag,
+.own-tag {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  vertical-align: 1px;
+}
+
+.esco-tag {
+  color: #1d5a8a;
+  background: #e6f0f8;
+  border: 1px solid #c9dcec;
+}
+
+.own-tag {
+  color: #6b4e00;
+  background: #fff3d6;
+  border: 1px solid #f0dca8;
+}
+
+/* De originele naam, klein boven de Boon Edam-naam. */
+.esco-original {
+  display: block;
+  margin-bottom: 2px;
+  color: #718079;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* "Staat deze rol niet in ESCO?" onder het zoekpaneel. */
+.not-in-esco {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 1px dashed #c4d2cb;
+  border-radius: var(--radius-card);
+}
+
+.not-in-esco strong {
+  display: block;
+  color: #26332f;
+  font-size: 14px;
+}
+
+.not-in-esco span {
+  color: #718079;
+  font-size: 13px;
+}
+
+/* De vaste ESCO-naam in het formulier: grijs, niet aan te passen. */
+.esco-locked {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  padding: 10px 12px;
+  color: #26332f;
+  background: #f5f7f6;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-weight: 400;
+}
+
+.esco-locked small {
+  margin-left: auto;
+  color: #718079;
+}
+
+.esco-own-note {
+  margin: 0;
+  color: #52645b;
+  font-size: 13px;
+}
+
+/* Kleine uitleg onder een veld. */
+.form-hint {
+  color: #718079;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* Blok "ESCO-gegevens" op de rol-detailpagina. */
+.esco-facts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px 16px;
+  margin: 0;
+  font-size: 14px;
+}
+
+.esco-facts dt {
+  color: #718079;
+  font-size: 13px;
+}
+
+.esco-facts dd {
+  margin: 0 0 10px;
+  color: #26332f;
+  overflow-wrap: anywhere;
+}
+
+.esco-facts a {
+  color: #1d5a8a;
+}
+
+.esco-rename {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.esco-rename input {
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+  border: 1px solid #d5dfda;
+  border-radius: 8px;
+}
+
+@media (min-width: 600px) {
+  .esco-facts {
+    grid-template-columns: 160px 1fr;
+  }
+
+  .esco-facts dd {
+    margin-bottom: 6px;
+  }
+}

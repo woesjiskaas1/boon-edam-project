@@ -60,6 +60,8 @@ export async function getEscoOccupation(uri) {
   return {
     uri: data.uri,
     title: data.title,
+    // De ESCO-code, bijv. "7412.3".
+    code: data.code ?? "",
     // De omschrijving staat per taal; wij willen de Nederlandse tekst.
     description: data.description?.[LANGUAGE]?.literal ?? "",
     essentialSkills: essentialSkills.map((skill) => ({

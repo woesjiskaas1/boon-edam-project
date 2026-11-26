@@ -47,7 +47,7 @@ const getChangeBlockReason = (currentUser, targetUser) => {
   return null;
 };
 
-function Settings({ currentUser, portalUsers }) {
+function Settings({ currentUser, portalUsers, onOpenLocations }) {
 
     
   return (
@@ -61,6 +61,18 @@ function Settings({ currentUser, portalUsers }) {
           </p>
         </div>
       </div>
+          <div className="content-card settings-section">
+            <div className="settings-section-header">
+              <div>
+                <h2>Landen en vestigingen</h2>
+                <p>Beheer de landen en vestigingen die je kunt kiezen bij een medewerker.</p>
+              </div>
+              <button type="button" className="secondary-button" onClick={onOpenLocations}>
+                Beheren →
+              </button>
+            </div>
+          </div>
+
           <div className="content-card settings-section">
             <div className="settings-section-header">
               <div>

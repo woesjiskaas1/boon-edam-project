@@ -6,31 +6,29 @@ import "../styles/add-employee.css";
 import "../styles/tag-picker.css";
 import "../styles/esco-search.css";
 
-function AddRole({ skills, onCancel }) {
-  // Is het ESCO-zoekpaneel open? Begint dicht.
-  const [isEscoOpen, setIsEscoOpen] = useState(false);
-  // Naam en omschrijving van de rol.
-  const [formData, setFormData] = useState({ name: "", description: "" });
+// Eerste letter groot: ESCO schrijft namen met een kleine letter.
+const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
+
+// Rol toevoegen.
+// Standaard zoek je eerst in ESCO. Staat de rol er niet in, dan kun je via
+// een losse knop zelf een rol aanmaken (modus "own").
+function AddRole({ skills, onSave, onCancel }) {
+  // "esco" = zoeken/gekozen uit ESCO (standaard), "own" = zelf aanmaken.
+  const [mode, setMode] = useState("esco");
+  // Het gekozen ESCO-beroep: { title, uri, code }, of null.
+  const [escoOccupation, setEscoOccupation] = useState(null);
+  // Boon Edam-naam (bij ESCO optioneel) of de naam van een eigen rol.
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   // De gekozen skills. Elk item: { id, name }.
   // Een ESCO-skill die nog niet in de database staat, heeft ook "escoUri".
   const [selectedSkills, setSelectedSkills] = useState([]);
-  // Het ESCO-beroep waar deze rol op is gebaseerd (alleen om te tonen).
-  const [escoTitle, setEscoTitle] = useState("");
-
-  // Eén functie voor de tekstvelden, zoals bij Medewerker toevoegen.
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-
-    setFormData((current) => ({
-      ...current,
-      [name]: value,
-    }));
-  };
+  const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   // Een skill uit je eigen lijst kiezen (via de TagPicker).
   const handleSkillSelect = (skillId) => {
     const skill = skills.find((item) => item.id === skillId);
-
     setSelectedSkills((current) => [...current, skill]);
   };
 
@@ -39,89 +37,169 @@ function AddRole({ skills, onCancel }) {
     setSelectedSkills((current) => current.filter((skill) => skill.id !== skillId));
   };
 
-  // Een beroep uit ESCO gekozen: vul naam, omschrijving en skills in.
+  // Een beroep uit ESCO gekozen: omschrijving en skills invullen.
   const handleEscoSelect = (occupation) => {
-    setFormData({
-      // ESCO schrijft met een kleine letter: maak de eerste letter groot.
-      name: occupation.title.charAt(0).toUpperCase() + occupation.title.slice(1),
-      description: occupation.description,
+    setEscoOccupation({
+      title: capitalize(occupation.title),
+      uri: occupation.uri,
+      code: occupation.code,
     });
+    setDescription(occupation.description);
 
-    setSelectedSkills((current) => {
-      // Namen die al gekozen zijn, in kleine letters, om dubbele te voorkomen.
-      const chosenNames = current.map((skill) => skill.name.toLowerCase());
-
-      const escoSkills = occupation.essentialSkills
-        .filter((escoSkill) => !chosenNames.includes(escoSkill.name.toLowerCase()))
-        .map((escoSkill) => {
-          // Bestaat deze skill al in de database (zelfde naam)? Gebruik die.
-          const existing = skills.find(
-            (skill) => skill.name.toLowerCase() === escoSkill.name.toLowerCase()
-          );
-
-          if (existing) {
-            return existing;
-          }
-
-          // Nog niet in de database: onthoud de ESCO-uri.
-          // Bij opslaan (stap 4) maakt de backend er een skill van.
-          return { id: escoSkill.uri, name: escoSkill.name, escoUri: escoSkill.uri };
-        });
-
-      return [...current, ...escoSkills];
+    const escoSkills = occupation.essentialSkills.map((escoSkill) => {
+      // Bestaat deze skill al in de database (zelfde ESCO-id of naam)? Gebruik die.
+      const existing = skills.find(
+        (skill) =>
+          (skill.escoUri && skill.escoUri === escoSkill.uri) ||
+          skill.name.toLowerCase() === escoSkill.name.toLowerCase()
+      );
+      // Anders: onthoud de ESCO-gegevens; bij opslaan wordt het een skill.
+      return existing ?? { id: escoSkill.uri, name: escoSkill.name, escoUri: escoSkill.uri };
     });
-
-    setEscoTitle(occupation.title);
-    setIsEscoOpen(false);
+    setSelectedSkills(escoSkills);
+    setError("");
   };
+
+  // Terug naar het zoeken (ander beroep kiezen of toch ESCO gebruiken).
+  const startOver = () => {
+    setMode("esco");
+    setEscoOccupation(null);
+    setName("");
+    setDescription("");
+    setSelectedSkills([]);
+    setError("");
+  };
+
+  // Zelf een rol aanmaken, zonder ESCO.
+  const startOwnRole = () => {
+    startOver();
+    setMode("own");
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // Bij ESCO mag de eigen naam leeg zijn: dan geldt de ESCO-naam.
+    const finalName = name.trim() || escoOccupation?.title || "";
+    if (finalName === "") {
+      setError("Vul een naam in voor de rol.");
+      return;
+    }
+
+    setIsSaving(true);
+    setError("");
+    try {
+      await onSave({
+        name: finalName,
+        description: description.trim(),
+        skills: selectedSkills,
+        escoTitle: escoOccupation?.title ?? "",
+        escoUri: escoOccupation?.uri ?? "",
+        escoCode: escoOccupation?.code ?? "",
+      });
+    } catch (saveError) {
+      setError(saveError.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // ---------- Stap 1: zoeken in ESCO (standaard) ----------
+  if (mode === "esco" && escoOccupation === null) {
+    return (
+      <section className="add-employee-page">
+        <div className="employees-header">
+          <div>
+            <h1>Rol toevoegen</h1>
+            <p>Zoek het beroep in ESCO, de Europese lijst met beroepen en skills.</p>
+          </div>
+        </div>
+
+        <EscoSearch onSelect={handleEscoSelect} />
+
+        <div className="not-in-esco">
+          <div>
+            <strong>Staat deze rol niet in ESCO?</strong>
+            <span>Maak dan zelf een rol aan met een eigen naam. Die heeft geen ESCO-koppeling.</span>
+          </div>
+          <Button variant="secondary" onClick={startOwnRole}>
+            Zelf een rol aanmaken
+          </Button>
+        </div>
+
+        <div className="form-actions">
+          <Button variant="secondary" onClick={onCancel}>
+            Annuleren
+          </Button>
+        </div>
+      </section>
+    );
+  }
+
+  // ---------- Stap 2: het formulier (na ESCO kiezen, of een eigen rol) ----------
+  const isEsco = mode === "esco";
 
   return (
     <section className="add-employee-page">
       <div className="employees-header">
         <div>
           <h1>Rol toevoegen</h1>
-          <p>Maak een rol zelf aan, of neem een beroep over uit ESCO.</p>
+          <p>{isEsco ? "Gebaseerd op een beroep uit ESCO." : "Een eigen rol, zonder ESCO-koppeling."}</p>
         </div>
-        {!isEscoOpen && (
-          <Button variant="secondary" onClick={() => setIsEscoOpen(true)}>
-            Zoek in ESCO
-          </Button>
-        )}
+        <Button variant="secondary" onClick={startOver}>
+          {isEsco ? "Ander beroep kiezen" : "Toch zoeken in ESCO"}
+        </Button>
       </div>
 
-      {isEscoOpen && (
-        <EscoSearch
-          onSelect={handleEscoSelect}
-          onClose={() => setIsEscoOpen(false)}
-        />
-      )}
-
-      <form className="add-employee-form" noValidate>
-        {escoTitle && (
-          <p className="esco-chosen">
-            Gebaseerd op het ESCO-beroep <strong>{escoTitle}</strong>. Je kunt alles nog aanpassen.
-          </p>
-        )}
-
-        <h2 className="form-section-title">Rol</h2>
+      <form className="add-employee-form" onSubmit={handleSubmit} noValidate>
+        <h2 className="form-section-title">Naam</h2>
         <div className="form-stack">
-          <label className="form-field">
-            Naam van de rol
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Bijv. Servicemonteur"
-            />
-          </label>
+          {isEsco ? (
+            <>
+              <div className="form-field">
+                ESCO-naam (kan niet worden aangepast)
+                <div className="esco-locked">
+                  <span className="esco-tag">ESCO</span>
+                  {escoOccupation.title}
+                  {escoOccupation.code && <small>code {escoOccupation.code}</small>}
+                </div>
+              </div>
+              <label className="form-field">
+                Boon Edam-naam (optioneel)
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="Laat leeg om de ESCO-naam te gebruiken"
+                />
+                <span className="form-hint">
+                  Deze naam zien collega's in het portaal. De ESCO-naam staat er altijd klein boven.
+                </span>
+              </label>
+            </>
+          ) : (
+            <>
+              <p className="esco-own-note">
+                <span className="own-tag">EIGEN</span>
+                Deze rol staat niet in ESCO en heeft dus geen ESCO-naam of ESCO-id.
+              </p>
+              <label className="form-field">
+                Naam van de rol
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="Bijv. Draaideur-specialist"
+                />
+              </label>
+            </>
+          )}
 
           <label className="form-field">
             Omschrijving (optioneel)
             <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
               rows={3}
             />
           </label>
@@ -138,12 +216,14 @@ function AddRole({ skills, onCancel }) {
           onRemove={handleSkillRemove}
         />
 
+        {error && <p className="form-error form-save-error" role="alert">{error}</p>}
+
         <div className="form-actions">
           <Button variant="secondary" onClick={onCancel}>
             Annuleren
           </Button>
-          <Button type="submit" variant="primary">
-            Rol opslaan
+          <Button type="submit" variant="primary" disabled={isSaving}>
+            {isSaving ? "Opslaan..." : "Rol opslaan"}
           </Button>
         </div>
       </form>

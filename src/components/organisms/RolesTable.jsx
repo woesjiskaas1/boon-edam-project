@@ -1,4 +1,6 @@
 import { Link } from "react-router";
+import EscoName from "../molecules/EscoName";
+import "../../styles/esco-search.css";
 
 // Hoeveel skills we per rol in de tabel laten zien. De rest wordt "+3".
 const VISIBLE_SKILLS = 2;
@@ -28,9 +30,11 @@ function RolesTable({ roles, skills, emptyText }) {
             return (
               <tr key={role.id}>
                 <td>
-                  <Link className="roles-name" to={`/rollen/${role.id}`}>
-                    {role.name}
-                  </Link>
+                  <EscoName escoTitle={role.escoTitle}>
+                    <Link className="roles-name" to={`/rollen/${role.id}`}>
+                      {role.name}
+                    </Link>
+                  </EscoName>
                   {role.description && (
                     <span className="roles-description">{role.description}</span>
                   )}

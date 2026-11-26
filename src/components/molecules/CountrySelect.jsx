@@ -1,9 +1,11 @@
 import { useEffect, useId, useRef, useState } from "react";
 import CountryLabel from "./CountryLabel";
-import countries from "../../data/countries";
+import defaultCountries from "../../data/countries";
 import "../../styles/country-select.css";
 
-function CountrySelect({ value, onChange, error }) {
+// "countries" komt uit App (Instellingen > Landen en vestigingen).
+// Geef je niets mee, dan gebruikt hij de vaste lijst uit src/data/countries.js.
+function CountrySelect({ value, onChange, error, countries = defaultCountries }) {
   const id = useId();
   const containerRef = useRef(null);
   const triggerRef = useRef(null);

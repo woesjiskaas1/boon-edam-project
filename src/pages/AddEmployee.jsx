@@ -2,7 +2,6 @@ import { useState } from "react";
 import CountrySelect from "../components/molecules/CountrySelect";
 import TagPicker from "../components/molecules/TagPicker";
 
-import locations from "../data/locations";
 import "../styles/add-employee.css";
 import "../styles/tag-picker.css";
 
@@ -18,7 +17,7 @@ const emptyForm = {
   skillIds: [],
 };
 
-function AddEmployee({ employeeRoles, skills, onSave, onCancel }) {
+function AddEmployee({ employeeRoles, skills, countries, locations, onSave, onCancel }) {
   const [formData, setFormData] = useState(emptyForm);
   const [errors, setErrors] = useState({});
   // Bezig met opslaan? Dan zetten we de knop uit.
@@ -177,6 +176,7 @@ function AddEmployee({ employeeRoles, skills, onSave, onCancel }) {
         <h2 className="form-section-title">Werkplek</h2>
         <div className="form-grid">
           <CountrySelect
+            countries={countries}
             value={formData.country}
             onChange={(country) =>
               setFormData((current) => ({ ...current, country, location: "" }))

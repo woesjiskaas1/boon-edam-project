@@ -205,3 +205,144 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ---------- Bewerken op de medewerkerpagina ---------- */
+
+/* Het formulier vult de hele breedte van het raster. */
+.employee-edit-card {
+  grid-column: 1 / -1;
+}
+
+.employee-edit-card h2 {
+  margin-bottom: 18px;
+}
+
+.employee-edit-stack {
+  margin-top: 20px;
+}
+
+/* Keuzelijst + knop naast elkaar (rol toevoegen). */
+.employee-add-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.employee-add-row .roles-sort {
+  flex: 1 1 200px;
+}
+
+/* De rolnaam in een chip is een link naar de rol. */
+.employee-chip-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.employee-chip-link:hover {
+  text-decoration: underline;
+}
+
+.employee-detail-card .form-hint {
+  display: block;
+  margin: 8px 0 0;
+  color: #718079;
+  font-size: 12px;
+}
+
+/* ---------- Skills met niveau ---------- */
+.employee-skill-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.employee-skill-rows li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.employee-skill-rows li + li {
+  border-top: 1px solid #e9eeeb;
+}
+
+.employee-skill-name {
+  flex: 1 1 160px;
+  overflow-wrap: anywhere;
+}
+
+.employee-skill-level {
+  padding: 6px 8px;
+  font: inherit;
+  font-size: 13px;
+  border: 1px solid #d5dfda;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+/* ---------- Gap-analyse ---------- */
+.employee-gap-card {
+  grid-column: 1 / -1;
+}
+
+.gap-meter {
+  height: 8px;
+  overflow: hidden;
+  background: #fbe4e1;
+  border-radius: 8px;
+}
+
+.gap-meter span {
+  display: block;
+  height: 100%;
+  background: #2e8b57;
+  border-radius: 8px;
+}
+
+.gap-summary {
+  margin: 10px 0;
+  color: #52645b;
+  font-size: 14px;
+}
+
+.gap-ok {
+  margin: 0;
+  color: #2e7d4f;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.gap-missing {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gap-missing li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 12px;
+  color: #8a2a1f;
+  background: #fff4f2;
+  border: 1px solid #f6d3ce;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.gap-missing li + li {
+  margin-top: 6px;
+}
+
+.gap-missing .secondary-button {
+  padding: 6px 12px;
+  font-size: 13px;
+}
