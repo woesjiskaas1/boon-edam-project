@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router";
-import TopNavbar from "./components/organisms/TopNavbar";
-import Sidebar from "./components/organisms/Sidebar";
+import PortalLayout from "./templates/PortalLayout";
 
 import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
@@ -26,6 +25,7 @@ import Register from "./pages/Register";
 
 import AddEmployee from "./pages/AddEmployee";
 import exampleCertificates from "./data/certificates";
+import exampleEmployees from "./data/employees";
 import { getCertificates } from "./services/certificateService";
 
 import {
@@ -64,7 +64,8 @@ function App() {
   // Landen en vestigingen: nog geen database, dus we beginnen met de vaste lijsten.
   const [countries, setCountries] = useState(initialCountries);
   const [locations, setLocations] = useState(initialLocations);
-  const [certificatesError, setCertificatesError] = useState("");
+  const [certificatesNotice, setCertificatesNotice] = useState("");
+  const [usesExampleCertificates, setUsesExampleCertificates] = useState(false);
   // Met navigate ga je in de code naar een andere URL.
   const navigate = useNavigate();
 
@@ -85,11 +86,21 @@ function App() {
       .then((loadedSkills) => setSkills(loadedSkills))
       .catch((error) => setEmployeesError(error.message));
 
+    const exampleNotice = "Je ziet voorbeeldcertificaten met fictieve medewerkeraantallen.";
     getCertificates()
-      .then((loadedCertificates) => setCertificates(loadedCertificates.length > 0 ? loadedCertificates : exampleCertificates))
+      .then((loadedCertificates) => {
+        if (loadedCertificates.length > 0) {
+          setCertificates(loadedCertificates);
+        } else {
+          setCertificates(exampleCertificates);
+          setUsesExampleCertificates(true);
+          setCertificatesNotice(exampleNotice);
+        }
+      })
       .catch(() => {
         setCertificates(exampleCertificates);
-        setCertificatesError("De certificaten konden niet worden opgehaald.");
+        setUsesExampleCertificates(true);
+        setCertificatesNotice(`De certificaten konden niet worden opgehaald. ${exampleNotice}`);
       });
   }, []);
 
@@ -322,27 +333,18 @@ function App() {
   }
 
   return (
-    <div className="app-layout">
-      <TopNavbar
-        currentUser={currentUser}
-        onNavigate={navigate}
-        onLogout={handleLogout}
-      />
-
-      <div className="app-body">
-        <Sidebar
-          isCollapsed={isSidebarCollapsed}
-          onToggle={() =>
-            setIsSidebarCollapsed((collapsed) => !collapsed)
-          }
-        />
-
-        <main className={`main-content${isSidebarCollapsed ? " sidebar-collapsed" : ""}`}>
-          {employeesError && (
-            <p className="auth-error" role="alert">
-              {employeesError} Draait de backend?
-            </p>
-          )}
+    <PortalLayout
+      currentUser={currentUser}
+      onNavigate={navigate}
+      onLogout={handleLogout}
+      isSidebarCollapsed={isSidebarCollapsed}
+      onSidebarToggle={() => setIsSidebarCollapsed((collapsed) => !collapsed)}
+      notice={employeesError && (
+        <p className="auth-error" role="alert">
+          {employeesError} Draait de backend?
+        </p>
+      )}
+    >
           <Routes>
             <Route
               path="/"
@@ -447,7 +449,9 @@ function App() {
               element={
                 <Certificates
                   certificates={certificates}
-                  error={certificatesError}
+                  employees={usesExampleCertificates ? exampleEmployees : employees}
+                  isExample={usesExampleCertificates}
+                  notice={certificatesNotice}
                   onSaveCertificate={handleSaveCertificate}
                   onDeleteCertificate={handleDeleteCertificate}
                 />
@@ -489,9 +493,7 @@ function App() {
             {/* Al ingelogd of onbekende URL: naar het dashboard */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </main>
-      </div>
-    </div>
+    </PortalLayout>
   );
 }
 

@@ -1,4 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
+import Button from "../atoms/Button";
+import Input from "../atoms/Input";
 import CountryLabel from "./CountryLabel";
 import defaultCountries from "../../data/countries";
 import "../../styles/country-select.css";
@@ -97,10 +99,9 @@ function CountrySelect({ value, onChange, error, countries = defaultCountries })
     <div className="form-field">
       <label id={`${id}-label`} htmlFor={`${id}-trigger`}>Land</label>
       <div className="country-select" ref={containerRef}>
-        <button
+        <Button
           ref={triggerRef}
           id={`${id}-trigger`}
-          type="button"
           role="combobox"
           className={`country-select-trigger${isOpen ? " is-open" : ""}`}
           aria-labelledby={`${id}-label ${id}-value`}
@@ -121,7 +122,7 @@ function CountrySelect({ value, onChange, error, countries = defaultCountries })
           <svg className="country-select-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="m5 7.5 5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-        </button>
+        </Button>
 
         {isOpen && (
           <ul id={`${id}-listbox`} className="country-select-options" role="listbox" aria-labelledby={`${id}-label`}>
@@ -147,7 +148,7 @@ function CountrySelect({ value, onChange, error, countries = defaultCountries })
             ))}
           </ul>
         )}
-        <input type="hidden" name="country" value={value} />
+        <Input type="hidden" name="country" value={value} />
       </div>
       {error && <span id={`${id}-error`} className="form-error">{error}</span>}
     </div>

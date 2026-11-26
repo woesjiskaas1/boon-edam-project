@@ -2,7 +2,11 @@ import Avatar from "../atoms/Avatar";
 import CountryLabel from "../molecules/CountryLabel";
 import "../../styles/employee.css";
 
-export default function EmployeeDetails({ employee, skills }) {
+// Bovenkant van de medewerkerpagina: de samenvatting en de kaart "Gegevens".
+// - editForm: als je aan het bewerken bent, staat dit formulier op de plek
+//   van de kaart "Gegevens".
+// - children: de andere kaarten (rollen, gap-analyse, skills).
+export default function EmployeeDetails({ employee, editForm, children }) {
   return (
     <>
       <div className="employee-summary">
@@ -18,53 +22,39 @@ export default function EmployeeDetails({ employee, skills }) {
       </div>
 
       <div className="employee-details-grid">
-        <section className="employee-detail-card" aria-labelledby="employee-personal-title">
-          <h2 id="employee-personal-title">Persoonlijke gegevens</h2>
-          <dl className="employee-fields">
-            <div>
-              <dt>Naam</dt>
-              <dd>{employee.name}</dd>
-            </div>
+        {editForm ?? (
+          <section className="employee-detail-card" aria-labelledby="employee-personal-title">
+            <h2 id="employee-personal-title">Gegevens</h2>
+            <dl className="employee-fields">
+              <div>
+                <dt>Naam</dt>
+                <dd>{employee.name}</dd>
+              </div>
+              <div>
+                <dt>E-mailadres</dt>
+                <dd>
+                  {employee.email
+                    ? <a href={`mailto:${employee.email}`}>{employee.email}</a>
+                    : "Niet ingevuld"}
+                </dd>
+              </div>
+              <div>
+                <dt>Land</dt>
+                <dd><CountryLabel country={employee.country} /></dd>
+              </div>
+              <div>
+                <dt>Vestiging</dt>
+                <dd>{employee.location || "Niet ingevuld"}</dd>
+              </div>
+              <div>
+                <dt>Medewerkers ID</dt>
+                <dd>{employee.id}</dd>
+              </div>
+            </dl>
+          </section>
+        )}
 
-            <div>
-              <dt>Land</dt>
-              <dd><CountryLabel country={employee.country} /></dd>
-            </div>
-          </dl>
-        </section>
-
-        <section className="employee-detail-card" aria-labelledby="employee-work-title">
-          <h2 id="employee-work-title">Werk- en contactgegevens</h2>
-          <dl className="employee-fields">
-            <div>
-              <dt>Medewerkers ID</dt>
-              <dd>{employee.id}</dd>
-            </div>
-            <div>
-              <dt>Rol</dt>
-              <dd>{employee.role || "Niet ingevuld"}</dd>
-            </div>
-            <div>
-              <dt>E-mailadres</dt>
-              <dd>
-                {employee.email
-                  ? <a href={`mailto:${employee.email}`}>{employee.email}</a>
-                  : "Niet ingevuld"}
-              </dd>
-            </div>
-          </dl>
-        </section>
-
-        <section className="employee-detail-card employee-skills-card" aria-labelledby="employee-skills-title">
-          <h2 id="employee-skills-title">Skills</h2>
-          {skills.length > 0 ? (
-            <ul className="employee-skill-list">
-              {skills.map((skill) => <li key={skill.id}>{skill.name}</li>)}
-            </ul>
-          ) : (
-            <p className="employee-empty-skills">Er zijn nog geen skills vastgelegd voor deze medewerker.</p>
-          )}
-        </section>
+        {children}
       </div>
     </>
   );

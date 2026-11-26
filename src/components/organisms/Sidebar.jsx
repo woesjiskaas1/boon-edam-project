@@ -1,45 +1,22 @@
-import { NavLink } from "react-router";
-
-// Elk menu-item hoort bij een URL ("path").
-const navigationItems = [
-  { path: "/", label: "Dashboard", icon: "⌂" },
-  { path: "/medewerkers", label: "Medewerkers", icon: "♙" },
-  { path: "/rollen", label: "Rollen", icon: "◫" },
-  { path: "/skills", label: "Skills", icon: "★" },
-  { path: "/skills-matrix", label: "Skills-matrix", icon: "▦" },
-  { path: "/certificaten", label: "Certificaten", icon: "▤" },
-  { path: "/instellingen", label: "Instellingen", icon: "⚙" },
-];
+import Button from "../atoms/Button";
+import NavItem from "../molecules/NavItem";
+import navigationItems from "../../data/navigationItems";
 
 function Sidebar({ isCollapsed, onToggle }) {
   return (
     <aside className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
-      <button
-        type="button"
+      <Button
         className="sidebar-toggle"
         onClick={onToggle}
+        aria-expanded={!isCollapsed}
         aria-label={isCollapsed ? "Menu uitklappen" : "Menu inklappen"}
       >
         {isCollapsed ? "☰" : "←"}
-      </button>
+      </Button>
 
       <nav aria-label="Hoofdnavigatie">
         {navigationItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.path === "/"}
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? "active" : ""}`
-            }
-            title={isCollapsed ? item.label : undefined}
-          >
-            <span className="sidebar-icon" aria-hidden="true">
-              {item.icon}
-            </span>
-
-            {!isCollapsed && <span>{item.label}</span>}
-          </NavLink>
+          <NavItem key={item.path} item={item} isCollapsed={isCollapsed} />
         ))}
       </nav>
     </aside>

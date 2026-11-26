@@ -1,3 +1,5 @@
+import Button from "../components/atoms/Button";
+
 function ImportEmployees({ onCancel }) {
   return (
     <section className="add-employee-page">
@@ -17,9 +19,9 @@ function ImportEmployees({ onCancel }) {
       </div>
 
       <div className="form-actions">
-        <button type="button" className="secondary-button" onClick={onCancel}>
+        <Button variant="secondary" onClick={onCancel}>
           Terug naar medewerkers
-        </button>
+        </Button>
       </div>
     </section>
   );

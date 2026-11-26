@@ -2,7 +2,7 @@ import { useState } from "react";
 import Button from "../components/atoms/Button";
 import SkillsTable from "../components/organisms/SkillsTable";
 import SkillFormDialog from "../components/organisms/SkillFormDialog";
-import SkillDeleteDialog from "../components/organisms/SkillDeleteDialog";
+import ConfirmDeleteDialog from "../components/molecules/ConfirmDeleteDialog";
 import suggestedCategories from "../data/skillCategories";
 import "../styles/skills.css";
 
@@ -95,9 +95,10 @@ function Skills({ skills, employees, onSaveSkill, onDeleteSkill }) {
       )}
 
       {skillToDelete && (
-        <SkillDeleteDialog
-          skill={skillToDelete}
-          onConfirm={handleDelete}
+        <ConfirmDeleteDialog
+          title="Skill verwijderen?"
+          description={`Weet je zeker dat je de skill “${skillToDelete.name}” wilt verwijderen? De skill wordt ook verwijderd bij gekoppelde medewerkers.`}
+          onConfirm={() => handleDelete(skillToDelete)}
           onClose={() => setSkillToDelete(null)}
         />
       )}

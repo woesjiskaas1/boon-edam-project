@@ -20,19 +20,6 @@
   gap: 20px;
 }
 
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  color: #34443d;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.form-field-wide {
-  grid-column: 1 / -1;
-}
-
 /* Voornaam, tussenvoegsel en achternaam (telefoon: onder elkaar). */
 .form-grid-names {
   grid-template-columns: 1fr;
@@ -56,36 +43,6 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-.form-field select:disabled {
-  color: #9aa6a0;
-  background: #f5f7f6;
-  cursor: not-allowed;
-}
-
-.form-field input,
-.form-field select,
-.form-field textarea {
-  padding: 10px 12px;
-  font: inherit;
-  font-weight: 400;
-  color: #26332f;
-  background: #ffffff;
-  border: 1px solid #d5dfda;
-  border-radius: 8px;
-}
-
-.form-field input:focus,
-.form-field select:focus {
-  outline: 2px solid #123c32;
-  outline-offset: 1px;
-}
-
-.form-error {
-  color: #b42318;
-  font-size: 13px;
-  font-weight: 400;
 }
 
 .roles-fieldset {

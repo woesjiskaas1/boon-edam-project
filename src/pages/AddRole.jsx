@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "../components/atoms/Button";
-import TagPicker from "../components/molecules/TagPicker";
 import EscoSearch from "../components/organisms/EscoSearch";
+import RoleForm from "../components/organisms/RoleForm";
 import "../styles/add-employee.css";
 import "../styles/tag-picker.css";
 import "../styles/esco-search.css";
@@ -151,82 +151,21 @@ function AddRole({ skills, onSave, onCancel }) {
         </Button>
       </div>
 
-      <form className="add-employee-form" onSubmit={handleSubmit} noValidate>
-        <h2 className="form-section-title">Naam</h2>
-        <div className="form-stack">
-          {isEsco ? (
-            <>
-              <div className="form-field">
-                ESCO-naam (kan niet worden aangepast)
-                <div className="esco-locked">
-                  <span className="esco-tag">ESCO</span>
-                  {escoOccupation.title}
-                  {escoOccupation.code && <small>code {escoOccupation.code}</small>}
-                </div>
-              </div>
-              <label className="form-field">
-                Boon Edam-naam (optioneel)
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="Laat leeg om de ESCO-naam te gebruiken"
-                />
-                <span className="form-hint">
-                  Deze naam zien collega's in het portaal. De ESCO-naam staat er altijd klein boven.
-                </span>
-              </label>
-            </>
-          ) : (
-            <>
-              <p className="esco-own-note">
-                <span className="own-tag">EIGEN</span>
-                Deze rol staat niet in ESCO en heeft dus geen ESCO-naam of ESCO-id.
-              </p>
-              <label className="form-field">
-                Naam van de rol
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="Bijv. Draaideur-specialist"
-                />
-              </label>
-            </>
-          )}
-
-          <label className="form-field">
-            Omschrijving (optioneel)
-            <textarea
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              rows={3}
-            />
-          </label>
-        </div>
-
-        <h2 className="form-section-title">Standaard skills</h2>
-        <TagPicker
-          label="Skills"
-          hint="Iedereen die deze rol krijgt, krijgt deze skills standaard. Skills uit ESCO die nog niet bestaan, worden bij opslaan aangemaakt."
-          placeholder="Zoek een skill..."
-          selectedItems={selectedSkills}
-          options={skills}
-          onSelect={handleSkillSelect}
-          onRemove={handleSkillRemove}
-        />
-
-        {error && <p className="form-error form-save-error" role="alert">{error}</p>}
-
-        <div className="form-actions">
-          <Button variant="secondary" onClick={onCancel}>
-            Annuleren
-          </Button>
-          <Button type="submit" variant="primary" disabled={isSaving}>
-            {isSaving ? "Opslaan..." : "Rol opslaan"}
-          </Button>
-        </div>
-      </form>
+      <RoleForm
+        escoOccupation={isEsco ? escoOccupation : null}
+        name={name}
+        description={description}
+        skills={skills}
+        selectedSkills={selectedSkills}
+        error={error}
+        isSaving={isSaving}
+        onNameChange={setName}
+        onDescriptionChange={setDescription}
+        onSkillSelect={handleSkillSelect}
+        onSkillRemove={handleSkillRemove}
+        onSubmit={handleSubmit}
+        onCancel={onCancel}
+      />
     </section>
   );
 }

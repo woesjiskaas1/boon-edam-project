@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef } from "react";
 import Button from "../atoms/Button";
 
-export default function SkillDeleteDialog({ skill, onConfirm, onClose, title = "Skill verwijderen?", description }) {
+export default function ConfirmDeleteDialog({ title, description, onConfirm, onClose }) {
   const dialogRef = useRef(null);
   const titleId = useId();
   const descriptionId = useId();
@@ -11,8 +11,8 @@ export default function SkillDeleteDialog({ skill, onConfirm, onClose, title = "
   }, []);
 
   const handleConfirm = () => {
-    onConfirm(skill);
-    dialogRef.current.close();
+    onConfirm();
+    dialogRef.current?.close();
   };
 
   return (
@@ -26,8 +26,7 @@ export default function SkillDeleteDialog({ skill, onConfirm, onClose, title = "
     >
       <h2 id={titleId}>{title}</h2>
       <p id={descriptionId} className="skills-dialog-description">
-        {description || <>Weet je zeker dat je de skill “{skill.name}” wilt verwijderen?
-          {" "}De skill wordt ook verwijderd bij gekoppelde medewerkers.</>}
+        {description}
       </p>
       <div className="skills-dialog-actions">
         <Button variant="secondary" onClick={() => dialogRef.current.close()}>
